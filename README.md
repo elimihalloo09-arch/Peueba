@@ -21,9 +21,15 @@ Metrobús $6.
 - **Tu dinero**: con tu sueldo neto mensual calcula cuánto ganas por hora, qué porcentaje
   del sueldo se va en el traslado (y cuánto se iría en Uber), lo que te queda libre y cuánto
   vale el tiempo que pasas en el camino.
+- **Mis gastos del mes**: lista editable de gastos (renta, despensa, comida fuera, servicios,
+  apps y suscripciones, salud, gustos…) con categoría y frecuencia — día, semana, quincena,
+  mes o año — convertida a su equivalente mensual. El transporte de la ruta elegida entra
+  solo, calculado. Muestra el total, qué porcentaje del sueldo es, cuánto te sobra y una
+  gráfica de barras por categoría.
 - **Bola de nieve**: toma el ahorro mensual contra el Uber como aporte y proyecta el
   acumulado a 6, 12, 24 y 60 meses, con un rendimiento anual editable (supuesto, no
-  promesa) y la fecha en que alcanzas tu meta.
+  promesa) y la fecha en que alcanzas tu meta. El aporte puede ser el ahorro contra el Uber,
+  lo que te sobra del sueldo o un monto fijo.
 - Gráfica comparativa del gasto mensual para cada combinación de días desde casa,
   con recorrido punto a punto, y tabla de desglose (presencial completo, escenario
   actual, ahorro, 100% desde casa).

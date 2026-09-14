@@ -251,6 +251,43 @@
   .hitos .h-sub{ font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--band-ink-3); margin:5px 0 0; }
   .aviso{ font-size:13px; color:var(--band-ink-3); margin-top:28px; max-width:76ch; }
 
+  /* ---- gastos ---- */
+  .totales{ display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--hair); margin-bottom:30px; }
+  .totales > div{ padding:22px 26px 6px 0; border-right:1px solid var(--hair); }
+  .totales > div + div{ padding-left:26px; }
+  .totales > div:last-child{ border-right:0; }
+  .totales .t-val{ font-family:"Archivo",sans-serif; font-weight:800; font-size:clamp(26px,3.8vw,38px);
+                   letter-spacing:-.03em; line-height:1.05; margin-top:8px; font-variant-numeric:tabular-nums; }
+  .totales .t-sub{ font-size:12.5px; color:var(--ink-2); margin-top:8px; }
+  .gastos{ background:var(--surface); border-radius:4px; padding:22px 24px 24px; }
+  .g-head, .g-row{ display:grid; grid-template-columns:minmax(0,2fr) 1.2fr 1fr 110px 26px; gap:12px; align-items:center; }
+  .g-head{ padding-bottom:10px; border-bottom:1px solid var(--ink); }
+  .g-head span{ font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.12em;
+                text-transform:uppercase; color:var(--ink-3); }
+  .g-head span:nth-child(4){ text-align:right; }
+  .g-row{ padding:9px 0; border-bottom:1px solid var(--hair-soft); }
+  .g-row input[type="text"], .g-row select{
+    font:inherit; font-size:14px; color:var(--ink); background:transparent; border:0;
+    border-bottom:1px solid transparent; padding:4px 0; width:100%; min-width:0;
+  }
+  .g-row select{ font-size:13px; color:var(--ink-2); cursor:pointer; }
+  .g-row input[type="text"]:hover, .g-row select:hover{ border-bottom-color:var(--hair); }
+  .g-row input[type="text"]:focus, .g-row select:focus{ outline:none; border-bottom-color:var(--serie-a); }
+  .g-row input[type="number"]{
+    font:inherit; font-family:"IBM Plex Mono",monospace; font-size:14px; font-variant-numeric:tabular-nums;
+    text-align:right; color:var(--ink); background:transparent; border:0; border-bottom:1px solid var(--hair);
+    padding:4px 0; width:100%;
+  }
+  .g-row input[type="number"]:focus{ outline:none; border-bottom-color:var(--serie-a); }
+  .g-row.fija{ color:var(--ink-2); }
+  .g-row.fija .g-nombre{ font-size:14px; display:flex; align-items:center; gap:9px; }
+  .g-row.fija .g-monto{ font-family:"IBM Plex Mono",monospace; font-size:14px; text-align:right; font-variant-numeric:tabular-nums; }
+  .g-row .g-equiv{ font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-3); text-align:right; }
+  .candado{ font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase;
+            color:var(--ink-3); border:1px solid var(--hair); border-radius:999px; padding:2px 8px; }
+  .g-pie{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-top:18px; }
+  .g-total{ font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--ink-2); font-variant-numeric:tabular-nums; }
+
   /* ---- tabla ---- */
   .table-scroll{ overflow-x:auto; }
   table{ border-collapse:collapse; width:100%; font-size:14px; min-width:600px; }
@@ -276,6 +313,10 @@
   .reset:hover{ border-color:var(--ink-3); color:var(--ink); }
 
   @media (max-width:980px){
+    .totales{ grid-template-columns:1fr; }
+    .totales > div{ border-right:0; border-bottom:1px solid var(--hair); padding:18px 0 16px; }
+    .totales > div + div{ padding-left:0; }
+    .totales > div:last-child{ border-bottom:0; }
     .escenario{ grid-template-columns:1fr 1fr; gap:26px; }
     .escenario > div:first-child{ grid-column:1 / -1; }
     .resumen{ grid-template-columns:1fr; }
@@ -291,6 +332,10 @@
   }
   @media (max-width:560px){
     section{ margin-top:40px; }
+    .g-head{ display:none; }
+    .g-row{ grid-template-columns:1fr 92px 26px; gap:8px 10px; padding:14px 0; }
+    .g-row > *:nth-child(2){ grid-column:1 / 2; }
+    .g-row > *:nth-child(3){ grid-column:2 / 4; text-align:right; }
     .panel, .ruta{ padding:20px 18px 22px; }
     .band{ padding:26px 20px 28px; margin-inline:0; }
     .escenario{ grid-template-columns:1fr; }
@@ -383,6 +428,43 @@
     </div>
   </section>
 
+  <section aria-labelledby="h-gastos">
+    <div class="sec-head">
+      <h2 id="h-gastos">Mis gastos del mes</h2>
+      <span class="hint">Ejemplo para arrancar: cambia, agrega y borra lo que quieras</span>
+    </div>
+    <div class="totales">
+      <div>
+        <p class="kicker">Se te va al mes</p>
+        <p class="t-val" id="g1"></p>
+        <p class="t-sub" id="g1sub"></p>
+      </div>
+      <div>
+        <p class="kicker">Te sobra</p>
+        <p class="t-val" id="g2" style="color:var(--good)"></p>
+        <p class="t-sub" id="g2sub"></p>
+      </div>
+      <div>
+        <p class="kicker">El gasto más grande</p>
+        <p class="t-val" id="g3"></p>
+        <p class="t-sub" id="g3sub"></p>
+      </div>
+    </div>
+    <div class="gastos">
+      <div class="g-head">
+        <span>Gasto</span><span>Categoría</span><span>Cada</span><span>Monto</span><span></span>
+      </div>
+      <div id="listaGastos"></div>
+      <div class="g-pie">
+        <span class="g-total" id="gTotal"></span>
+        <button class="mas" id="masGasto" type="button">+ Agregar gasto</button>
+      </div>
+    </div>
+    <div class="chart-wrap" id="gastosWrap" style="margin-top:30px;">
+      <div class="tooltip" id="gastosTip" role="status" aria-live="off"></div>
+    </div>
+  </section>
+
   <section class="band" aria-labelledby="h-dinero">
     <div class="sec-head">
       <h2 id="h-dinero">Tu dinero</h2>
@@ -418,6 +500,19 @@
       <div>
         <label class="lab" for="rutaBase">Ruta que usas</label>
         <select class="in" id="rutaBase"></select>
+      </div>
+      <div>
+        <label class="lab" for="aporteModo">Qué apartas cada mes</label>
+        <select class="in" id="aporteModo">
+          <option value="uber">Lo que no gastas en Uber</option>
+          <option value="sobra">Lo que te sobra del sueldo</option>
+          <option value="fijo">Un monto fijo</option>
+        </select>
+        <p class="hint-in" id="aporteHint"></p>
+      </div>
+      <div id="aporteFijoCaja" hidden>
+        <label class="lab" for="aporteFijo">Monto fijo al mes</label>
+        <input class="in" type="number" id="aporteFijo" min="0" step="100" value="3000">
       </div>
       <div>
         <label class="lab" for="rendimiento">Rendimiento anual</label>
@@ -477,7 +572,20 @@
   var EJEMPLO = {
     moneda:"$", diasLaborales:20, diasCasa:4, casaExtra:0,
     uber:{ida:240, regreso:259},
-    finanzas:{sueldo:12000, horasDia:6, rendimiento:10, rutaBase:"a", meta:100000},
+    finanzas:{sueldo:12000, horasDia:6, rendimiento:10, rutaBase:"a", meta:100000,
+              aporteModo:"uber", aporteFijo:3000},
+    gastos:[
+      {t:"Renta",                      cat:"Casa",     m:3000, f:"mensual"},
+      {t:"Despensa",                   cat:"Comida",   m:550,  f:"semanal"},
+      {t:"Comida y café fuera",        cat:"Comida",   m:700,  f:"mensual"},
+      {t:"Luz, agua y gas",            cat:"Servicios",m:450,  f:"mensual"},
+      {t:"Internet",                   cat:"Servicios",m:450,  f:"mensual"},
+      {t:"Celular",                    cat:"Servicios",m:250,  f:"mensual"},
+      {t:"Apps y suscripciones",       cat:"Apps",     m:350,  f:"mensual"},
+      {t:"Uber ocasional (fines)",     cat:"Transporte",m:300, f:"mensual"},
+      {t:"Farmacia y salud",           cat:"Salud",    m:300,  f:"mensual"},
+      {t:"Salidas y gustos",           cat:"Gustos",   m:600,  f:"mensual"}
+    ],
     destinos:[
       {id:"a", nombre:"CPN · El Reloj", modo:"publico", km:0, viajes:2, minutos:95,
        tramos:[
@@ -505,6 +613,14 @@
     {v:"moto",     t:"Moto"},
     {v:"taxi",     t:"Taxi o app"},
     {v:"activo",   t:"Bici o a pie"}
+  ];
+  var CATEGORIAS = ["Casa","Comida","Transporte","Apps","Servicios","Salud","Deudas","Gustos","Otros"];
+  var FRECUENCIAS = [
+    {v:"diario",    t:"día",      f:30},
+    {v:"semanal",   t:"semana",   f:4.345},
+    {v:"quincenal", t:"quincena", f:2},
+    {v:"mensual",   t:"mes",      f:1},
+    {v:"anual",     t:"año",      f:1/12}
   ];
   var MES_NOMBRE = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
 
@@ -550,6 +666,26 @@
   }
   function ahorroMes(d, diasEnCasa){ return gastoMes(d, 0) - gastoMes(d, diasEnCasa); }
   function minutosMes(d, diasEnCasa){ return diasEnCasa * d.viajes * d.minutos; }
+  function factorFrec(f){
+    var x = FRECUENCIAS.filter(function(fr){ return fr.v === f; })[0];
+    return x ? x.f : 1;
+  }
+  function gastoMensual(g){ return (parseFloat(g.m) || 0) * factorFrec(g.f); }
+  function totalGastos(transporteMes){
+    return (estado.gastos || []).reduce(function(a, g){ return a + gastoMensual(g); }, 0) + transporteMes;
+  }
+  function porCategoria(transporteMes, nombreRuta){
+    var mapa = {};
+    (estado.gastos || []).forEach(function(g){
+      var c = g.cat || "Otros";
+      mapa[c] = (mapa[c] || 0) + gastoMensual(g);
+    });
+    mapa["Transporte"] = (mapa["Transporte"] || 0) + transporteMes;
+    return Object.keys(mapa).map(function(c){ return {cat:c, v:mapa[c]}; })
+      .filter(function(x){ return x.v > 0; })
+      .sort(function(a, b){ return b.v - a.v; });
+  }
+
   function acumulado(aporte, meses, tasaAnual){
     var i = (tasaAnual || 0) / 100 / 12;
     if(i <= 0) return aporte * meses;
@@ -757,6 +893,117 @@
         });
       });
     });
+  }
+
+  // ---------- lista de gastos ----------
+  function pintarGastos(){
+    var cont = document.getElementById("listaGastos");
+    cont.innerHTML = "";
+
+    var fija = el("div","g-row fija");
+    var nom = el("div","g-nombre");
+    nom.appendChild(document.createTextNode("Transporte al trabajo"));
+    nom.appendChild(el("span","candado","de tu ruta"));
+    fija.appendChild(nom);
+    fija.appendChild(el("div", null, "Transporte"));
+    fija.appendChild(el("div", null, "mes"));
+    var mfija = el("div","g-monto"); mfija.id = "gastoRutaVal";
+    fija.appendChild(mfija);
+    fija.appendChild(document.createElement("div"));
+    cont.appendChild(fija);
+
+    (estado.gastos || []).forEach(function(g, idx){
+      var fila = el("div","g-row");
+
+      var nb = document.createElement("input");
+      nb.type = "text"; nb.value = g.t; nb.setAttribute("aria-label","Nombre del gasto "+(idx+1));
+      nb.addEventListener("input", function(){ g.t = nb.value; render(true); });
+      fila.appendChild(nb);
+
+      var sc = document.createElement("select");
+      sc.setAttribute("aria-label","Categoría de "+(g.t || "gasto"));
+      CATEGORIAS.forEach(function(c){
+        var o = document.createElement("option");
+        o.value = c; o.textContent = c;
+        if(c === g.cat) o.selected = true;
+        sc.appendChild(o);
+      });
+      sc.addEventListener("change", function(){ g.cat = sc.value; render(true); });
+      fila.appendChild(sc);
+
+      var sf = document.createElement("select");
+      sf.setAttribute("aria-label","Frecuencia de "+(g.t || "gasto"));
+      FRECUENCIAS.forEach(function(fr){
+        var o = document.createElement("option");
+        o.value = fr.v; o.textContent = fr.t;
+        if(fr.v === g.f) o.selected = true;
+        sf.appendChild(o);
+      });
+      sf.addEventListener("change", function(){ g.f = sf.value; render(true); });
+      fila.appendChild(sf);
+
+      var caja = document.createElement("div");
+      var mt = document.createElement("input");
+      mt.type = "number"; mt.min = "0"; mt.step = "10"; mt.value = g.m;
+      mt.setAttribute("aria-label","Monto de "+(g.t || "gasto"));
+      mt.addEventListener("input", function(){ g.m = Math.max(0, num(mt.value, 0)); render(true); });
+      caja.appendChild(mt);
+      var eq = el("div","g-equiv"); eq.id = "equiv-" + idx;
+      caja.appendChild(eq);
+      fila.appendChild(caja);
+
+      var qu = document.createElement("button");
+      qu.type = "button"; qu.className = "quitar"; qu.textContent = "×";
+      qu.setAttribute("aria-label","Quitar "+(g.t || "gasto"));
+      qu.addEventListener("click", function(){ estado.gastos.splice(idx, 1); pintarGastos(); render(true); });
+      fila.appendChild(qu);
+
+      cont.appendChild(fila);
+    });
+  }
+
+  // ---------- barras por categoría ----------
+  function dibujarBarras(cats, total){
+    var wrap = document.getElementById("gastosWrap");
+    var viejo = wrap.querySelector("svg");
+    if(viejo) viejo.remove();
+    if(!cats.length) return;
+
+    var W = Math.max(320, wrap.clientWidth || 700);
+    var compacto = W < 560;
+    var fila = 34, pad = {t:8, r: compacto ? 8 : 16, b:26, l: compacto ? 88 : 128};
+    var H = pad.t + pad.b + cats.length * fila;
+    var iw = Math.max(60, W - pad.l - pad.r - (compacto ? 84 : 176));
+    var max = cats[0].v || 1;
+
+    var svg = svgEl("svg", {viewBox:"0 0 "+W+" "+H, width:W, height:H, role:"img",
+      "aria-label":"Gasto mensual por categoría, de mayor a menor"});
+
+    cats.forEach(function(c, i){
+      var y = pad.t + i * fila, alto = 17;
+      var ancho = Math.max(2, (c.v / max) * iw);
+      var et = svgEl("text", {x:pad.l-14, y:y+alto-4, "text-anchor":"end", fill:"var(--ink)",
+        "font-size":"13", "font-family":"Public Sans, sans-serif"});
+      et.textContent = c.cat;
+      svg.appendChild(et);
+      svg.appendChild(svgEl("rect", {x:pad.l, y:y, width:ancho, height:alto, rx:4,
+        fill:"var(--serie-a)", opacity: i === 0 ? 1 : .82}));
+      var val = svgEl("text", {x:pad.l + ancho + 10, y:y+alto-4, fill:"var(--ink)",
+        "font-size":"12.5", "font-family":"IBM Plex Mono, monospace"});
+      val.textContent = dineroEje(c.v, 0);
+      svg.appendChild(val);
+      var por = svgEl("text", {x:pad.l + ancho + 10 + (dineroEje(c.v, 0).length * 7.4) + 10, y:y+alto-4,
+        fill:"var(--ink-3)", "font-size":"11.5", "font-family":"IBM Plex Mono, monospace"});
+      por.textContent = total > 0 ? pct(c.v / total * 100) : "";
+      if(!compacto) svg.appendChild(por);
+    });
+
+    var pie = svgEl("text", {x:pad.l, y:H-6, fill:"var(--ink-3)", "font-size":"10",
+      "font-family":"IBM Plex Mono, monospace", "letter-spacing":".14em"});
+    pie.textContent = "GASTO MENSUAL POR CATEGORÍA";
+    svg.appendChild(pie);
+
+    wrap.appendChild(svg);
   }
 
   // ---------- gráfica del gasto ----------
@@ -1058,7 +1305,12 @@
     var gastoBase = gastoMes(base, dsel);
     var uberDia = (estado.uber.ida || 0) + (estado.uber.regreso || 0);
     var uberMes = uberDia * presenciales;
-    var aporte = Math.max(0, uberMes - gastoBase);
+    var aporteUber = Math.max(0, uberMes - gastoBase);
+    var gTot = totalGastos(gastoBase);
+    var sobra = fin.sueldo - gTot;
+    var aporte = fin.aporteModo === "sobra" ? Math.max(0, sobra)
+               : fin.aporteModo === "fijo" ? Math.max(0, fin.aporteFijo || 0)
+               : aporteUber;
     var tasa = fin.rendimiento || 0;
     var horasTrabajo = (fin.horasDia || 0) * L;
     var porHora = horasTrabajo > 0 ? fin.sueldo / horasTrabajo : 0;
@@ -1083,10 +1335,43 @@
     document.getElementById("r1").innerHTML = figura(gastoBase);
     document.getElementById("r1sub").textContent = dinero(gastoBase * 12) + " al año · " + presenciales +
       (presenciales === 1 ? " día presencial" : " días presenciales");
-    document.getElementById("r2").innerHTML = figura(aporte);
-    document.getElementById("r2sub").textContent = dinero(aporte * 12) + " al año · el Uber costaría " + dinero(uberMes) + " al mes";
+    document.getElementById("r2").innerHTML = figura(aporteUber);
+    document.getElementById("r2sub").textContent = dinero(aporteUber * 12) + " al año · el Uber costaría " + dinero(uberMes) + " al mes";
     document.getElementById("r3").innerHTML = figura(acumulado(aporte, 12, tasa));
-    document.getElementById("r3sub").textContent = "con " + pct(tasa) + " anual · sin rendimiento " + dinero(aporte * 12);
+    document.getElementById("r3sub").textContent = "apartando " + dinero(aporte) + " al mes con " + pct(tasa) + " anual";
+
+    // gastos del mes
+    var cats = porCategoria(gastoBase, base.nombre);
+    var mayor = cats[0] || {cat:"—", v:0};
+    var rutaVal = document.getElementById("gastoRutaVal");
+    if(rutaVal) rutaVal.textContent = dinero(gastoBase);
+    (estado.gastos || []).forEach(function(g, idx){
+      var eq = document.getElementById("equiv-" + idx);
+      if(eq) eq.textContent = g.f === "mensual" ? "" : "= " + dineroEje(gastoMensual(g), 0) + "/mes";
+    });
+    document.getElementById("gTotal").textContent = (estado.gastos || []).length + " gastos escritos + tu transporte · " + dinero(gTot) + " al mes";
+    document.getElementById("g1").innerHTML = figura(gTot);
+    document.getElementById("g1sub").textContent = conSueldo
+      ? pct(gTot / fin.sueldo * 100) + " de tu sueldo · incluye " + dinero(gastoBase) + " de transporte"
+      : "incluye " + dinero(gastoBase) + " de transporte";
+    document.getElementById("g2").innerHTML = figura(sobra);
+    document.getElementById("g2").style.color = sobra >= 0 ? "var(--good)" : "var(--serie-b)";
+    document.getElementById("g2sub").textContent = sobra >= 0
+      ? "si lo apartas todo: " + dinero(acumulado(Math.max(0, sobra), 12, tasa)) + " en 12 meses"
+      : "te faltan " + dinero(-sobra) + " para cubrir el mes";
+    document.getElementById("g3").innerHTML = figura(mayor.v);
+    document.getElementById("g3sub").textContent = mayor.cat + " · " + (gTot > 0 ? pct(mayor.v / gTot * 100) + " de lo que gastas" : "");
+    dibujarBarras(cats, gTot);
+
+    // de dónde sale el aporte
+    var cajaFijo = document.getElementById("aporteFijoCaja");
+    cajaFijo.hidden = fin.aporteModo !== "fijo";
+    var selAporte = document.getElementById("aporteModo");
+    if(selAporte.value !== fin.aporteModo) selAporte.value = fin.aporteModo;
+    document.getElementById("aporteHint").textContent =
+      fin.aporteModo === "sobra" ? "Ahora: " + dinero(Math.max(0, sobra)) + " al mes"
+      : fin.aporteModo === "fijo" ? "Pase lo que pase"
+      : "Ahora: " + dinero(aporteUber) + " al mes";
 
     var met = document.getElementById("metricas");
     met.innerHTML = "";
@@ -1154,8 +1439,20 @@
         horasDia:num(g.finanzas.horasDia, 8),
         rendimiento:num(g.finanzas.rendimiento, 0),
         meta:num(g.finanzas.meta, 0),
+        aporteFijo:num(g.finanzas.aporteFijo, 0),
+        aporteModo:["uber","sobra","fijo"].indexOf(g.finanzas.aporteModo) >= 0 ? g.finanzas.aporteModo : "uber",
         rutaBase:g.finanzas.rutaBase === "b" ? "b" : "a"
       };
+    }
+    if(Array.isArray(g.gastos)){
+      estado.gastos = g.gastos.map(function(x){
+        return {
+          t:String(x && x.t != null ? x.t : "Gasto"),
+          cat:CATEGORIAS.indexOf(x && x.cat) >= 0 ? x.cat : "Otros",
+          m:num(x && x.m, 0),
+          f:FRECUENCIAS.filter(function(fr){ return fr.v === (x && x.f); }).length ? x.f : "mensual"
+        };
+      });
     }
     if(Array.isArray(g.destinos)){
       g.destinos.slice(0,2).forEach(function(gd, i){
@@ -1182,8 +1479,11 @@
     document.getElementById("horasDia").value = estado.finanzas.horasDia;
     document.getElementById("rendimiento").value = estado.finanzas.rendimiento;
     document.getElementById("meta").value = estado.finanzas.meta;
+    document.getElementById("aporteFijo").value = estado.finanzas.aporteFijo;
+    document.getElementById("aporteModo").value = estado.finanzas.aporteModo;
     document.getElementById("rutaBase").dataset.firma = "";
     pintarRutas();
+    pintarGastos();
     render(false);
   }
 
@@ -1205,7 +1505,14 @@
       estado.uber[par[1]] = Math.max(0, num(e.target.value, 0)); render(true);
     });
   });
-  ["sueldo","horasDia","rendimiento","meta"].forEach(function(k){
+  document.getElementById("masGasto").addEventListener("click", function(){
+    estado.gastos = (estado.gastos || []).concat([{t:"Nuevo gasto", cat:"Otros", m:0, f:"mensual"}]);
+    pintarGastos(); render(true);
+  });
+  document.getElementById("aporteModo").addEventListener("change", function(e){
+    estado.finanzas.aporteModo = e.target.value; render(true);
+  });
+  ["sueldo","horasDia","rendimiento","meta","aporteFijo"].forEach(function(k){
     document.getElementById(k).addEventListener("input", function(e){
       estado.finanzas[k] = Math.max(0, num(e.target.value, 0)); render(true);
     });
