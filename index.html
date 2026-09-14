@@ -361,6 +361,8 @@
   .d-row select[data-estado="cobranza"]{ color:var(--deuda); border-color:var(--deuda); }
   .d-row select[data-estado="atraso"]{ color:var(--serie-b); border-color:var(--serie-b); }
   .d-row select[data-estado="corriente"]{ color:var(--good); border-color:var(--good); }
+  .d-row select[data-estado="entregado"]{ color:var(--ink-3); border-color:var(--hair); }
+  .d-row.entregada input[type="text"], .d-row.entregada input[type="number"]{ color:var(--ink-3); }
   .plan{ display:grid; grid-template-columns:repeat(4, minmax(120px,1fr)); gap:24px 28px; margin-top:30px;
          padding-top:24px; border-top:1px solid var(--hair); align-items:start; }
   .plan-res dt{ font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.12em;
@@ -720,9 +722,14 @@
         <p class="hint-in">% supuesto tuyo</p>
       </div>
       <div>
-        <label class="lab" for="meta">Tu meta</label>
-        <input class="in" type="number" id="meta" min="0" step="1000" value="100000">
-        <p class="hint-in">Cuánto quieres juntar</p>
+        <label class="lab" for="metaNombre">Para qué es</label>
+        <input class="in" type="text" id="metaNombre" value="Auto más económico">
+        <p class="hint-in">Tu meta, con nombre</p>
+      </div>
+      <div>
+        <label class="lab" for="meta">Cuánto necesitas</label>
+        <input class="in" type="number" id="meta" min="0" step="1000" value="80000">
+        <p class="hint-in">De contado o de enganche</p>
       </div>
       <div>
         <p class="lab">Llegas a tu meta</p>
@@ -772,8 +779,9 @@
   var EJEMPLO = {
     moneda:"$", diasLaborales:20, diasCasa:4, casaExtra:0,
     uber:{ida:240, regreso:259},
-    finanzas:{sueldo:30000, horasDia:6, rendimiento:10, rutaBase:"a", meta:100000,
-              aporteModo:"uber", aporteFijo:3000, extraDeuda:2000, metodo:"avalancha"},
+    finanzas:{sueldo:30000, horasDia:6, rendimiento:10, rutaBase:"a",
+              aporteModo:"uber", aporteFijo:3000, extraDeuda:2000, metodo:"avalancha",
+              meta:80000, metaNombre:"Auto más económico"},
     deudas:[
       {t:"NU · tarjeta de crédito",   saldo:23505,  pago:0,     tasa:70, estado:"cobranza"},
       {t:"NU · préstamo personal",    saldo:1184,   pago:590,   tasa:80, estado:"cobranza"},
@@ -783,7 +791,7 @@
       {t:"BanCoppel · tarjeta",       saldo:4812,   pago:901,   tasa:70, estado:"atraso"},
       {t:"HeyBanco · tarjeta",        saldo:13719,  pago:1072,  tasa:70, estado:"atraso"},
       {t:"Telcel · línea",            saldo:608,    pago:608,   tasa:0,  estado:"atraso"},
-      {t:"VW Leasing · auto",         saldo:253566, pago:16691, tasa:18, estado:"atraso"},
+      {t:"VW Leasing · auto entregado", saldo:253566, pago:0, tasa:18, estado:"entregado"},
       {t:"Banco Azteca · préstamo",   saldo:26752,  pago:908,   tasa:80, estado:"corriente"},
       {t:"Banco Azteca · préstamo 2", saldo:12960,  pago:469,   tasa:80, estado:"corriente"},
       {t:"Banco Azteca · muebles",    saldo:8619,   pago:734,   tasa:60, estado:"corriente"},
@@ -831,7 +839,8 @@
     {v:"taxi",     t:"Taxi o app"},
     {v:"activo",   t:"Bici o a pie"}
   ];
-  var ESTADOS_DEUDA = [{v:"corriente", t:"Al corriente"}, {v:"atraso", t:"Con atraso"}, {v:"cobranza", t:"En cobranza"}];
+  var ESTADOS_DEUDA = [{v:"corriente", t:"Al corriente"}, {v:"atraso", t:"Con atraso"},
+                       {v:"cobranza", t:"En cobranza"}, {v:"entregado", t:"Entregado"}];
   var CATEGORIAS = ["Casa","Comida","Transporte","Apps","Servicios","Salud","Deudas","Gustos","Otros"];
   var FRECUENCIAS = [
     {v:"diario",    t:"día",      f:30},
@@ -962,14 +971,23 @@
       .sort(function(a, b){ return b.v - a.v; });
   }
 
-  function totalDeuda(){ return (estado.deudas || []).reduce(function(a, d){ return a + (d.saldo || 0); }, 0); }
-  function pagosDeuda(){ return (estado.deudas || []).reduce(function(a, d){ return a + (d.pago || 0); }, 0); }
+  function totalDeuda(){
+    return (estado.deudas || []).filter(function(d){ return d.estado !== "entregado"; })
+      .reduce(function(a, d){ return a + (d.saldo || 0); }, 0);
+  }
+  function deudaEntregada(){ return deudaPorEstado("entregado"); }
+  function pagosDeuda(){
+    return (estado.deudas || []).filter(function(d){ return d.estado !== "entregado"; })
+      .reduce(function(a, d){ return a + (d.pago || 0); }, 0);
+  }
   function deudaPorEstado(e){
     return (estado.deudas || []).filter(function(d){ return d.estado === e; })
       .reduce(function(a, d){ return a + (d.saldo || 0); }, 0);
   }
   function simularDeuda(extra, metodo){
-    var vivas = (estado.deudas || []).filter(function(d){ return (d.saldo || 0) > 0; }).map(function(d, i){
+    var vivas = (estado.deudas || []).filter(function(d){
+      return (d.saldo || 0) > 0 && d.estado !== "entregado";
+    }).map(function(d, i){
       return {i:i, t:d.t, saldo:d.saldo, pago:d.pago || 0, tasa:d.tasa || 0, mes:null, pagado:0};
     });
     if(!vivas.length) return {meses:0, intereses:0, orden:[], curva:[{x:0, y:0}], imposible:false};
@@ -1405,7 +1423,7 @@
     var cont = document.getElementById("listaDeudas");
     cont.innerHTML = "";
     (estado.deudas || []).forEach(function(d, idx){
-      var fila = el("div","d-row");
+      var fila = el("div","d-row" + (d.estado === "entregado" ? " entregada" : ""));
 
       var nb = document.createElement("input");
       nb.type = "text"; nb.value = d.t; nb.setAttribute("aria-label","Acreedor "+(idx+1));
@@ -1969,11 +1987,11 @@
 
     // deudas
     var dTot = totalDeuda(), dPagos = pagosDeuda(), dCobranza = deudaPorEstado("cobranza");
-    var sinAuto = dTot - (estado.deudas || []).filter(function(d){ return /auto|leasing/i.test(d.t); })
-      .reduce(function(x, d){ return x + d.saldo; }, 0);
+    var entregada = deudaEntregada();
     document.getElementById("d1").innerHTML = figura(dTot);
-    document.getElementById("d1sub").textContent = "sin el auto: " + dinero(sinAuto) + " · " +
-      (estado.deudas || []).filter(function(d){ return d.saldo > 0; }).length + " créditos con saldo";
+    document.getElementById("d1sub").textContent =
+      (estado.deudas || []).filter(function(d){ return d.saldo > 0 && d.estado !== "entregado"; }).length +
+      " créditos que sigues pagando" + (entregada > 0 ? " · " + dinero(entregada) + " entregado, por finiquitar" : "");
     document.getElementById("d2").innerHTML = figura(dPagos);
     document.getElementById("d2sub").textContent = conSueldo
       ? pct(dPagos / fin.sueldo * 100) + " de tu sueldo en pagos fijos"
@@ -1981,7 +1999,8 @@
     document.getElementById("d3").innerHTML = figura(dCobranza);
     document.getElementById("d3sub").textContent = "lo que ya te exigen completo · con atraso: " + dinero(deudaPorEstado("atraso"));
     document.getElementById("dTotal").textContent = (estado.deudas || []).length + " créditos · " +
-      dinero(dTot) + " en total, " + dinero(dPagos) + " al mes";
+      dinero(dTot) + " que pagas, " + dinero(dPagos) + " al mes" +
+      (entregada > 0 ? " · " + dinero(entregada) + " del auto entregado, aparte" : "");
     document.getElementById("extraHint").textContent = "tu aporte de ahorro hoy es " + dinero(aporte) + " al mes";
 
     var sim = simularDeuda(Math.max(0, fin.extraDeuda || 0), fin.metodo);
@@ -2027,7 +2046,7 @@
     });
 
     dibujarCurvaDeuda(sim);
-    dibujarBarras((estado.deudas || []).filter(function(d){ return d.saldo > 0; })
+    dibujarBarras((estado.deudas || []).filter(function(d){ return d.saldo > 0 && d.estado !== "entregado"; })
       .map(function(d){ return {cat:cortoPlano(d.t, 24), v:d.saldo}; })
       .sort(function(x, y){ return y.v - x.v; }), dTot, "saldosWrap", "var(--deuda)", "SALDO POR ACREEDOR");
 
@@ -2060,7 +2079,8 @@
       met.appendChild(caja);
     });
 
-    document.getElementById("metaFecha").textContent = mesesParaMeta(aporte, fin.meta, tasa);
+    document.getElementById("metaFecha").textContent =
+      (fin.metaNombre ? fin.metaNombre + " · " : "") + mesesParaMeta(aporte, fin.meta, tasa);
 
     var hitos = document.getElementById("hitos");
     hitos.innerHTML = "";
@@ -2108,6 +2128,7 @@
         horasDia:num(g.finanzas.horasDia, 8),
         rendimiento:num(g.finanzas.rendimiento, 0),
         meta:num(g.finanzas.meta, 0),
+        metaNombre:typeof g.finanzas.metaNombre === "string" ? g.finanzas.metaNombre.slice(0, 40) : "",
         aporteFijo:num(g.finanzas.aporteFijo, 0),
         aporteModo:["uber","sobra","fijo"].indexOf(g.finanzas.aporteModo) >= 0 ? g.finanzas.aporteModo : "uber",
         extraDeuda:num(g.finanzas.extraDeuda, 0),
@@ -2132,7 +2153,7 @@
         return {
           t:String(x && x.t != null ? x.t : "Deuda"),
           saldo:num(x && x.saldo, 0), pago:num(x && x.pago, 0), tasa:num(x && x.tasa, 0),
-          estado:["corriente","atraso","cobranza"].indexOf(x && x.estado) >= 0 ? x.estado : "corriente"
+          estado:["corriente","atraso","cobranza","entregado"].indexOf(x && x.estado) >= 0 ? x.estado : "corriente"
         };
       });
     }
@@ -2171,6 +2192,7 @@
     document.getElementById("horasDia").value = estado.finanzas.horasDia;
     document.getElementById("rendimiento").value = estado.finanzas.rendimiento;
     document.getElementById("meta").value = estado.finanzas.meta;
+    document.getElementById("metaNombre").value = estado.finanzas.metaNombre || "";
     document.getElementById("aporteFijo").value = estado.finanzas.aporteFijo;
     document.getElementById("aporteModo").value = estado.finanzas.aporteModo;
     document.getElementById("extraDeuda").value = estado.finanzas.extraDeuda;
@@ -2256,6 +2278,9 @@
   document.getElementById("masGasto").addEventListener("click", function(){
     estado.gastos = (estado.gastos || []).concat([{t:"Nuevo gasto", cat:"Otros", m:0, f:"mensual"}]);
     pintarGastos(); render(true);
+  });
+  document.getElementById("metaNombre").addEventListener("input", function(e){
+    estado.finanzas.metaNombre = e.target.value.slice(0, 40); render(true);
   });
   document.getElementById("aporteModo").addEventListener("change", function(e){
     estado.finanzas.aporteModo = e.target.value; render(true);
