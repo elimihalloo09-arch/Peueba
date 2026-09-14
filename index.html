@@ -14,6 +14,7 @@
     --ink-3:#7A8B90;
     --serie-a:#0B8F9C;
     --serie-b:#BE7314;
+    --serie-c:#6257BE;
     --good:#2E7443;
     --good-soft:#E4EFE6;
     --focus:#0B8F9C;
@@ -33,6 +34,7 @@
       --ink-3:#7E8F91;
       --serie-a:#1A99A6;
       --serie-b:#C27C18;
+      --serie-c:#8E85DE;
       --good:#5FB27A;
       --good-soft:#1E2C23;
       --focus:#1A99A6;
@@ -51,6 +53,7 @@
     --ink-3:#7E8F91;
     --serie-a:#1A99A6;
     --serie-b:#C27C18;
+    --serie-c:#8E85DE;
     --good:#5FB27A;
     --good-soft:#1E2C23;
     --focus:#1A99A6;
@@ -170,6 +173,16 @@
   .tramos-foot{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:10px;}
   .tramos-total{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--ink-2); font-variant-numeric:tabular-nums;}
   .uber-grid{display:grid; grid-template-columns:150px 150px 1fr; gap:20px; align-items:start;}
+  .dinero-grid{display:grid; grid-template-columns:150px 130px 130px 1fr; gap:20px; align-items:start;}
+  .dinero .readout, .bola .readout{margin-top:0; padding-top:0;}
+  .hitos{display:grid; grid-template-columns:repeat(4,1fr); gap:0; margin-top:16px; border-top:1px solid var(--line-soft); padding-top:14px;}
+  .hitos > div{padding-right:16px; border-right:1px solid var(--line-soft);}
+  .hitos > div:last-child{border-right:0; padding-right:0;}
+  .hitos dt{font-size:12px; color:var(--ink-3);}
+  .hitos .h-val{font-family:"Archivo",sans-serif; font-weight:700; font-size:clamp(19px,2.4vw,24px); letter-spacing:-.02em;
+                margin-top:4px; font-variant-numeric:tabular-nums; color:var(--serie-c);}
+  .hitos .h-sub{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-3); margin-top:3px;}
+  .aviso{font-size:12.5px; color:var(--ink-3); margin-top:14px; padding-left:10px; border-left:2px solid var(--line);}
   .uber .readout{margin-top:0; padding-top:0;}
   .compo{margin-top:16px;}
   .bar{display:flex; height:12px; border-radius:3px; overflow:hidden; background:var(--card-2); gap:2px;}
@@ -209,6 +222,10 @@
     .destinos{grid-template-columns:1fr;}
   }
   @media (max-width:860px){
+    .dinero-grid{grid-template-columns:1fr 1fr;}
+    .dinero-grid .readout{grid-column:1 / -1;}
+    .hitos{grid-template-columns:1fr 1fr; gap:14px 0;}
+    .hitos > div:nth-child(2){border-right:0;}
     .uber-grid{grid-template-columns:1fr 1fr;}
     .uber-grid .readout{grid-column:1 / -1;}
   }
@@ -226,7 +243,8 @@
     <h1>Casa, CPN o Bancen</h1>
     <p class="lede">Tus dos rutas reales desde Calle 27 #136, Nezahualcóyotl: El Reloj (CPN) y Hidalgo 77 (BanCen),
       tramo por tramo y con tarifas oficiales. Mueve los días desde casa y verás el gasto del mes, el ahorro y las
-      horas de trayecto que te devuelves — más la comparación contra el Uber.</p>
+      horas de trayecto que te devuelves. Abajo, lo que el Uber te costaría, qué parte de tu sueldo se va en moverte
+      y en cuánto se convierte ese ahorro si lo apartas mes con mes.</p>
     <div class="rule"></div>
   </header>
 
@@ -297,6 +315,57 @@
     </div>
   </section>
 
+  <section class="card card-pad dinero" aria-labelledby="h-dinero">
+    <div class="card-head">
+      <h2 id="h-dinero">Tu dinero</h2>
+      <span class="hint">Escribe tu sueldo: no lo sé y no se envía a ningún lado</span>
+    </div>
+    <div class="dinero-grid">
+      <div class="field">
+        <label for="sueldo">Sueldo neto al mes</label>
+        <span class="sub">Ejemplo: cámbialo</span>
+        <input type="number" id="sueldo" min="0" step="100" value="12000">
+      </div>
+      <div class="field">
+        <label for="horasDia">Horas de trabajo al día</label>
+        <span class="sub">11:00 a 17:00 = 6</span>
+        <input type="number" id="horasDia" min="1" max="16" step="0.5" value="6">
+      </div>
+      <div class="field">
+        <label for="rutaBase">Ruta que usas</label>
+        <span class="sub">Base del ahorro</span>
+        <select id="rutaBase"></select>
+      </div>
+      <dl class="readout" id="dineroOut"></dl>
+    </div>
+  </section>
+
+  <section class="card card-pad bola" aria-labelledby="h-bola">
+    <div class="card-head">
+      <h2 id="h-bola">Si guardas lo que no gastas en Uber</h2>
+      <span class="hint">Aporte mensual = lo que el Uber te costaría menos lo que gastas en tu ruta</span>
+    </div>
+    <div class="dinero-grid" style="grid-template-columns:150px 150px 1fr;">
+      <div class="field">
+        <label for="rendimiento">Rendimiento anual</label>
+        <span class="sub">% supuesto, editable</span>
+        <input type="number" id="rendimiento" min="0" max="100" step="0.5" value="10">
+      </div>
+      <div class="field">
+        <label for="meta">Tu meta</label>
+        <span class="sub">Cuánto quieres juntar</span>
+        <input type="number" id="meta" min="0" step="1000" value="100000">
+      </div>
+      <dl class="readout" id="bolaOut"></dl>
+    </div>
+    <div class="chart-wrap" id="bolaWrap" style="margin-top:16px;">
+      <div class="tooltip" id="bolaTip" role="status" aria-live="off"></div>
+    </div>
+    <dl class="hitos" id="hitos"></dl>
+    <p class="aviso">El dinero solo se acumula si lo apartas: el ahorro existe en el momento en que no pides el Uber.
+      El rendimiento es un supuesto tuyo, no una promesa de nadie.</p>
+  </section>
+
   <section class="card card-pad" aria-labelledby="h-graf">
     <div class="card-head">
       <h2 id="h-graf">Gasto mensual según los días que trabajes desde casa</h2>
@@ -350,6 +419,7 @@
   var EJEMPLO = {
     moneda:"$", diasLaborales:20, diasCasa:4, casaExtra:0,
     uber:{ida:240, regreso:259},
+    finanzas:{sueldo:12000, horasDia:6, rendimiento:10, rutaBase:"a", meta:100000},
     destinos:[
       {id:"a", nombre:"CPN · El Reloj", modo:"publico", km:0, viajes:2, minutos:95,
        tramos:[
@@ -387,6 +457,25 @@
   function dinero(n){ return estado.moneda + " " + nf(2).format(n); }
   function dineroEje(n, dec){ return estado.moneda + nf(dec).format(n); }
   function horas(n){ return nf(n % 1 === 0 ? 0 : 1).format(n) + " h"; }
+  function pct(n){ return nf(n >= 10 ? 0 : 1).format(n) + "%"; }
+  var MES_NOMBRE = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  function mesesParaMeta(aporte, meta, tasa){
+    if(!(meta > 0)) return "—";
+    if(!(aporte > 0)) return "nunca con $0 de aporte";
+    for(var n = 1; n <= 600; n++){
+      if(acumulado(aporte, n, tasa) >= meta){
+        var f = new Date();
+        f.setMonth(f.getMonth() + n);
+        return n + (n === 1 ? " mes" : " meses") + " · " + MES_NOMBRE[f.getMonth()] + " " + f.getFullYear();
+      }
+    }
+    return "más de 50 años";
+  }
+  function acumulado(aporte, meses, tasaAnual){
+    var i = (tasaAnual || 0) / 100 / 12;
+    if(i <= 0) return aporte * meses;
+    return aporte * (Math.pow(1 + i, meses) - 1) / i;
+  }
   function num(v, def){ var x = parseFloat(v); return isFinite(x) ? x : def; }
   function el(tag, cls, txt){ var e = document.createElement(tag); if(cls) e.className = cls; if(txt != null) e.textContent = txt; return e; }
 
@@ -724,6 +813,94 @@
     lg.appendChild(nota);
   }
 
+  function dibujarBola(aporte){
+    var wrap = document.getElementById("bolaWrap");
+    var viejo = wrap.querySelector("svg");
+    if(viejo) viejo.remove();
+
+    var MESES = 24, tasa = (estado.finanzas && estado.finanzas.rendimiento) || 0;
+    var W = Math.max(340, wrap.clientWidth || 700);
+    var compacto = W < 560;
+    var H = compacto ? 220 : 250;
+    var pad = {t:14, r: compacto ? 18 : 112, b:34, l: compacto ? 60 : 72};
+    var iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
+
+    var pts = [];
+    for(var m = 0; m <= MESES; m++) pts.push({x:m, y:acumulado(aporte, m, tasa)});
+    var top = Math.max(pts[MESES].y, 1) * 1.08;
+
+    function X(v){ return pad.l + (v / MESES) * iw; }
+    function Y(v){ return pad.t + ih - (v / top) * ih; }
+
+    var svg = svgEl("svg", {viewBox:"0 0 "+W+" "+H, width:W, height:H, role:"img",
+      "aria-label":"Ahorro acumulado en 24 meses apartando " + dinero(aporte) + " al mes"});
+
+    var decEje = top >= 100 ? 0 : 1, fsEje = compacto ? 12 : 11;
+    for(var t = 0; t <= 4; t++){
+      var val = top * t / 4, y = Y(val);
+      svg.appendChild(svgEl("line", {x1:pad.l, x2:pad.l+iw, y1:y, y2:y, stroke:"var(--line-soft)", "stroke-width":1}));
+      var lab = svgEl("text", {x:pad.l-9, y:y+4, "text-anchor":"end", fill:"var(--ink-3)",
+        "font-size":fsEje, "font-family":"IBM Plex Mono, monospace"});
+      lab.textContent = dineroEje(val, decEje);
+      svg.appendChild(lab);
+    }
+    svg.appendChild(svgEl("line", {x1:pad.l, x2:pad.l+iw, y1:pad.t+ih, y2:pad.t+ih, stroke:"var(--line)", "stroke-width":1}));
+    for(var m2 = 0; m2 <= MESES; m2 += 6){
+      var tx = svgEl("text", {x:X(m2), y:pad.t+ih+20, "text-anchor":"middle", fill:"var(--ink-3)",
+        "font-size":fsEje, "font-family":"IBM Plex Mono, monospace"});
+      tx.textContent = m2;
+      svg.appendChild(tx);
+    }
+    var ejeX = svgEl("text", {x:pad.l+iw/2, y:H-2, "text-anchor":"middle", fill:"var(--ink-3)", "font-size":"11"});
+    ejeX.textContent = "meses apartando ese dinero";
+    svg.appendChild(ejeX);
+
+    var dLinea = pts.map(function(pt, idx){ return (idx ? "L" : "M") + X(pt.x).toFixed(1) + " " + Y(pt.y).toFixed(1); }).join(" ");
+    svg.appendChild(svgEl("path", {d:dLinea + " L " + X(MESES).toFixed(1) + " " + Y(0).toFixed(1) + " L " + X(0).toFixed(1) + " " + Y(0).toFixed(1) + " Z",
+      fill:"var(--serie-c)", opacity:.12, stroke:"none"}));
+    svg.appendChild(svgEl("path", {d:dLinea, fill:"none", stroke:"var(--serie-c)", "stroke-width":2,
+      "stroke-linecap":"round", "stroke-linejoin":"round"}));
+    svg.appendChild(svgEl("circle", {cx:X(MESES), cy:Y(pts[MESES].y), r:5.5, fill:"var(--serie-c)",
+      stroke:"var(--card)", "stroke-width":2}));
+
+    if(!compacto){
+      var t1 = svgEl("text", {x:pad.l+iw+12, y:Y(pts[MESES].y)-2, fill:"var(--ink)", "font-size":"12.5",
+        "font-family":"Archivo, sans-serif", "font-weight":"600"});
+      t1.textContent = "2 años";
+      var t2 = svgEl("text", {x:pad.l+iw+12, y:Y(pts[MESES].y)+14, fill:"var(--ink-3)", "font-size":"11.5",
+        "font-family":"IBM Plex Mono, monospace"});
+      t2.textContent = dinero(pts[MESES].y);
+      svg.appendChild(t1); svg.appendChild(t2);
+    }
+
+    var cross = svgEl("line", {x1:0, x2:0, y1:pad.t, y2:pad.t+ih, stroke:"var(--ink-3)", "stroke-width":1, opacity:0});
+    var dot = svgEl("circle", {r:4.5, fill:"var(--serie-c)", stroke:"var(--card)", "stroke-width":2, opacity:0});
+    svg.appendChild(cross); svg.appendChild(dot);
+    var hit = svgEl("rect", {x:pad.l, y:pad.t, width:iw, height:ih, fill:"transparent"});
+    svg.appendChild(hit);
+
+    var tip = document.getElementById("bolaTip");
+    hit.addEventListener("mousemove", function(ev){
+      var r = svg.getBoundingClientRect(), escala = W / r.width;
+      var m3 = Math.round((((ev.clientX - r.left) * escala) - pad.l) / (iw || 1) * MESES);
+      m3 = Math.min(Math.max(m3, 0), MESES);
+      cross.setAttribute("x1", X(m3)); cross.setAttribute("x2", X(m3)); cross.setAttribute("opacity", .5);
+      dot.setAttribute("cx", X(m3)); dot.setAttribute("cy", Y(pts[m3].y)); dot.setAttribute("opacity", 1);
+      tip.innerHTML = '<div class="tt-h">Mes ' + m3 + '</div>' +
+        '<div class="tt-r"><span>Acumulado</span><b>' + dinero(pts[m3].y) + '</b></div>' +
+        '<div class="tt-r"><span>Sin rendimiento</span><b>' + dinero(aporte * m3) + '</b></div>';
+      tip.style.opacity = 1;
+      var tw = tip.offsetWidth, left = (X(m3) / escala) - tw/2;
+      tip.style.left = Math.min(Math.max(left, 4), r.width - tw - 4) + "px";
+      tip.style.top = "4px";
+    });
+    hit.addEventListener("mouseleave", function(){
+      tip.style.opacity = 0; cross.setAttribute("opacity", 0); dot.setAttribute("opacity", 0);
+    });
+
+    wrap.appendChild(svg);
+  }
+
   // ---------- tabla ----------
   function pintarTabla(){
     var L = estado.diasLaborales, dsel = Math.min(estado.diasCasa, L);
@@ -750,10 +927,15 @@
     }
     fila("Todo presencial (0 días en casa)", function(d){ return gastoMes(d, 0); });
     fila("Tu escenario (" + dsel + (dsel === 1 ? " día" : " días") + " en casa)", function(d){ return gastoMes(d, dsel); });
-    fila("Ahorro", function(d){ return ahorroMes(d, dsel); }, "save");
+    var uberDiaT = ((estado.uber && estado.uber.ida) || 0) + ((estado.uber && estado.uber.regreso) || 0);
+    fila("Ahorro por trabajar desde casa", function(d){ return ahorroMes(d, dsel); }, "save");
+    fila("Todo en Uber (referencia)", function(){ return uberDia_T(uberDiaT, L, dsel); });
+    fila("Ahorro contra el Uber", function(d){ return uberDia_T(uberDiaT, L, dsel) - gastoMes(d, dsel); }, "save");
     fila("Todo desde casa (" + L + " días)", function(d){ return gastoMes(d, L); });
     document.getElementById("tablaHint").textContent = "Año = 12 meses de " + L + " días laborales";
   }
+
+  function uberDia_T(uberDia, L, dsel){ return uberDia * (L - dsel); }
 
   // ---------- render ----------
   function render(guardar){
@@ -876,6 +1058,84 @@
       });
     }
 
+    // tu dinero: sueldo, tiempo y proporción del gasto
+    var fin = estado.finanzas || (estado.finanzas = {sueldo:0, horasDia:8, rendimiento:0, rutaBase:"a"});
+    var base = estado.destinos.filter(function(d){ return d.id === fin.rutaBase; })[0] || a;
+    var gastoBase = gastoMes(base, dsel);
+    var horasTrabajo = (fin.horasDia || 0) * L;
+    var porHora = horasTrabajo > 0 ? fin.sueldo / horasTrabajo : 0;
+    var horasTraslado = presenciales * base.viajes * base.minutos / 60;
+
+    var selRuta = document.getElementById("rutaBase");
+    if(selRuta && selRuta.dataset.pintado !== estado.destinos.map(function(d){ return d.nombre; }).join("|")){
+      selRuta.innerHTML = "";
+      estado.destinos.forEach(function(d){
+        var o = document.createElement("option");
+        o.value = d.id; o.textContent = d.nombre;
+        if(d.id === fin.rutaBase) o.selected = true;
+        selRuta.appendChild(o);
+      });
+      selRuta.dataset.pintado = estado.destinos.map(function(d){ return d.nombre; }).join("|");
+    }
+
+    var doOut = document.getElementById("dineroOut");
+    if(doOut){
+      doOut.innerHTML = "";
+      var sinSueldo = !(fin.sueldo > 0);
+      [["Ganas por hora", sinSueldo ? "—" : dinero(porHora), null],
+       ["Traslado a " + corto(base.nombre, 14), sinSueldo ? "—" : pct(gastoBase / fin.sueldo * 100) + " de tu sueldo", null],
+       ["En Uber sería", sinSueldo ? "—" : pct(uberMes / fin.sueldo * 100) + " de tu sueldo", "malo"],
+       ["Te queda libre al mes", sinSueldo ? "—" : dinero(fin.sueldo - gastoBase), null],
+       ["Horas al mes en traslado", horas(horasTraslado) + (sinSueldo ? "" : " · " + dinero(horasTraslado * porHora) + " de tu tiempo"), null]
+      ].forEach(function(f){
+        var box = document.createElement("div");
+        box.style.minWidth = "132px";
+        box.appendChild(el("dt", null, f[0]));
+        var dd = el("dd", null, f[1]);
+        dd.style.fontSize = "15px";
+        if(f[2] === "malo"){ dd.style.color = "var(--ink)"; dd.style.fontWeight = "600"; }
+        box.appendChild(dd);
+        doOut.appendChild(box);
+      });
+    }
+
+    // bola de nieve: el ahorro contra el Uber, apartado mes a mes
+    var aporte = Math.max(0, uberMes - gastoBase);
+    var tasa = fin.rendimiento || 0;
+    var boOut = document.getElementById("bolaOut");
+    if(boOut){
+      boOut.innerHTML = "";
+      [["Aporte mensual", dinero(aporte), "serie-c"],
+       ["Al año, sin rendimiento", dinero(aporte * 12), null],
+       ["Al año, con " + pct(tasa), dinero(acumulado(aporte, 12, tasa)), "serie-c"],
+       ["Equivale a", (fin.sueldo > 0 ? pct(aporte / fin.sueldo * 100) + " de tu sueldo al mes" : "—"), null],
+       ["Llegas a tu meta", mesesParaMeta(aporte, fin.meta, tasa), "serie-c"]
+      ].forEach(function(f){
+        var box = document.createElement("div");
+        box.style.minWidth = "150px";
+        box.appendChild(el("dt", null, f[0]));
+        var dd = el("dd", null, f[1]);
+        dd.style.fontSize = "16px";
+        if(f[2] === "serie-c") dd.style.color = "var(--serie-c)";
+        box.appendChild(dd);
+        boOut.appendChild(box);
+      });
+    }
+    var hitos = document.getElementById("hitos");
+    if(hitos){
+      hitos.innerHTML = "";
+      [6, 12, 24, 60].forEach(function(m){
+        var box = document.createElement("div");
+        box.appendChild(el("dt", null, m === 60 ? "5 años" : (m === 24 ? "2 años" : m + " meses")));
+        var dd = el("dd","h-val", dinero(acumulado(aporte, m, tasa)));
+        dd.style.margin = "0";
+        box.appendChild(dd);
+        box.appendChild(el("dd","h-sub", "sin rendimiento " + dinero(aporte * m)));
+        hitos.appendChild(box);
+      });
+    }
+    dibujarBola(aporte);
+
     dibujarGrafica();
     pintarTabla();
     if(guardar !== false) programarGuardado();
@@ -908,6 +1168,15 @@
       if(guardado[k] !== undefined && guardado[k] !== null) estado[k] = guardado[k];
     });
     if(guardado.uber) estado.uber = {ida:num(guardado.uber.ida, 0), regreso:num(guardado.uber.regreso, 0)};
+    if(guardado.finanzas){
+      estado.finanzas = {
+        sueldo:num(guardado.finanzas.sueldo, 0),
+        horasDia:num(guardado.finanzas.horasDia, 8),
+        rendimiento:num(guardado.finanzas.rendimiento, 0),
+        meta:num(guardado.finanzas.meta, 0),
+        rutaBase:guardado.finanzas.rutaBase === "b" ? "b" : "a"
+      };
+    }
     if(Array.isArray(guardado.destinos)){
       guardado.destinos.slice(0,2).forEach(function(g, i){
         if(!estado.destinos[i] || !g) return;
@@ -924,6 +1193,13 @@
   }
   function aplicarGuardado(){
     if(!estado.uber) estado.uber = {ida:0, regreso:0};
+    if(!estado.finanzas) estado.finanzas = {sueldo:0, horasDia:8, rendimiento:0, rutaBase:"a"};
+    document.getElementById("sueldo").value = estado.finanzas.sueldo;
+    document.getElementById("horasDia").value = estado.finanzas.horasDia;
+    document.getElementById("rendimiento").value = estado.finanzas.rendimiento;
+    document.getElementById("meta").value = estado.finanzas.meta;
+    var selR = document.getElementById("rutaBase");
+    selR.dataset.pintado = "";
     document.getElementById("uberIda").value = estado.uber.ida;
     document.getElementById("uberRegreso").value = estado.uber.regreso;
     document.getElementById("moneda").value = estado.moneda;
@@ -958,6 +1234,17 @@
       render(true);
     });
   });
+  [["sueldo","sueldo"],["horasDia","horasDia"],["rendimiento","rendimiento"],["meta","meta"]].forEach(function(par){
+    var input = document.getElementById(par[0]);
+    input.addEventListener("input", function(){
+      estado.finanzas[par[1]] = Math.max(0, num(input.value, 0));
+      render(true);
+    });
+  });
+  document.getElementById("rutaBase").addEventListener("change", function(e){
+    estado.finanzas.rutaBase = e.target.value;
+    render(true);
+  });
   document.getElementById("reset").addEventListener("click", function(){
     estado = JSON.parse(JSON.stringify(EJEMPLO));
     aplicarGuardado();
@@ -967,7 +1254,7 @@
   var reajuste;
   window.addEventListener("resize", function(){
     clearTimeout(reajuste);
-    reajuste = setTimeout(dibujarGrafica, 150);
+    reajuste = setTimeout(function(){ render(false); }, 150);
   });
 
   try{
