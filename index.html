@@ -673,8 +673,8 @@
     <div class="dinero-grid">
       <div>
         <label class="lab" for="sueldo">Sueldo neto al mes</label>
-        <input class="in" type="number" id="sueldo" min="0" step="100" value="12000">
-        <p class="hint-in">Ejemplo: cámbialo</p>
+        <input class="in" type="number" id="sueldo" min="0" step="100" value="30000">
+        <p class="hint-in">Neto, lo que te cae</p>
       </div>
       <div>
         <label class="lab" for="horasDia">Horas de trabajo al día</label>
@@ -772,7 +772,7 @@
   var EJEMPLO = {
     moneda:"$", diasLaborales:20, diasCasa:4, casaExtra:0,
     uber:{ida:240, regreso:259},
-    finanzas:{sueldo:12000, horasDia:6, rendimiento:10, rutaBase:"a", meta:100000,
+    finanzas:{sueldo:30000, horasDia:6, rendimiento:10, rutaBase:"a", meta:100000,
               aporteModo:"uber", aporteFijo:3000, extraDeuda:2000, metodo:"avalancha"},
     deudas:[
       {t:"NU · tarjeta de crédito",   saldo:23505,  pago:0,     tasa:70, estado:"cobranza"},
@@ -945,7 +945,8 @@
   }
   function gastoMensual(g){ return (parseFloat(g.m) || 0) * factorFrec(g.f); }
   function totalGastos(transporteMes){
-    return (estado.gastos || []).reduce(function(a, g){ return a + gastoMensual(g); }, 0) + transporteMes;
+    return (estado.gastos || []).reduce(function(a, g){ return a + gastoMensual(g); }, 0) +
+      transporteMes + pagosDeuda();
   }
   function porCategoria(transporteMes, nombreRuta){
     var mapa = {};
@@ -954,6 +955,8 @@
       mapa[c] = (mapa[c] || 0) + gastoMensual(g);
     });
     mapa["Transporte"] = (mapa["Transporte"] || 0) + transporteMes;
+    var pd = pagosDeuda();
+    if(pd > 0) mapa["Deudas"] = (mapa["Deudas"] || 0) + pd;
     return Object.keys(mapa).map(function(c){ return {cat:c, v:mapa[c]}; })
       .filter(function(x){ return x.v > 0; })
       .sort(function(a, b){ return b.v - a.v; });
@@ -1332,17 +1335,20 @@
     var cont = document.getElementById("listaGastos");
     cont.innerHTML = "";
 
-    var fija = el("div","g-row fija");
-    var nom = el("div","g-nombre");
-    nom.appendChild(document.createTextNode("Transporte al trabajo"));
-    nom.appendChild(el("span","candado","de tu ruta"));
-    fija.appendChild(nom);
-    fija.appendChild(el("div", null, "Transporte"));
-    fija.appendChild(el("div", null, "mes"));
-    var mfija = el("div","g-monto"); mfija.id = "gastoRutaVal";
-    fija.appendChild(mfija);
-    fija.appendChild(document.createElement("div"));
-    cont.appendChild(fija);
+    [["Transporte al trabajo", "de tu ruta", "Transporte", "gastoRutaVal"],
+     ["Pagos de deudas", "de tus créditos", "Deudas", "gastoDeudaVal"]].forEach(function(f){
+      var fija = el("div","g-row fija");
+      var nom = el("div","g-nombre");
+      nom.appendChild(document.createTextNode(f[0]));
+      nom.appendChild(el("span","candado", f[1]));
+      fija.appendChild(nom);
+      fija.appendChild(el("div", null, f[2]));
+      fija.appendChild(el("div", null, "mes"));
+      var mfija = el("div","g-monto"); mfija.id = f[3];
+      fija.appendChild(mfija);
+      fija.appendChild(document.createElement("div"));
+      cont.appendChild(fija);
+    });
 
     (estado.gastos || []).forEach(function(g, idx){
       var fila = el("div","g-row");
@@ -1941,15 +1947,17 @@
     var mayor = cats[0] || {cat:"—", v:0};
     var rutaVal = document.getElementById("gastoRutaVal");
     if(rutaVal) rutaVal.textContent = dinero(gastoBase);
+    var deudaVal = document.getElementById("gastoDeudaVal");
+    if(deudaVal) deudaVal.textContent = dinero(pagosDeuda());
     (estado.gastos || []).forEach(function(g, idx){
       var eq = document.getElementById("equiv-" + idx);
       if(eq) eq.textContent = g.f === "mensual" ? "" : "= " + dineroEje(gastoMensual(g), 0) + "/mes";
     });
-    document.getElementById("gTotal").textContent = (estado.gastos || []).length + " gastos escritos + tu transporte · " + dinero(gTot) + " al mes";
+    document.getElementById("gTotal").textContent = (estado.gastos || []).length +
+      " gastos escritos + transporte + pagos de deuda · " + dinero(gTot) + " al mes";
     document.getElementById("g1").innerHTML = figura(gTot);
-    document.getElementById("g1sub").textContent = conSueldo
-      ? pct(gTot / fin.sueldo * 100) + " de tu sueldo · incluye " + dinero(gastoBase) + " de transporte"
-      : "incluye " + dinero(gastoBase) + " de transporte";
+    document.getElementById("g1sub").textContent = (conSueldo ? pct(gTot / fin.sueldo * 100) + " de tu sueldo · " : "") +
+      "incluye " + dinero(gastoBase) + " de transporte y " + dinero(pagosDeuda()) + " de deudas";
     document.getElementById("g2").innerHTML = figura(sobra);
     document.getElementById("g2").style.color = sobra >= 0 ? "var(--good)" : "var(--serie-b)";
     document.getElementById("g2sub").textContent = sobra >= 0
@@ -2038,7 +2046,7 @@
     [["Ganas por hora", conSueldo ? dinero(porHora) : "—", null],
      ["Traslado a " + corto(base.nombre, 12), conSueldo ? pct(gastoBase / fin.sueldo * 100) + " del sueldo" : "—", null],
      ["En Uber sería", conSueldo ? pct(uberMes / fin.sueldo * 100) + " del sueldo" : "—", null],
-     ["Te queda libre al mes", conSueldo ? dinero(fin.sueldo - gastoBase) : "—", null],
+     ["Te queda tras gastos y deudas", conSueldo ? dinero(fin.sueldo - gTot) : "—", (fin.sueldo - gTot) < 0 ? "acento" : null],
      ["Horas al mes en traslado", horas(horasTraslado), null],
      ["Ese tiempo vale", conSueldo ? dinero(horasTraslado * porHora) : "—", null],
      ["Uber por día", dinero(uberDia), null],
@@ -2046,7 +2054,8 @@
     ].forEach(function(f){
       var caja = document.createElement("div");
       caja.appendChild(el("dt", null, f[0]));
-      var dd = el("dd", f[2] || null, f[1]);
+      var dd = el("dd", f[2] === "acento" && f[1].indexOf("-") === 0 ? null : (f[2] || null), f[1]);
+      if(f[1].indexOf("-") === 0) dd.style.color = "var(--deuda)";
       caja.appendChild(dd);
       met.appendChild(caja);
     });
