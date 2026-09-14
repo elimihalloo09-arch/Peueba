@@ -30,6 +30,10 @@ Metrobús $6.
   mes o año — convertida a su equivalente mensual. El transporte de la ruta elegida entra
   solo, calculado. Muestra el total, qué porcentaje del sueldo es, cuánto te sobra y una
   gráfica de barras por categoría.
+- **Mis deudas**: saldo, pago mensual, tasa estimada y estado (al corriente, con atraso, en
+  cobranza) por acreedor, con simulador de liquidación por avalancha (tasa más alta) o bola de
+  nieve (saldo más chico): meses para salir, fecha, intereses totales, orden de pago y curva del
+  saldo mes a mes. Las tasas son supuestos editables, no vienen en el reporte de Buró.
 - **Bola de nieve**: toma el ahorro mensual contra el Uber como aporte y proyecta el
   acumulado a 6, 12, 24 y 60 meses, con un rendimiento anual editable (supuesto, no
   promesa) y la fecha en que alcanzas tu meta. El aporte puede ser el ahorro contra el Uber,

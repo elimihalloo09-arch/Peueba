@@ -16,6 +16,7 @@
     --serie-b:#BE7314;
     --serie-c:#6257BE;
     --good:#2E7443;
+    --deuda:#B23A30;
     --band:#101A1D;
     --band-ink:#F2F6F6;
     --band-ink-2:#A7B9BC;
@@ -25,6 +26,7 @@
     --band-serie-b:#C27C18;
     --band-serie-c:#8E85DE;
     --band-good:#5FB27A;
+    --band-deuda:#E07B6F;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -41,6 +43,7 @@
       --serie-b:#C27C18;
       --serie-c:#8E85DE;
       --good:#5FB27A;
+      --deuda:#E07B6F;
       --band:#1B2529;
       --band-hair:#2C393D;
       color-scheme: dark;
@@ -59,6 +62,7 @@
     --serie-b:#C27C18;
     --serie-c:#8E85DE;
     --good:#5FB27A;
+    --deuda:#E07B6F;
     --band:#1B2529;
     --band-hair:#2C393D;
     color-scheme: dark;
@@ -226,7 +230,7 @@
   .band{
     --surface:var(--band); --ink:var(--band-ink); --ink-2:var(--band-ink-2); --ink-3:var(--band-ink-3);
     --hair:var(--band-hair); --hair-soft:var(--band-hair); --sunken:#1A2427;
-    --serie-a:var(--band-serie-a); --serie-b:var(--band-serie-b); --serie-c:var(--band-serie-c); --good:var(--band-good);
+    --serie-a:var(--band-serie-a); --serie-b:var(--band-serie-b); --serie-c:var(--band-serie-c); --good:var(--band-good); --deuda:var(--band-deuda);
     background:var(--band); color:var(--band-ink); border-radius:4px; padding:34px 30px 36px;
     margin-inline:-4px;
   }
@@ -332,6 +336,45 @@
   .g-pie{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-top:18px; }
   .g-total{ font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--ink-2); font-variant-numeric:tabular-nums; }
 
+  /* ---- deudas ---- */
+  .d-head, .d-row{ display:grid; grid-template-columns:minmax(0,1.8fr) 112px 112px 70px 124px 26px; gap:11px; align-items:center; }
+  .d-head{ padding-bottom:10px; border-bottom:1px solid var(--ink); }
+  .d-head span{ font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.12em;
+                text-transform:uppercase; color:var(--ink-3); }
+  .d-head span:nth-child(2), .d-head span:nth-child(3), .d-head span:nth-child(4){ text-align:right; }
+  .d-row{ padding:9px 0; border-bottom:1px solid var(--hair-soft); }
+  .d-row input[type="text"]{
+    font:inherit; font-size:14px; color:var(--ink); background:transparent; border:0;
+    border-bottom:1px solid transparent; padding:4px 0; width:100%; min-width:0;
+  }
+  .d-row input[type="text"]:hover{ border-bottom-color:var(--hair); }
+  .d-row input[type="text"]:focus, .d-row input[type="number"]:focus{ outline:none; border-bottom-color:var(--serie-a); }
+  .d-row input[type="number"]{
+    font:inherit; font-family:"IBM Plex Mono",monospace; font-size:14px; font-variant-numeric:tabular-nums;
+    text-align:right; color:var(--ink); background:transparent; border:0; border-bottom:1px solid var(--hair);
+    padding:4px 0; width:100%;
+  }
+  .d-row select{
+    font:inherit; font-size:11.5px; color:var(--ink-2); background:transparent; border:1px solid var(--hair);
+    border-radius:999px; padding:4px 8px; width:100%; cursor:pointer;
+  }
+  .d-row select[data-estado="cobranza"]{ color:var(--deuda); border-color:var(--deuda); }
+  .d-row select[data-estado="atraso"]{ color:var(--serie-b); border-color:var(--serie-b); }
+  .d-row select[data-estado="corriente"]{ color:var(--good); border-color:var(--good); }
+  .plan{ display:grid; grid-template-columns:repeat(4, minmax(120px,1fr)); gap:24px 28px; margin-top:30px;
+         padding-top:24px; border-top:1px solid var(--hair); align-items:start; }
+  .plan-res dt{ font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.12em;
+                text-transform:uppercase; color:var(--ink-3); }
+  .plan-res dd{ margin:7px 0 0; font-family:"Archivo",sans-serif; font-weight:700; font-size:clamp(18px,2.2vw,22px);
+                letter-spacing:-.025em; font-variant-numeric:tabular-nums; }
+  .orden{ list-style:none; padding:0; margin:26px 0 0; display:grid; gap:2px; }
+  .orden li{ display:grid; grid-template-columns:28px minmax(0,1fr) 120px 152px; gap:12px; align-items:baseline;
+             padding:9px 0; border-bottom:1px solid var(--hair-soft); font-size:14px; }
+  .orden .n{ font-family:"Archivo",sans-serif; font-weight:800; color:var(--deuda); font-size:15px; }
+  .orden .cuanto, .orden .cuando{ font-family:"IBM Plex Mono",monospace; font-size:13px; text-align:right;
+                                  font-variant-numeric:tabular-nums; color:var(--ink-2); }
+  .alerta{ font-size:13.5px; color:var(--deuda); margin-top:20px; padding-left:12px; border-left:2px solid var(--deuda); }
+
   /* ---- tabla ---- */
   .table-scroll{ overflow-x:auto; }
   table{ border-collapse:collapse; width:100%; font-size:14px; min-width:600px; }
@@ -357,6 +400,7 @@
   .reset:hover{ border-color:var(--ink-3); color:var(--ink); }
 
   @media (max-width:980px){
+    .plan{ grid-template-columns:1fr 1fr; }
     .tally{ grid-template-columns:1fr 1fr; }
     .totales{ grid-template-columns:1fr; }
     .totales > div{ border-right:0; border-bottom:1px solid var(--hair); padding:18px 0 16px; }
@@ -377,6 +421,13 @@
   }
   @media (max-width:560px){
     section{ margin-top:40px; }
+    .d-head{ display:none; }
+    .d-row{ grid-template-columns:1fr 100px 26px; gap:8px 10px; padding:14px 0; }
+    .d-row > *:nth-child(1){ grid-column:1 / 3; }
+    .d-row > *:nth-child(5){ grid-column:1 / 3; }
+    .plan{ grid-template-columns:1fr 1fr; }
+    .orden li{ grid-template-columns:24px 1fr; }
+    .orden .cuanto, .orden .cuando{ grid-column:2; text-align:left; }
     .cal{ gap:5px; }
     .dia{ font-size:13px; }
     .dia .et{ display:none; }
@@ -552,6 +603,68 @@
     </div>
   </section>
 
+  <section aria-labelledby="h-deudas">
+    <div class="sec-head">
+      <h2 id="h-deudas">Mis deudas</h2>
+      <span class="hint">Saldos de tu Reporte de Crédito Especial · 31 de agosto de 2026</span>
+    </div>
+    <div class="totales">
+      <div>
+        <p class="kicker">Deuda total</p>
+        <p class="t-val" id="d1" style="color:var(--deuda)"></p>
+        <p class="t-sub" id="d1sub"></p>
+      </div>
+      <div>
+        <p class="kicker">Pagos comprometidos</p>
+        <p class="t-val" id="d2"></p>
+        <p class="t-sub" id="d2sub"></p>
+      </div>
+      <div>
+        <p class="kicker">En cobranza</p>
+        <p class="t-val" id="d3" style="color:var(--deuda)"></p>
+        <p class="t-sub" id="d3sub"></p>
+      </div>
+    </div>
+    <div class="gastos">
+      <div class="d-head">
+        <span>Acreedor</span><span>Saldo</span><span>Pago al mes</span><span>Tasa</span><span>Estado</span><span></span>
+      </div>
+      <div id="listaDeudas"></div>
+      <div class="g-pie">
+        <span class="g-total" id="dTotal"></span>
+        <button class="mas" id="masDeuda" type="button">+ Agregar deuda</button>
+      </div>
+
+      <div class="plan">
+        <div>
+          <label class="lab" for="extraDeuda">Extra al mes</label>
+          <input class="in" type="number" id="extraDeuda" min="0" step="100" value="2000">
+          <p class="hint-in" id="extraHint"></p>
+        </div>
+        <div>
+          <label class="lab" for="metodo">Con qué orden</label>
+          <select class="in" id="metodo">
+            <option value="avalancha">Avalancha · tasa más alta</option>
+            <option value="bola">Bola de nieve · saldo más chico</option>
+          </select>
+          <p class="hint-in">La avalancha paga menos intereses; la bola da victorias antes</p>
+        </div>
+        <dl class="plan-res" id="planRes" style="grid-column:span 2; display:grid; grid-template-columns:1fr 1fr; gap:24px;"></dl>
+      </div>
+      <p class="alerta" id="alertaDeuda" hidden></p>
+      <ol class="orden" id="orden"></ol>
+    </div>
+    <div class="chart-wrap" id="deudaWrap" style="margin-top:30px;">
+      <div class="tooltip" id="deudaTip" role="status" aria-live="off"></div>
+    </div>
+    <div class="chart-wrap" id="saldosWrap" style="margin-top:26px;"></div>
+    <p style="color:var(--ink-3); font-size:13px; margin-top:24px; max-width:78ch;">
+      El reporte no trae tasas de interés: las que ves son supuestos editables, no datos de Buró. Las cuentas en
+      cobranza aparecen con el saldo completo exigido, por eso su pago mensual entra en cero hasta que acuerdes un
+      plan o una quita con el acreedor. Ningún rendimiento del 10% compite con quitarte una tarjeta al 70%.
+    </p>
+  </section>
+
   <section class="band" aria-labelledby="h-dinero">
     <div class="sec-head">
       <h2 id="h-dinero">Tu dinero</h2>
@@ -660,7 +773,22 @@
     moneda:"$", diasLaborales:20, diasCasa:4, casaExtra:0,
     uber:{ida:240, regreso:259},
     finanzas:{sueldo:12000, horasDia:6, rendimiento:10, rutaBase:"a", meta:100000,
-              aporteModo:"uber", aporteFijo:3000},
+              aporteModo:"uber", aporteFijo:3000, extraDeuda:2000, metodo:"avalancha"},
+    deudas:[
+      {t:"NU · tarjeta de crédito",   saldo:23505,  pago:0,     tasa:70, estado:"cobranza"},
+      {t:"NU · préstamo personal",    saldo:1184,   pago:590,   tasa:80, estado:"cobranza"},
+      {t:"Klar · tarjeta",            saldo:13424,  pago:0,     tasa:70, estado:"cobranza"},
+      {t:"Coppel · préstamo",         saldo:18253,  pago:0,     tasa:70, estado:"cobranza"},
+      {t:"Fintopia · préstamo",       saldo:10715,  pago:4910,  tasa:90, estado:"cobranza"},
+      {t:"BanCoppel · tarjeta",       saldo:4812,   pago:901,   tasa:70, estado:"atraso"},
+      {t:"HeyBanco · tarjeta",        saldo:13719,  pago:1072,  tasa:70, estado:"atraso"},
+      {t:"Telcel · línea",            saldo:608,    pago:608,   tasa:0,  estado:"atraso"},
+      {t:"VW Leasing · auto",         saldo:253566, pago:16691, tasa:18, estado:"atraso"},
+      {t:"Banco Azteca · préstamo",   saldo:26752,  pago:908,   tasa:80, estado:"corriente"},
+      {t:"Banco Azteca · préstamo 2", saldo:12960,  pago:469,   tasa:80, estado:"corriente"},
+      {t:"Banco Azteca · muebles",    saldo:8619,   pago:734,   tasa:60, estado:"corriente"},
+      {t:"Fonacot · préstamo",        saldo:68237,  pago:2823,  tasa:20, estado:"corriente"}
+    ],
     marcas:{},
     historial:[],
     gastos:[
@@ -703,6 +831,7 @@
     {v:"taxi",     t:"Taxi o app"},
     {v:"activo",   t:"Bici o a pie"}
   ];
+  var ESTADOS_DEUDA = [{v:"corriente", t:"Al corriente"}, {v:"atraso", t:"Con atraso"}, {v:"cobranza", t:"En cobranza"}];
   var CATEGORIAS = ["Casa","Comida","Transporte","Apps","Servicios","Salud","Deudas","Gustos","Otros"];
   var FRECUENCIAS = [
     {v:"diario",    t:"día",      f:30},
@@ -733,6 +862,10 @@
     return txt.length > max ? txt.slice(0, max - 1).trim() + "…" : txt;
   }
   function color(i){ return i === 0 ? "var(--serie-a)" : "var(--serie-b)"; }
+  function cortoPlano(txt, max){
+    txt = String(txt || "").replace(/\s*·\s*/g, " ").trim();
+    return txt.length > max ? txt.slice(0, max - 1).trim() + "…" : txt;
+  }
 
   // ---------- modelo ----------
   function usaVehiculo(m){ return m === "vehiculo" || m === "moto"; }
@@ -824,6 +957,59 @@
     return Object.keys(mapa).map(function(c){ return {cat:c, v:mapa[c]}; })
       .filter(function(x){ return x.v > 0; })
       .sort(function(a, b){ return b.v - a.v; });
+  }
+
+  function totalDeuda(){ return (estado.deudas || []).reduce(function(a, d){ return a + (d.saldo || 0); }, 0); }
+  function pagosDeuda(){ return (estado.deudas || []).reduce(function(a, d){ return a + (d.pago || 0); }, 0); }
+  function deudaPorEstado(e){
+    return (estado.deudas || []).filter(function(d){ return d.estado === e; })
+      .reduce(function(a, d){ return a + (d.saldo || 0); }, 0);
+  }
+  function simularDeuda(extra, metodo){
+    var vivas = (estado.deudas || []).filter(function(d){ return (d.saldo || 0) > 0; }).map(function(d, i){
+      return {i:i, t:d.t, saldo:d.saldo, pago:d.pago || 0, tasa:d.tasa || 0, mes:null, pagado:0};
+    });
+    if(!vivas.length) return {meses:0, intereses:0, orden:[], curva:[{x:0, y:0}], imposible:false};
+    var curva = [{x:0, y:vivas.reduce(function(a, d){ return a + d.saldo; }, 0)}];
+    var intereses = 0, liberado = 0, orden = [], m = 0, tope = 360;
+    while(m < tope && vivas.some(function(d){ return d.saldo > 0.5; })){
+      m++;
+      var activas = vivas.filter(function(d){ return d.saldo > 0.5; });
+      activas.forEach(function(d){
+        var interes = d.saldo * (d.tasa / 100) / 12;
+        d.saldo += interes;
+        intereses += interes;
+      });
+      var objetivo = activas.slice().sort(function(a, b){
+        return metodo === "bola" ? a.saldo - b.saldo : b.tasa - a.tasa;
+      })[0];
+      var bolsa = extra + liberado;
+      activas.forEach(function(d){
+        var pago = Math.min(d.pago, d.saldo);
+        d.saldo -= pago;
+        d.pagado += pago;
+      });
+      if(objetivo && objetivo.saldo > 0){
+        var golpe = Math.min(bolsa, objetivo.saldo);
+        objetivo.saldo -= golpe;
+        objetivo.pagado += golpe;
+      }
+      activas.forEach(function(d){
+        if(d.saldo <= 0.5 && d.mes === null){
+          d.saldo = 0;
+          d.mes = m;
+          liberado += d.pago;
+          orden.push({t:d.t, mes:m, pagado:d.pagado});
+        }
+      });
+      curva.push({x:m, y:vivas.reduce(function(a, d){ return a + Math.max(0, d.saldo); }, 0)});
+    }
+    var quedan = vivas.filter(function(d){ return d.saldo > 0.5; });
+    return {
+      meses:m, intereses:intereses, orden:orden, curva:curva,
+      imposible:quedan.length > 0,
+      atoradas:quedan.map(function(d){ return d.t; })
+    };
   }
 
   function acumulado(aporte, meses, tasaAnual){
@@ -1208,22 +1394,149 @@
     });
   }
 
+  // ---------- lista de deudas ----------
+  function pintarDeudas(){
+    var cont = document.getElementById("listaDeudas");
+    cont.innerHTML = "";
+    (estado.deudas || []).forEach(function(d, idx){
+      var fila = el("div","d-row");
+
+      var nb = document.createElement("input");
+      nb.type = "text"; nb.value = d.t; nb.setAttribute("aria-label","Acreedor "+(idx+1));
+      nb.addEventListener("input", function(){ d.t = nb.value; render(true); });
+      fila.appendChild(nb);
+
+      [["saldo","Saldo de "+d.t,"100"],["pago","Pago mensual de "+d.t,"50"],["tasa","Tasa anual de "+d.t,"1"]]
+        .forEach(function(par){
+          var i = document.createElement("input");
+          i.type = "number"; i.min = "0"; i.step = par[2]; i.value = d[par[0]];
+          i.setAttribute("aria-label", par[1]);
+          i.addEventListener("input", function(){ d[par[0]] = Math.max(0, num(i.value, 0)); render(true); });
+          fila.appendChild(i);
+        });
+
+      var se = document.createElement("select");
+      se.setAttribute("aria-label","Estado de "+d.t);
+      se.dataset.estado = d.estado;
+      ESTADOS_DEUDA.forEach(function(e){
+        var o = document.createElement("option");
+        o.value = e.v; o.textContent = e.t;
+        if(e.v === d.estado) o.selected = true;
+        se.appendChild(o);
+      });
+      se.addEventListener("change", function(){ d.estado = se.value; se.dataset.estado = se.value; render(true); });
+      fila.appendChild(se);
+
+      var qu = document.createElement("button");
+      qu.type = "button"; qu.className = "quitar"; qu.textContent = "×";
+      qu.setAttribute("aria-label","Quitar "+d.t);
+      qu.addEventListener("click", function(){ estado.deudas.splice(idx, 1); pintarDeudas(); render(true); });
+      fila.appendChild(qu);
+
+      cont.appendChild(fila);
+    });
+  }
+
+  // ---------- curva de la deuda ----------
+  function dibujarCurvaDeuda(sim){
+    var wrap = document.getElementById("deudaWrap");
+    var viejo = wrap.querySelector("svg");
+    if(viejo) viejo.remove();
+    var pts = sim.curva;
+    if(pts.length < 2) return;
+
+    var W = Math.max(320, wrap.clientWidth || 700);
+    var compacto = W < 560, H = compacto ? 210 : 250;
+    var pad = {t:14, r: compacto ? 16 : 116, b:36, l: compacto ? 66 : 86};
+    var iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
+    var N = pts[pts.length - 1].x, top = Math.max(pts[0].y, 1) * 1.06;
+    function X(v){ return pad.l + (v / (N || 1)) * iw; }
+    function Y(v){ return pad.t + ih - (v / top) * ih; }
+
+    var svg = svgEl("svg", {viewBox:"0 0 "+W+" "+H, width:W, height:H, role:"img",
+      "aria-label":"Saldo total de la deuda mes a mes con el plan elegido"});
+    var fsEje = compacto ? 12 : 11.5;
+    for(var t = 0; t <= 4; t++){
+      var val = top * t / 4, y = Y(val);
+      svg.appendChild(svgEl("line", {x1:pad.l, x2:pad.l+iw, y1:y, y2:y, stroke:"var(--hair-soft)", "stroke-width":1}));
+      var lab = svgEl("text", {x:pad.l-12, y:y+4, "text-anchor":"end", fill:"var(--ink-3)",
+        "font-size":fsEje, "font-family":"IBM Plex Mono, monospace"});
+      lab.textContent = dineroEje(val, 0);
+      svg.appendChild(lab);
+    }
+    var paso = Math.max(6, Math.ceil(N / (compacto ? 4 : 8) / 6) * 6);
+    for(var m = 0; m <= N; m += paso){
+      var tx = svgEl("text", {x:X(m), y:pad.t+ih+21, "text-anchor":"middle", fill:"var(--ink-3)",
+        "font-size":fsEje, "font-family":"IBM Plex Mono, monospace"});
+      tx.textContent = m;
+      svg.appendChild(tx);
+    }
+    var ejeX = svgEl("text", {x:pad.l, y:H-3, "text-anchor":"start", fill:"var(--ink-3)",
+      "font-size":"10", "font-family":"IBM Plex Mono, monospace", "letter-spacing":".14em"});
+    ejeX.textContent = "MESES DESDE HOY";
+    svg.appendChild(ejeX);
+
+    var linea = pts.map(function(pt, i){ return (i ? "L" : "M") + X(pt.x).toFixed(1) + " " + Y(pt.y).toFixed(1); }).join(" ");
+    svg.appendChild(svgEl("path", {d:linea + " L " + X(N).toFixed(1) + " " + Y(0).toFixed(1) + " L " + X(0).toFixed(1) + " " + Y(0).toFixed(1) + " Z",
+      fill:"var(--deuda)", opacity:.13, stroke:"none"}));
+    svg.appendChild(svgEl("path", {d:linea, fill:"none", stroke:"var(--deuda)", "stroke-width":2.5,
+      "stroke-linecap":"round", "stroke-linejoin":"round"}));
+    svg.appendChild(svgEl("circle", {cx:X(N), cy:Y(pts[pts.length-1].y), r:6, fill:"var(--deuda)",
+      stroke:"var(--ground)", "stroke-width":3}));
+    if(!compacto){
+      var t1 = svgEl("text", {x:pad.l+iw+14, y:Y(pts[pts.length-1].y)-1, fill:"var(--ink)", "font-size":"13",
+        "font-family":"Archivo, sans-serif", "font-weight":"700"});
+      t1.textContent = sim.imposible ? "no baja" : "libre";
+      var t2 = svgEl("text", {x:pad.l+iw+14, y:Y(pts[pts.length-1].y)+16, fill:"var(--ink-3)", "font-size":"11.5",
+        "font-family":"IBM Plex Mono, monospace"});
+      t2.textContent = "mes " + N;
+      svg.appendChild(t1); svg.appendChild(t2);
+    }
+
+    var cross = svgEl("line", {x1:0, x2:0, y1:pad.t, y2:pad.t+ih, stroke:"var(--ink-3)", "stroke-width":1, opacity:0});
+    var dot = svgEl("circle", {r:5, fill:"var(--deuda)", stroke:"var(--ground)", "stroke-width":2.5, opacity:0});
+    svg.appendChild(cross); svg.appendChild(dot);
+    var hit = svgEl("rect", {x:pad.l, y:pad.t, width:iw, height:ih, fill:"transparent"});
+    svg.appendChild(hit);
+    var tip = document.getElementById("deudaTip");
+    hit.addEventListener("mousemove", function(ev){
+      var r = svg.getBoundingClientRect(), escala = W / r.width;
+      var m2 = Math.round((((ev.clientX - r.left) * escala) - pad.l) / (iw || 1) * N);
+      m2 = Math.min(Math.max(m2, 0), N);
+      var pt = pts[m2] || pts[pts.length-1];
+      cross.setAttribute("x1", X(m2)); cross.setAttribute("x2", X(m2)); cross.setAttribute("opacity", .45);
+      dot.setAttribute("cx", X(m2)); dot.setAttribute("cy", Y(pt.y)); dot.setAttribute("opacity", 1);
+      var f = new Date(); f.setMonth(f.getMonth() + m2);
+      tip.innerHTML = '<div class="tt-h">Mes ' + m2 + ' · ' + MES_NOMBRE[f.getMonth()] + ' ' + f.getFullYear() + '</div>' +
+        '<div class="tt-r"><span>Debes</span><b>' + dinero(pt.y) + '</b></div>';
+      tip.style.opacity = 1;
+      var tw = tip.offsetWidth, left = (X(m2) / escala) - tw/2;
+      tip.style.left = Math.min(Math.max(left, 0), r.width - tw) + "px";
+      tip.style.top = "0px";
+    });
+    hit.addEventListener("mouseleave", function(){
+      tip.style.opacity = 0; cross.setAttribute("opacity", 0); dot.setAttribute("opacity", 0);
+    });
+
+    wrap.appendChild(svg);
+  }
+
   // ---------- barras por categoría ----------
-  function dibujarBarras(cats, total){
-    var wrap = document.getElementById("gastosWrap");
+  function dibujarBarras(cats, total, idWrap, tinte, rotulo){
+    var wrap = document.getElementById(idWrap || "gastosWrap");
     var viejo = wrap.querySelector("svg");
     if(viejo) viejo.remove();
     if(!cats.length) return;
 
     var W = Math.max(320, wrap.clientWidth || 700);
     var compacto = W < 560;
-    var fila = 34, pad = {t:8, r: compacto ? 8 : 16, b:26, l: compacto ? 88 : 128};
+    var fila = 34, pad = {t:8, r: compacto ? 8 : 16, b:26, l: compacto ? 92 : 150};
     var H = pad.t + pad.b + cats.length * fila;
     var iw = Math.max(60, W - pad.l - pad.r - (compacto ? 84 : 176));
     var max = cats[0].v || 1;
 
     var svg = svgEl("svg", {viewBox:"0 0 "+W+" "+H, width:W, height:H, role:"img",
-      "aria-label":"Gasto mensual por categoría, de mayor a menor"});
+      "aria-label":(rotulo || "Gasto mensual por categoría") + ", de mayor a menor"});
 
     cats.forEach(function(c, i){
       var y = pad.t + i * fila, alto = 17;
@@ -1233,7 +1546,7 @@
       et.textContent = c.cat;
       svg.appendChild(et);
       svg.appendChild(svgEl("rect", {x:pad.l, y:y, width:ancho, height:alto, rx:4,
-        fill:"var(--serie-a)", opacity: i === 0 ? 1 : .82}));
+        fill:tinte || "var(--serie-a)", opacity: i === 0 ? 1 : .82}));
       var val = svgEl("text", {x:pad.l + ancho + 10, y:y+alto-4, fill:"var(--ink)",
         "font-size":"12.5", "font-family":"IBM Plex Mono, monospace"});
       val.textContent = dineroEje(c.v, 0);
@@ -1246,7 +1559,7 @@
 
     var pie = svgEl("text", {x:pad.l, y:H-6, fill:"var(--ink-3)", "font-size":"10",
       "font-family":"IBM Plex Mono, monospace", "letter-spacing":".14em"});
-    pie.textContent = "GASTO MENSUAL POR CATEGORÍA";
+    pie.textContent = rotulo || "GASTO MENSUAL POR CATEGORÍA";
     svg.appendChild(pie);
 
     wrap.appendChild(svg);
@@ -1646,6 +1959,70 @@
     document.getElementById("g3sub").textContent = mayor.cat + " · " + (gTot > 0 ? pct(mayor.v / gTot * 100) + " de lo que gastas" : "");
     dibujarBarras(cats, gTot);
 
+    // deudas
+    var dTot = totalDeuda(), dPagos = pagosDeuda(), dCobranza = deudaPorEstado("cobranza");
+    var sinAuto = dTot - (estado.deudas || []).filter(function(d){ return /auto|leasing/i.test(d.t); })
+      .reduce(function(x, d){ return x + d.saldo; }, 0);
+    document.getElementById("d1").innerHTML = figura(dTot);
+    document.getElementById("d1sub").textContent = "sin el auto: " + dinero(sinAuto) + " · " +
+      (estado.deudas || []).filter(function(d){ return d.saldo > 0; }).length + " créditos con saldo";
+    document.getElementById("d2").innerHTML = figura(dPagos);
+    document.getElementById("d2sub").textContent = conSueldo
+      ? pct(dPagos / fin.sueldo * 100) + " de tu sueldo en pagos fijos"
+      : "suma de los pagos mensuales";
+    document.getElementById("d3").innerHTML = figura(dCobranza);
+    document.getElementById("d3sub").textContent = "lo que ya te exigen completo · con atraso: " + dinero(deudaPorEstado("atraso"));
+    document.getElementById("dTotal").textContent = (estado.deudas || []).length + " créditos · " +
+      dinero(dTot) + " en total, " + dinero(dPagos) + " al mes";
+    document.getElementById("extraHint").textContent = "tu aporte de ahorro hoy es " + dinero(aporte) + " al mes";
+
+    var sim = simularDeuda(Math.max(0, fin.extraDeuda || 0), fin.metodo);
+    var selMet = document.getElementById("metodo");
+    if(selMet.value !== fin.metodo) selMet.value = fin.metodo;
+    var fLibre = new Date(); fLibre.setMonth(fLibre.getMonth() + sim.meses);
+    var planRes = document.getElementById("planRes");
+    planRes.innerHTML = "";
+    [["Libre de deudas en", sim.imposible ? "no alcanza" : sim.meses + (sim.meses === 1 ? " mes" : " meses"),
+      sim.imposible ? "var(--deuda)" : "var(--good)"],
+     ["Fecha", sim.imposible ? "—" : MES_NOMBRE[fLibre.getMonth()] + " " + fLibre.getFullYear(), null],
+     ["Intereses que pagarías", dinero(sim.intereses), "var(--deuda)"],
+     ["Sale de tu bolsa al mes", dinero(dPagos + Math.max(0, fin.extraDeuda || 0)), null]
+    ].forEach(function(f){
+      var caja = document.createElement("div");
+      caja.appendChild(el("dt", null, f[0]));
+      var dd = el("dd", null, f[1]);
+      if(f[2]) dd.style.color = f[2];
+      caja.appendChild(dd);
+      planRes.appendChild(caja);
+    });
+
+    var alerta = document.getElementById("alertaDeuda");
+    if(sim.imposible){
+      alerta.hidden = false;
+      alerta.textContent = "Con este pago, en 30 años no se liquidan: " + sim.atoradas.slice(0,3).join(", ") +
+        (sim.atoradas.length > 3 ? " y " + (sim.atoradas.length - 3) + " más" : "") +
+        ". Los intereses crecen más rápido que el abono: sube el extra o negocia el saldo.";
+    } else {
+      alerta.hidden = true;
+    }
+
+    var ol = document.getElementById("orden");
+    ol.innerHTML = "";
+    sim.orden.forEach(function(o, i){
+      var f = new Date(); f.setMonth(f.getMonth() + o.mes);
+      var li = document.createElement("li");
+      li.appendChild(el("span","n", String(i + 1)));
+      li.appendChild(el("span", null, o.t));
+      li.appendChild(el("span","cuanto", dinero(o.pagado)));
+      li.appendChild(el("span","cuando", "mes " + o.mes + " · " + MES_NOMBRE[f.getMonth()].slice(0,3) + " " + f.getFullYear()));
+      ol.appendChild(li);
+    });
+
+    dibujarCurvaDeuda(sim);
+    dibujarBarras((estado.deudas || []).filter(function(d){ return d.saldo > 0; })
+      .map(function(d){ return {cat:cortoPlano(d.t, 24), v:d.saldo}; })
+      .sort(function(x, y){ return y.v - x.v; }), dTot, "saldosWrap", "var(--deuda)", "SALDO POR ACREEDOR");
+
     // de dónde sale el aporte
     var cajaFijo = document.getElementById("aporteFijoCaja");
     cajaFijo.hidden = fin.aporteModo !== "fijo";
@@ -1724,6 +2101,8 @@
         meta:num(g.finanzas.meta, 0),
         aporteFijo:num(g.finanzas.aporteFijo, 0),
         aporteModo:["uber","sobra","fijo"].indexOf(g.finanzas.aporteModo) >= 0 ? g.finanzas.aporteModo : "uber",
+        extraDeuda:num(g.finanzas.extraDeuda, 0),
+        metodo:g.finanzas.metodo === "bola" ? "bola" : "avalancha",
         rutaBase:g.finanzas.rutaBase === "b" ? "b" : "a"
       };
     }
@@ -1737,6 +2116,15 @@
       estado.historial = g.historial.filter(function(m){ return m && typeof m.mes === "string"; }).map(function(m){
         return {mes:m.mes, oficina:num(m.oficina, 0), casa:num(m.casa, 0),
                 plan:num(m.plan, 0), real:num(m.real, 0), apartado:num(m.apartado, 0)};
+      });
+    }
+    if(Array.isArray(g.deudas)){
+      estado.deudas = g.deudas.map(function(x){
+        return {
+          t:String(x && x.t != null ? x.t : "Deuda"),
+          saldo:num(x && x.saldo, 0), pago:num(x && x.pago, 0), tasa:num(x && x.tasa, 0),
+          estado:["corriente","atraso","cobranza"].indexOf(x && x.estado) >= 0 ? x.estado : "corriente"
+        };
       });
     }
     if(Array.isArray(g.gastos)){
@@ -1776,9 +2164,12 @@
     document.getElementById("meta").value = estado.finanzas.meta;
     document.getElementById("aporteFijo").value = estado.finanzas.aporteFijo;
     document.getElementById("aporteModo").value = estado.finanzas.aporteModo;
+    document.getElementById("extraDeuda").value = estado.finanzas.extraDeuda;
+    document.getElementById("metodo").value = estado.finanzas.metodo;
     document.getElementById("rutaBase").dataset.firma = "";
     pintarRutas();
     pintarGastos();
+    pintarDeudas();
     pintarCalendario();
     pintarHistorial();
     render(false);
@@ -1842,6 +2233,16 @@
     estado.historial = (estado.historial || []).filter(function(m){ return m.mes !== clave; }).concat([entrada]);
     pintarHistorial(); render(true);
     marcar("Cierre de " + nombreMes(mesVisible) + " guardado");
+  });
+  document.getElementById("masDeuda").addEventListener("click", function(){
+    estado.deudas = (estado.deudas || []).concat([{t:"Nueva deuda", saldo:0, pago:0, tasa:40, estado:"corriente"}]);
+    pintarDeudas(); render(true);
+  });
+  document.getElementById("extraDeuda").addEventListener("input", function(e){
+    estado.finanzas.extraDeuda = Math.max(0, num(e.target.value, 0)); render(true);
+  });
+  document.getElementById("metodo").addEventListener("change", function(e){
+    estado.finanzas.metodo = e.target.value === "bola" ? "bola" : "avalancha"; render(true);
   });
   document.getElementById("masGasto").addEventListener("click", function(){
     estado.gastos = (estado.gastos || []).concat([{t:"Nuevo gasto", cat:"Otros", m:0, f:"mensual"}]);
