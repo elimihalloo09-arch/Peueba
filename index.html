@@ -1,0 +1,838 @@
+<meta charset="utf-8">
+<title>Casa, CPN o Bancen</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+  :root{
+    --ground:#F3F4F0;
+    --card:#FCFCFA;
+    --card-2:#EFF1EC;
+    --line:#DCE0D8;
+    --line-soft:#E7EAE3;
+    --ink:#16242A;
+    --ink-2:#4C6068;
+    --ink-3:#7A8B90;
+    --serie-a:#0B8F9C;
+    --serie-b:#BE7314;
+    --good:#2E7443;
+    --good-soft:#E4EFE6;
+    --focus:#0B8F9C;
+    --shadow:0 1px 2px rgba(22,36,42,.06), 0 8px 24px -18px rgba(22,36,42,.5);
+    --r:10px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#141A1C;
+      --card:#1B2326;
+      --card-2:#222B2E;
+      --line:#2E393C;
+      --line-soft:#262F32;
+      --ink:#E7EEEC;
+      --ink-2:#A5B5B6;
+      --ink-3:#7E8F91;
+      --serie-a:#1A99A6;
+      --serie-b:#C27C18;
+      --good:#5FB27A;
+      --good-soft:#1E2C23;
+      --focus:#1A99A6;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -20px #000;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#141A1C;
+    --card:#1B2326;
+    --card-2:#222B2E;
+    --line:#2E393C;
+    --line-soft:#262F32;
+    --ink:#E7EEEC;
+    --ink-2:#A5B5B6;
+    --ink-3:#7E8F91;
+    --serie-a:#1A99A6;
+    --serie-b:#C27C18;
+    --good:#5FB27A;
+    --good-soft:#1E2C23;
+    --focus:#1A99A6;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -20px #000;
+    color-scheme: dark;
+  }
+
+  body{
+    background:var(--ground);
+    color:var(--ink);
+    font-family:"Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+    font-size:15px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:1120px;
+    margin:0 auto;
+    padding-inline:20px;
+    padding-block:32px 56px;
+    display:flex;
+    flex-direction:column;
+    gap:26px;
+  }
+  h1,h2,h3{font-family:"Archivo", ui-sans-serif, system-ui, sans-serif; text-wrap:balance; margin:0;}
+  h1{font-size:clamp(28px,4.4vw,40px); font-weight:700; letter-spacing:-.02em; line-height:1.06;}
+  h2{font-size:17px; font-weight:600; letter-spacing:-.01em;}
+  h3{font-size:14px; font-weight:600;}
+  p{margin:0;}
+  .eyebrow{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3);
+  }
+  .lede{color:var(--ink-2); max-width:62ch; margin-top:10px;}
+  .num{font-family:"IBM Plex Mono", ui-monospace, monospace; font-variant-numeric:tabular-nums;}
+
+  header .rule{height:3px; width:64px; background:var(--serie-a); margin-top:18px; border-radius:2px;}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow);}
+  .card-pad{padding:18px 20px;}
+  .card-head{display:flex; align-items:baseline; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:14px;}
+  .card-head .hint{font-size:13px; color:var(--ink-3);}
+
+  /* ---- controls ---- */
+  .field{display:flex; flex-direction:column; gap:5px; min-width:0;}
+  .field > label{font-size:12.5px; color:var(--ink-2); font-weight:600; letter-spacing:.01em;}
+  .field .sub{font-size:11.5px; color:var(--ink-3); font-weight:400;}
+  input[type="number"], input[type="text"], select{
+    font:inherit; font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:14px;
+    font-variant-numeric:tabular-nums;
+    color:var(--ink); background:var(--card-2);
+    border:1px solid var(--line); border-radius:7px;
+    padding:7px 9px; width:100%; min-width:0;
+  }
+  input[type="text"].namebox{font-family:"Archivo", sans-serif; font-weight:600; font-size:16px; letter-spacing:-.01em;}
+  select{font-family:"Source Sans 3", sans-serif; appearance:none; background-image:none; cursor:pointer;}
+  input:focus-visible, select:focus-visible, button:focus-visible, [tabindex]:focus-visible{
+    outline:2px solid var(--focus); outline-offset:2px;
+  }
+  input[type="range"]{width:100%; accent-color:var(--serie-a); cursor:pointer;}
+
+  .escenario{display:grid; grid-template-columns:1.5fr 1fr 1.2fr .7fr; gap:18px; align-items:end;}
+  .slider-head{display:flex; align-items:baseline; justify-content:space-between; gap:8px;}
+  .slider-head .big{font-family:"Archivo",sans-serif; font-weight:700; font-size:22px; letter-spacing:-.02em;}
+  .slider-scale{display:flex; justify-content:space-between; font-size:11px; color:var(--ink-3); margin-top:2px;}
+
+  /* ---- verdict ---- */
+  .verdict{display:grid; grid-template-columns:1.15fr 1fr 1fr; gap:0;}
+  .verdict > div{padding:18px 20px; border-right:1px solid var(--line-soft);}
+  .verdict > div:last-child{border-right:0;}
+  .tile-label{font-size:12.5px; color:var(--ink-2); display:flex; align-items:center; gap:7px;}
+  .chip{width:9px; height:9px; border-radius:2px; flex:none;}
+  .tile-value{font-family:"Archivo",sans-serif; font-weight:700; font-size:clamp(24px,3.4vw,32px); letter-spacing:-.025em; margin-top:6px; font-variant-numeric:tabular-nums;}
+  .tile-foot{font-size:12.5px; color:var(--ink-3); margin-top:4px;}
+  .verdict .save .tile-value{color:var(--good);}
+  .badge{display:inline-block; font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+         background:var(--good-soft); color:var(--good); border-radius:999px; padding:3px 9px; margin-top:10px;}
+
+  /* ---- chart ---- */
+  .chart-wrap{position:relative;}
+  svg{display:block; width:100%; height:auto; max-width:100%;}
+  .legend{display:flex; gap:16px; flex-wrap:wrap; font-size:13px; color:var(--ink-2); margin-bottom:6px;}
+  .legend span.i{display:inline-flex; align-items:center; gap:7px;}
+  .tooltip{
+    position:absolute; pointer-events:none; z-index:3; opacity:0; transition:opacity .12s ease;
+    background:var(--card); border:1px solid var(--line); border-radius:8px; box-shadow:var(--shadow);
+    padding:9px 11px; font-size:13px; min-width:158px;
+  }
+  .tooltip .tt-h{font-family:"Archivo",sans-serif; font-weight:600; font-size:13px; margin-bottom:6px;}
+  .tooltip .tt-r{display:flex; align-items:center; justify-content:space-between; gap:14px;}
+  .tooltip .tt-r b{font-family:"IBM Plex Mono",monospace; font-weight:500; font-variant-numeric:tabular-nums;}
+
+  /* ---- destinos ---- */
+  .destinos{display:grid; grid-template-columns:1fr 1fr; gap:22px;}
+  .destino{position:relative; overflow:hidden;}
+  .destino::before{content:""; position:absolute; inset:0 auto 0 0; width:4px; background:var(--serie);}
+  .destino .card-pad{padding-left:24px; display:flex; flex-direction:column; height:100%;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;}
+  .subhead{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3);
+           margin:20px 0 10px; padding-bottom:6px; border-bottom:1px solid var(--line-soft);}
+  .readout{display:flex; flex-wrap:wrap; gap:6px 26px; margin-top:auto; padding-top:18px;}
+  .readout div{min-width:92px;}
+  .readout dt{font-size:12px; color:var(--ink-3);}
+  .readout dd{margin:2px 0 0; font-family:"IBM Plex Mono",monospace; font-size:17px; font-variant-numeric:tabular-nums;}
+  .compo{margin-top:16px;}
+  .bar{display:flex; height:12px; border-radius:3px; overflow:hidden; background:var(--card-2); gap:2px;}
+  .bar i{display:block; height:100%;}
+  .compo-legend{display:flex; flex-wrap:wrap; gap:4px 16px; margin-top:8px; font-size:12px; color:var(--ink-2);}
+  .compo-legend span{display:inline-flex; align-items:center; gap:6px;}
+  .compo-legend .sw{width:8px; height:8px; border-radius:2px;}
+
+  /* ---- tabla ---- */
+  .table-scroll{overflow-x:auto;}
+  table{border-collapse:collapse; width:100%; font-size:14px; min-width:560px;}
+  th,td{text-align:right; padding:10px 12px; border-bottom:1px solid var(--line-soft);}
+  th:first-child, td:first-child{text-align:left;}
+  thead th{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); font-weight:400; border-bottom:1px solid var(--line);}
+  tbody td{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;}
+  tbody tr:last-child td{border-bottom:0;}
+  tr.save td{color:var(--good); font-weight:500;}
+  tr.save td:first-child{font-weight:600;}
+
+  .notes{font-size:13px; color:var(--ink-2); display:flex; flex-direction:column; gap:7px;}
+  .notes li{margin-left:18px;}
+  footer{display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap;
+         font-size:12.5px; color:var(--ink-3); border-top:1px solid var(--line); padding-top:16px;}
+  button.ghost{
+    font:inherit; font-size:13px; color:var(--ink-2); background:var(--card); border:1px solid var(--line);
+    border-radius:7px; padding:6px 12px; cursor:pointer;
+  }
+  button.ghost:hover{border-color:var(--ink-3); color:var(--ink);}
+  #estado{font-family:"IBM Plex Mono",monospace; font-size:11.5px;}
+
+  @media (max-width:860px){
+    .escenario{grid-template-columns:1fr 1fr;}
+    .verdict{grid-template-columns:1fr;}
+    .verdict > div{border-right:0; border-bottom:1px solid var(--line-soft);}
+    .verdict > div:last-child{border-bottom:0;}
+    .destinos{grid-template-columns:1fr;}
+  }
+  @media (max-width:520px){
+    .escenario{grid-template-columns:1fr;}
+    .grid3{grid-template-columns:1fr 1fr;}
+  }
+  @media (prefers-reduced-motion:reduce){ *{transition:none !important; animation:none !important;} }
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Proyección de traslados · casa y oficina</p>
+    <h1>Casa, CPN o Bancen</h1>
+    <p class="lede">Cuánto te cuesta cada día que vas a la oficina, cuánto te devuelve cada día que trabajas desde casa,
+      y cómo se ve la diferencia al mes y al año en cada uno de los dos destinos. Los valores de inicio son un ejemplo:
+      cámbialos por los tuyos y todo se recalcula.</p>
+    <div class="rule"></div>
+  </header>
+
+  <section class="card card-pad" aria-labelledby="h-esc">
+    <div class="card-head">
+      <h2 id="h-esc">Tu mes</h2>
+      <span class="hint">Mueve los días desde casa para ver la proyección</span>
+    </div>
+    <div class="escenario">
+      <div class="field">
+        <div class="slider-head">
+          <label for="diasCasa">Días desde casa al mes</label>
+          <span class="big num" id="diasCasaOut">8</span>
+        </div>
+        <input type="range" id="diasCasa" min="0" max="22" step="1" value="8">
+        <div class="slider-scale"><span>0 · todo presencial</span><span id="scaleMax">22 · todo en casa</span></div>
+      </div>
+      <div class="field">
+        <label for="diasLaborales">Días laborales al mes</label>
+        <input type="number" id="diasLaborales" min="1" max="31" step="1" value="22">
+      </div>
+      <div class="field">
+        <label for="casaExtra">Gasto extra por día en casa</label>
+        <span class="sub">Luz, internet, almuerzo en casa</span>
+        <input type="number" id="casaExtra" min="0" step="0.1" value="2.5">
+      </div>
+      <div class="field">
+        <label for="moneda">Moneda</label>
+        <span class="sub">Símbolo</span>
+        <input type="text" id="moneda" maxlength="4" value="$">
+      </div>
+    </div>
+  </section>
+
+  <section class="card verdict" aria-labelledby="h-ver">
+    <div>
+      <h2 id="h-ver">El veredicto</h2>
+      <p class="tile-foot" id="veredicto" style="margin-top:8px; font-size:14px; color:var(--ink-2);"></p>
+      <span class="badge" id="veredictoBadge"></span>
+    </div>
+    <div class="save">
+      <p class="tile-label"><span class="chip" style="background:var(--serie-a)"></span><span id="lblAhorroA">Ahorro mensual · CPN</span></p>
+      <p class="tile-value num" id="ahorroA">—</p>
+      <p class="tile-foot" id="ahorroAAnual">—</p>
+    </div>
+    <div class="save">
+      <p class="tile-label"><span class="chip" style="background:var(--serie-b)"></span><span id="lblAhorroB">Ahorro mensual · Bancen</span></p>
+      <p class="tile-value num" id="ahorroB">—</p>
+      <p class="tile-foot" id="ahorroBAnual">—</p>
+    </div>
+  </section>
+
+  <section class="card card-pad" aria-labelledby="h-graf">
+    <div class="card-head">
+      <h2 id="h-graf">Gasto mensual según los días que trabajes desde casa</h2>
+      <span class="hint">Pasa el cursor por la gráfica para ver cualquier combinación</span>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="chart-wrap" id="chartWrap">
+      <div class="tooltip" id="tooltip" role="status" aria-live="off"></div>
+    </div>
+  </section>
+
+  <section class="destinos" id="destinos" aria-label="Destinos"></section>
+
+  <section class="card card-pad" aria-labelledby="h-tabla">
+    <div class="card-head">
+      <h2 id="h-tabla">Desglose del escenario</h2>
+      <span class="hint" id="tablaHint"></span>
+    </div>
+    <div class="table-scroll">
+      <table id="tabla">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card card-pad" aria-labelledby="h-sup">
+    <h2 id="h-sup" style="margin-bottom:10px;">Cómo se calcula</h2>
+    <div class="notes">
+      <p>Gasto del mes = (días laborales − días desde casa) × costo de un día presencial + días desde casa × gasto extra en casa.</p>
+      <ul>
+        <li>Vehículo propio: (km por trayecto × viajes al día ÷ rendimiento) × precio del combustible, más peajes, parqueadero y un costo de mantenimiento por kilómetro.</li>
+        <li>Transporte público: pasajes al día × precio del pasaje. Taxi o app: viajes al día × tarifa por viaje.</li>
+        <li>El ahorro compara cada día en casa contra un día presencial completo, incluida la comida fuera.</li>
+        <li>El año son 12 meses iguales; no incluye vacaciones ni incrementos de tarifa.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <span id="estado">Los cambios se guardan en este navegador</span>
+    <button class="ghost" id="reset" type="button">Restablecer ejemplo</button>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var EJEMPLO = {
+    moneda:"$", diasLaborales:22, diasCasa:8, casaExtra:2.5,
+    destinos:[
+      {id:"a", nombre:"CPN",    modo:"publico",  km:14, viajes:2, minutos:40,
+       pasaje:1.10, pasajesDia:2, rendimiento:12, precioComb:1.25, peaje:0, parqueo:0, mantKm:0.05, tarifa:6, comida:7},
+      {id:"b", nombre:"Bancen", modo:"vehiculo", km:9,  viajes:2, minutos:25,
+       pasaje:1.10, pasajesDia:2, rendimiento:12, precioComb:1.25, peaje:0, parqueo:3, mantKm:0.05, tarifa:6, comida:7}
+    ]
+  };
+
+  var MODOS = [
+    {v:"publico",  t:"Transporte público"},
+    {v:"vehiculo", t:"Vehículo propio"},
+    {v:"moto",     t:"Moto"},
+    {v:"taxi",     t:"Taxi o app"},
+    {v:"activo",   t:"Bici o a pie"}
+  ];
+
+  var estado = JSON.parse(JSON.stringify(EJEMPLO));
+  var dbRef = null, guardarTimer = null;
+
+  // ---------- utilidades ----------
+  function nf(dec){ return new Intl.NumberFormat("es-ES",{minimumFractionDigits:dec, maximumFractionDigits:dec}); }
+  function dinero(n){ return estado.moneda + " " + nf(2).format(n); }
+  function dineroEje(n, dec){ return estado.moneda + nf(dec).format(n); }
+  function horas(n){ return nf(n % 1 === 0 ? 0 : 1).format(n) + " h"; }
+  function num(v, def){ var x = parseFloat(v); return isFinite(x) ? x : def; }
+  function el(tag, cls, txt){ var e = document.createElement(tag); if(cls) e.className = cls; if(txt != null) e.textContent = txt; return e; }
+
+  // ---------- modelo ----------
+  function usaVehiculo(m){ return m === "vehiculo" || m === "moto"; }
+
+  function partesDia(d){
+    var transporte = 0, extras = 0;
+    if(d.modo === "publico"){
+      transporte = d.pasaje * d.pasajesDia;
+    } else if(usaVehiculo(d.modo)){
+      var kmDia = d.km * d.viajes;
+      var rend = d.rendimiento > 0 ? d.rendimiento : 1;
+      transporte = (kmDia / rend) * d.precioComb + kmDia * d.mantKm;
+      extras = d.peaje + d.parqueo;
+    } else if(d.modo === "taxi"){
+      transporte = d.tarifa * d.viajes;
+    }
+    return {transporte:transporte, extras:extras, comida:d.comida};
+  }
+  function costoDiaOficina(d){
+    var p = partesDia(d);
+    return p.transporte + p.extras + p.comida;
+  }
+  function gastoMes(d, diasEnCasa){
+    var L = estado.diasLaborales;
+    var casa = Math.min(Math.max(diasEnCasa, 0), L);
+    return (L - casa) * costoDiaOficina(d) + casa * estado.casaExtra;
+  }
+  function ahorroMes(d, diasEnCasa){
+    return gastoMes(d, 0) - gastoMes(d, diasEnCasa);
+  }
+  function minutosMes(d, diasEnCasa){
+    return diasEnCasa * d.viajes * d.minutos;
+  }
+  function color(i){ return i === 0 ? "var(--serie-a)" : "var(--serie-b)"; }
+
+  // ---------- panel de cada destino ----------
+  function campo(id, etiqueta, valor, sub, paso){
+    var f = el("div","field");
+    var l = el("label", null, etiqueta); l.setAttribute("for", id); f.appendChild(l);
+    if(sub) f.appendChild(el("span","sub",sub));
+    var i = document.createElement("input");
+    i.type = "number"; i.id = id; i.min = "0"; i.step = paso || "0.01"; i.value = valor;
+    f.appendChild(i);
+    return f;
+  }
+
+  function pintarDestinos(){
+    var cont = document.getElementById("destinos");
+    cont.innerHTML = "";
+    estado.destinos.forEach(function(d, i){
+      var card = el("section","card destino");
+      card.style.setProperty("--serie", color(i));
+      var pad = el("div","card-pad");
+
+      var head = el("div","card-head");
+      var nb = document.createElement("input");
+      nb.type = "text"; nb.className = "namebox"; nb.value = d.nombre; nb.id = "nombre-"+d.id;
+      nb.setAttribute("aria-label","Nombre del destino "+(i+1));
+      nb.style.width = "auto"; nb.style.maxWidth = "190px";
+      nb.addEventListener("input", function(){ d.nombre = nb.value || "Destino "+(i+1); render(false); });
+      head.appendChild(nb);
+      var dia = el("span","hint"); dia.id = "diaCosto-"+d.id;
+      head.appendChild(dia);
+      pad.appendChild(head);
+
+      var g1 = el("div","grid3");
+      var fModo = el("div","field");
+      var lm = el("label",null,"Cómo te mueves"); lm.setAttribute("for","modo-"+d.id);
+      fModo.appendChild(lm);
+      var sel = document.createElement("select"); sel.id = "modo-"+d.id;
+      MODOS.forEach(function(m){
+        var o = document.createElement("option"); o.value = m.v; o.textContent = m.t;
+        if(m.v === d.modo) o.selected = true;
+        sel.appendChild(o);
+      });
+      sel.addEventListener("change", function(){ d.modo = sel.value; pintarDestinos(); render(true); });
+      fModo.appendChild(sel);
+      g1.appendChild(fModo);
+      g1.appendChild(campo("km-"+d.id, "Km por trayecto", d.km, null, "0.1"));
+      g1.appendChild(campo("viajes-"+d.id, "Trayectos al día", d.viajes, "Ida y vuelta = 2", "1"));
+      pad.appendChild(g1);
+
+      pad.appendChild(el("p","subhead","Costo del transporte"));
+      var g2 = el("div","grid2");
+      if(d.modo === "publico"){
+        g2.appendChild(campo("pasaje-"+d.id, "Precio del pasaje", d.pasaje));
+        g2.appendChild(campo("pasajesDia-"+d.id, "Pasajes al día", d.pasajesDia, "Con transbordos", "1"));
+      } else if(usaVehiculo(d.modo)){
+        g2.appendChild(campo("rendimiento-"+d.id, "Rendimiento (km/L)", d.rendimiento, null, "0.1"));
+        g2.appendChild(campo("precioComb-"+d.id, "Precio del combustible (L)", d.precioComb));
+        g2.appendChild(campo("parqueo-"+d.id, "Parqueadero al día", d.parqueo));
+        g2.appendChild(campo("peaje-"+d.id, "Peajes al día", d.peaje));
+        g2.appendChild(campo("mantKm-"+d.id, "Mantenimiento por km", d.mantKm, "Llantas, aceite, desgaste", "0.01"));
+      } else if(d.modo === "taxi"){
+        g2.appendChild(campo("tarifa-"+d.id, "Tarifa por viaje", d.tarifa));
+      } else {
+        var nota = el("p","sub","Sin costo de transporte: solo cuentan la comida fuera y el tiempo.");
+        nota.style.color = "var(--ink-3)"; nota.style.gridColumn = "1 / -1";
+        g2.appendChild(nota);
+      }
+      pad.appendChild(g2);
+
+      pad.appendChild(el("p","subhead","El día presencial"));
+      var g3 = el("div","grid2");
+      g3.appendChild(campo("comida-"+d.id, "Comida y café fuera", d.comida));
+      g3.appendChild(campo("minutos-"+d.id, "Minutos por trayecto", d.minutos, null, "1"));
+      pad.appendChild(g3);
+
+      var rd = document.createElement("dl"); rd.className = "readout"; rd.id = "readout-"+d.id;
+      pad.appendChild(rd);
+
+      var compo = el("div","compo"); compo.id = "compo-"+d.id;
+      compo.appendChild(el("div","bar"));
+      compo.appendChild(el("div","compo-legend"));
+      pad.appendChild(compo);
+
+      card.appendChild(pad);
+      cont.appendChild(card);
+
+      // enlazar campos numéricos del destino
+      [["km","km"],["viajes","viajes"],["minutos","minutos"],["pasaje","pasaje"],["pasajesDia","pasajesDia"],
+       ["rendimiento","rendimiento"],["precioComb","precioComb"],["peaje","peaje"],["parqueo","parqueo"],
+       ["mantKm","mantKm"],["tarifa","tarifa"],["comida","comida"]].forEach(function(par){
+        var input = document.getElementById(par[0]+"-"+d.id);
+        if(!input) return;
+        input.addEventListener("input", function(){
+          d[par[1]] = Math.max(0, num(input.value, 0));
+          render(true);
+        });
+      });
+    });
+  }
+
+  // ---------- gráfica ----------
+  var SVG_NS = "http://www.w3.org/2000/svg";
+  function svgEl(t, attrs){
+    var e = document.createElementNS(SVG_NS, t);
+    for(var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  function dibujarGrafica(){
+    var wrap = document.getElementById("chartWrap");
+    var viejo = wrap.querySelector("svg");
+    if(viejo) viejo.remove();
+
+    var L = estado.diasLaborales;
+    var W = Math.max(340, wrap.clientWidth || 700);
+    var H = W < 560 ? 260 : 300;
+    var compacto = W < 560;
+    var pad = {t:16, r: compacto ? 18 : 104, b:34, l: compacto ? 58 : 68};
+    var iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
+
+    var series = estado.destinos.map(function(d, i){
+      var pts = [];
+      for(var k = 0; k <= L; k++) pts.push({x:k, y:gastoMes(d, k)});
+      return {nombre:d.nombre, color:color(i), pts:pts};
+    });
+    var maxY = 0;
+    series.forEach(function(s){ s.pts.forEach(function(p){ if(p.y > maxY) maxY = p.y; }); });
+    if(maxY <= 0) maxY = 1;
+    var top = maxY * 1.08;
+
+    function X(v){ return pad.l + (L === 0 ? 0 : (v / L) * iw); }
+    function Y(v){ return pad.t + ih - (v / top) * ih; }
+
+    var svg = svgEl("svg", {viewBox:"0 0 "+W+" "+H, width:W, height:H, role:"img",
+      "aria-label":"Gasto mensual de traslado según los días trabajados desde casa, para "+series.map(function(s){return s.nombre;}).join(" y ")});
+
+    // rejilla + eje Y
+    var ticks = 4;
+    var decEje = top >= 100 ? 0 : (top >= 10 ? 1 : 2);
+    var fsEje = compacto ? 12 : 11;
+    for(var t = 0; t <= ticks; t++){
+      var val = top * t / ticks;
+      var y = Y(val);
+      svg.appendChild(svgEl("line", {x1:pad.l, x2:pad.l+iw, y1:y, y2:y,
+        stroke:"var(--line-soft)", "stroke-width":1}));
+      var lab = svgEl("text", {x:pad.l-9, y:y+4, "text-anchor":"end", fill:"var(--ink-3)",
+        "font-size":fsEje, "font-family":"IBM Plex Mono, monospace"});
+      lab.textContent = dineroEje(val, decEje);
+      svg.appendChild(lab);
+    }
+    // eje X
+    svg.appendChild(svgEl("line", {x1:pad.l, x2:pad.l+iw, y1:pad.t+ih, y2:pad.t+ih, stroke:"var(--line)", "stroke-width":1}));
+    var paso = Math.max(1, Math.ceil(L / (compacto ? 4 : 8)));
+    for(var k = 0; k <= L; k += paso){
+      var tx = svgEl("text", {x:X(k), y:pad.t+ih+20, "text-anchor":"middle", fill:"var(--ink-3)",
+        "font-size":fsEje, "font-family":"IBM Plex Mono, monospace"});
+      tx.textContent = k;
+      svg.appendChild(tx);
+    }
+    var ejeX = svgEl("text", {x:pad.l+iw/2, y:H-2, "text-anchor":"middle", fill:"var(--ink-3)", "font-size":"11"});
+    ejeX.textContent = "días desde casa al mes";
+    svg.appendChild(ejeX);
+
+    // guía del escenario actual
+    var dsel = Math.min(estado.diasCasa, L);
+    svg.appendChild(svgEl("line", {x1:X(dsel), x2:X(dsel), y1:pad.t, y2:pad.t+ih,
+      stroke:"var(--ink-3)", "stroke-width":1, "stroke-dasharray":"3 4"}));
+
+    // líneas
+    series.forEach(function(s){
+      var d = s.pts.map(function(p, idx){ return (idx ? "L" : "M") + X(p.x).toFixed(1) + " " + Y(p.y).toFixed(1); }).join(" ");
+      svg.appendChild(svgEl("path", {d:d, fill:"none", stroke:s.color, "stroke-width":2,
+        "stroke-linecap":"round", "stroke-linejoin":"round"}));
+      var p = s.pts[dsel];
+      svg.appendChild(svgEl("circle", {cx:X(p.x), cy:Y(p.y), r:5.5, fill:s.color,
+        stroke:"var(--card)", "stroke-width":2}));
+    });
+
+    // etiquetas directas al final de cada línea
+    if(!compacto){
+      var fin = series.map(function(s){ return {s:s, y:Y(s.pts[L].y)}; }).sort(function(a,b){ return a.y - b.y; });
+      if(fin.length === 2 && fin[1].y - fin[0].y < 38){
+        var mid = (fin[0].y + fin[1].y) / 2;
+        fin[0].y = Math.max(pad.t + 12, mid - 19);
+        fin[1].y = Math.min(pad.t + ih, mid + 19);
+      }
+      fin.forEach(function(f){
+        var g = svgEl("g", {});
+        var t1 = svgEl("text", {x:pad.l+iw+12, y:f.y-2, fill:"var(--ink)", "font-size":"12.5",
+          "font-family":"Archivo, sans-serif", "font-weight":"600"});
+        t1.textContent = f.s.nombre;
+        var t2 = svgEl("text", {x:pad.l+iw+12, y:f.y+14, fill:"var(--ink-3)", "font-size":"11.5",
+          "font-family":"IBM Plex Mono, monospace"});
+        t2.textContent = dinero(f.s.pts[L].y);
+        g.appendChild(t1); g.appendChild(t2);
+        svg.appendChild(g);
+      });
+    }
+
+    // capa de interacción
+    var cross = svgEl("line", {x1:0, x2:0, y1:pad.t, y2:pad.t+ih, stroke:"var(--ink-3)", "stroke-width":1, opacity:0});
+    svg.appendChild(cross);
+    var dots = series.map(function(s){
+      var c = svgEl("circle", {r:4.5, fill:s.color, stroke:"var(--card)", "stroke-width":2, opacity:0});
+      svg.appendChild(c);
+      return c;
+    });
+    var hit = svgEl("rect", {x:pad.l, y:pad.t, width:iw, height:ih, fill:"transparent"});
+    svg.appendChild(hit);
+
+    var tip = document.getElementById("tooltip");
+    function mover(ev){
+      var r = svg.getBoundingClientRect();
+      var escala = W / r.width;
+      var px = (ev.clientX - r.left) * escala;
+      var k = Math.round(((px - pad.l) / (iw || 1)) * L);
+      k = Math.min(Math.max(k, 0), L);
+      cross.setAttribute("x1", X(k)); cross.setAttribute("x2", X(k)); cross.setAttribute("opacity", .5);
+      var filas = "";
+      series.forEach(function(s, i){
+        dots[i].setAttribute("cx", X(k)); dots[i].setAttribute("cy", Y(s.pts[k].y)); dots[i].setAttribute("opacity", 1);
+        filas += '<div class="tt-r"><span><span class="chip" style="display:inline-block;background:'+s.color+'"></span> '+
+          s.nombre+'</span><b>'+dinero(s.pts[k].y)+'</b></div>';
+      });
+      tip.innerHTML = '<div class="tt-h">'+k+(k === 1 ? " día" : " días")+' desde casa</div>'+filas;
+      tip.style.opacity = 1;
+      var tw = tip.offsetWidth, left = (X(k) / escala) - tw/2;
+      left = Math.min(Math.max(left, 4), r.width - tw - 4);
+      tip.style.left = left + "px";
+      tip.style.top = "6px";
+    }
+    hit.addEventListener("mousemove", mover);
+    hit.addEventListener("mouseleave", function(){
+      tip.style.opacity = 0; cross.setAttribute("opacity", 0);
+      dots.forEach(function(c){ c.setAttribute("opacity", 0); });
+    });
+
+    wrap.appendChild(svg);
+
+    var lg = document.getElementById("legend");
+    lg.innerHTML = "";
+    series.forEach(function(s){
+      var sp = el("span","i");
+      var ch = el("span","chip"); ch.style.background = s.color;
+      sp.appendChild(ch); sp.appendChild(document.createTextNode(s.nombre));
+      lg.appendChild(sp);
+    });
+    var nota = el("span","i");
+    nota.style.color = "var(--ink-3)";
+    nota.textContent = "línea punteada: tu escenario actual";
+    lg.appendChild(nota);
+  }
+
+  // ---------- tabla ----------
+  function pintarTabla(){
+    var L = estado.diasLaborales, dsel = Math.min(estado.diasCasa, L);
+    var thead = document.querySelector("#tabla thead"), tbody = document.querySelector("#tabla tbody");
+    thead.innerHTML = ""; tbody.innerHTML = "";
+    var tr = document.createElement("tr");
+    tr.appendChild(el("th", null, "Escenario"));
+    estado.destinos.forEach(function(d){
+      tr.appendChild(el("th", null, d.nombre + " · mes"));
+      tr.appendChild(el("th", null, d.nombre + " · año"));
+    });
+    thead.appendChild(tr);
+
+    function fila(titulo, fn, cls){
+      var r = document.createElement("tr");
+      if(cls) r.className = cls;
+      r.appendChild(el("td", null, titulo));
+      estado.destinos.forEach(function(d){
+        var v = fn(d);
+        r.appendChild(el("td", null, dinero(v)));
+        r.appendChild(el("td", null, dinero(v * 12)));
+      });
+      tbody.appendChild(r);
+    }
+    fila("Todo presencial (0 días en casa)", function(d){ return gastoMes(d, 0); });
+    fila("Tu escenario (" + dsel + (dsel === 1 ? " día" : " días") + " en casa)", function(d){ return gastoMes(d, dsel); });
+    fila("Ahorro", function(d){ return ahorroMes(d, dsel); }, "save");
+    fila("Todo desde casa (" + L + " días)", function(d){ return gastoMes(d, L); });
+    document.getElementById("tablaHint").textContent = "Año = 12 meses de " + L + " días laborales";
+  }
+
+  // ---------- render ----------
+  function render(guardar){
+    var L = Math.max(1, Math.round(estado.diasLaborales));
+    estado.diasLaborales = L;
+    if(estado.diasCasa > L) estado.diasCasa = L;
+    var dsel = estado.diasCasa;
+
+    var slider = document.getElementById("diasCasa");
+    slider.max = L;
+    if(+slider.value !== dsel) slider.value = dsel;
+    document.getElementById("diasCasaOut").textContent = dsel;
+    document.getElementById("scaleMax").textContent = L + " · todo en casa";
+
+    estado.destinos.forEach(function(d, i){
+      var p = partesDia(d), total = p.transporte + p.extras + p.comida;
+      var dia = document.getElementById("diaCosto-" + d.id);
+      if(dia) dia.textContent = dinero(total) + " por día presencial";
+
+      var rd = document.getElementById("readout-" + d.id);
+      if(rd){
+        rd.innerHTML = "";
+        [["Gasto del mes", dinero(gastoMes(d, dsel))],
+         ["Ahorro del mes", dinero(ahorroMes(d, dsel))],
+         ["Ahorro al año", dinero(ahorroMes(d, dsel) * 12)],
+         ["Tiempo recuperado", horas(minutosMes(d, dsel) / 60) + "/mes"]].forEach(function(par, idx){
+          var box = document.createElement("div");
+          box.appendChild(el("dt", null, par[0]));
+          var dd = el("dd", null, par[1]);
+          if(idx === 1 || idx === 2) dd.style.color = "var(--good)";
+          box.appendChild(dd);
+          rd.appendChild(box);
+        });
+      }
+
+      var compo = document.getElementById("compo-" + d.id);
+      if(compo){
+        var segs = [
+          {t:"Transporte", v:p.transporte, op:"100%"},
+          {t:"Peajes y parqueo", v:p.extras, op:"58%"},
+          {t:"Comida fuera", v:p.comida, op:"30%"}
+        ].filter(function(s){ return s.v > 0; });
+        var bar = compo.querySelector(".bar"), leg = compo.querySelector(".compo-legend");
+        bar.innerHTML = ""; leg.innerHTML = "";
+        segs.forEach(function(s){
+          var tinte = "color-mix(in oklab, " + color(i) + " " + s.op + ", var(--card-2))";
+          var seg = document.createElement("i");
+          seg.style.width = (total > 0 ? (s.v / total * 100) : 0) + "%";
+          seg.style.background = tinte;
+          bar.appendChild(seg);
+          var sp = document.createElement("span");
+          var sw = el("span","sw"); sw.style.background = tinte;
+          sp.appendChild(sw);
+          sp.appendChild(document.createTextNode(s.t + " · " + dinero(s.v)));
+          leg.appendChild(sp);
+        });
+        if(!segs.length) leg.appendChild(el("span", null, "Este destino no te cuesta nada al día."));
+      }
+    });
+
+    // veredicto
+    var a = estado.destinos[0], b = estado.destinos[1];
+    document.getElementById("lblAhorroA").textContent = "Ahorro mensual · " + a.nombre;
+    document.getElementById("lblAhorroB").textContent = "Ahorro mensual · " + b.nombre;
+    document.getElementById("ahorroA").textContent = dinero(ahorroMes(a, dsel));
+    document.getElementById("ahorroB").textContent = dinero(ahorroMes(b, dsel));
+    document.getElementById("ahorroAAnual").textContent = dinero(ahorroMes(a, dsel) * 12) + " al año · " +
+      horas(minutosMes(a, dsel) / 60) + " de trayecto que no haces";
+    document.getElementById("ahorroBAnual").textContent = dinero(ahorroMes(b, dsel) * 12) + " al año · " +
+      horas(minutosMes(b, dsel) / 60) + " de trayecto que no haces";
+
+    var ga = gastoMes(a, dsel), gb = gastoMes(b, dsel), dif = Math.abs(ga - gb);
+    var barato = ga <= gb ? a : b;
+    var texto;
+    if(dif < 0.01){
+      texto = "Con " + dsel + (dsel === 1 ? " día" : " días") + " desde casa, ir a " + a.nombre + " o a " +
+        b.nombre + " te cuesta lo mismo: " + dinero(ga) + " al mes.";
+    } else {
+      texto = "Con " + dsel + (dsel === 1 ? " día" : " días") + " desde casa, trabajar en " + barato.nombre +
+        " te cuesta " + dinero(dif) + " menos al mes que en " + (barato === a ? b.nombre : a.nombre) + ".";
+    }
+    document.getElementById("veredicto").textContent = texto;
+    document.getElementById("veredictoBadge").textContent = dif < 0.01
+      ? "Empate · " + dinero(ga) + " al mes"
+      : dinero(dif * 12) + " al año de diferencia";
+
+    dibujarGrafica();
+    pintarTabla();
+    if(guardar !== false) programarGuardado();
+  }
+
+  // ---------- persistencia ----------
+  function programarGuardado(){
+    clearTimeout(guardarTimer);
+    guardarTimer = setTimeout(guardar, 600);
+  }
+  function guardar(){
+    try{ localStorage.setItem("proyector-traslados", JSON.stringify(estado)); }catch(e){}
+    if(dbRef){
+      dbRef.doc("config/escenario").set({escenario:estado, actualizado:Date.now()}).then(function(){
+        marcar("Guardado");
+      }).catch(function(){ marcar("Guardado solo en este navegador"); });
+    } else {
+      marcar("Guardado en este navegador");
+    }
+  }
+  function marcar(txt){
+    var e = document.getElementById("estado");
+    e.textContent = txt;
+    clearTimeout(marcar._t);
+    marcar._t = setTimeout(function(){ e.textContent = "Los cambios se guardan automáticamente"; }, 2200);
+  }
+  function fusionar(guardado){
+    if(!guardado || typeof guardado !== "object") return;
+    ["moneda","diasLaborales","diasCasa","casaExtra"].forEach(function(k){
+      if(guardado[k] !== undefined && guardado[k] !== null) estado[k] = guardado[k];
+    });
+    if(Array.isArray(guardado.destinos)){
+      guardado.destinos.slice(0,2).forEach(function(g, i){
+        if(!estado.destinos[i] || !g) return;
+        Object.keys(estado.destinos[i]).forEach(function(k){
+          if(k !== "id" && g[k] !== undefined && g[k] !== null) estado.destinos[i][k] = g[k];
+        });
+      });
+    }
+  }
+  function aplicarGuardado(){
+    document.getElementById("moneda").value = estado.moneda;
+    document.getElementById("diasLaborales").value = estado.diasLaborales;
+    document.getElementById("casaExtra").value = estado.casaExtra;
+    document.getElementById("diasCasa").value = estado.diasCasa;
+    pintarDestinos();
+    render(false);
+  }
+
+  // ---------- arranque ----------
+  document.getElementById("diasCasa").addEventListener("input", function(e){
+    estado.diasCasa = Math.round(num(e.target.value, 0));
+    render(true);
+  });
+  document.getElementById("diasLaborales").addEventListener("input", function(e){
+    estado.diasLaborales = Math.min(31, Math.max(1, Math.round(num(e.target.value, 22))));
+    render(true);
+  });
+  document.getElementById("casaExtra").addEventListener("input", function(e){
+    estado.casaExtra = Math.max(0, num(e.target.value, 0));
+    render(true);
+  });
+  document.getElementById("moneda").addEventListener("input", function(e){
+    estado.moneda = e.target.value.slice(0,4) || "$";
+    render(true);
+  });
+  document.getElementById("reset").addEventListener("click", function(){
+    estado = JSON.parse(JSON.stringify(EJEMPLO));
+    aplicarGuardado();
+    guardar();
+  });
+
+  var reajuste;
+  window.addEventListener("resize", function(){
+    clearTimeout(reajuste);
+    reajuste = setTimeout(dibujarGrafica, 150);
+  });
+
+  try{
+    var local = localStorage.getItem("proyector-traslados");
+    if(local) fusionar(JSON.parse(local));
+  }catch(e){}
+  aplicarGuardado();
+
+  if(window.claude && typeof window.claude.use === "function"){
+    window.claude.use("db").then(function(db){
+      if(!db) return;
+      dbRef = db;
+      return db.doc("config/escenario").get().then(function(snap){
+        var cuerpo = snap && snap.exists ? snap.data() : null;
+        if(cuerpo && cuerpo.escenario){
+          fusionar(cuerpo.escenario);
+          aplicarGuardado();
+        }
+      });
+    }).catch(function(){});
+  }
+})();
+</script>
