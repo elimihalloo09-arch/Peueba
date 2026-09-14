@@ -251,6 +251,50 @@
   .hitos .h-sub{ font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--band-ink-3); margin:5px 0 0; }
   .aviso{ font-size:13px; color:var(--band-ink-3); margin-top:28px; max-width:76ch; }
 
+  /* ---- calendario ---- */
+  .cal-barra{ display:flex; align-items:baseline; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:18px; }
+  .cal-mes{ font-family:"Archivo",sans-serif; font-weight:700; font-stretch:106%; font-size:clamp(19px,2.4vw,24px);
+            letter-spacing:-.02em; text-transform:capitalize; }
+  .cal-nav{ display:flex; gap:8px; }
+  .cal-nav button, .accion{
+    font:inherit; font-size:13px; color:var(--ink-2); background:transparent; border:1px solid var(--hair);
+    border-radius:999px; padding:6px 14px; cursor:pointer;
+  }
+  .cal-nav button:hover, .accion:hover{ border-color:var(--ink-3); color:var(--ink); }
+  .cal{ display:grid; grid-template-columns:repeat(7,1fr); gap:7px; }
+  .cal .dow{ font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+             color:var(--ink-3); text-align:center; padding-bottom:4px; }
+  .cal .hueco{ aspect-ratio:1 / .64; }
+  .dia{
+    font:inherit; font-family:"Archivo",sans-serif; font-weight:600; font-size:15px; aspect-ratio:1 / .64;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+    background:var(--surface); color:var(--ink); border:1px solid var(--hair); border-radius:5px; cursor:pointer;
+    padding:2px; line-height:1;
+  }
+  .dia:hover{ border-color:var(--ink-3); }
+  .dia .et{ font-family:"IBM Plex Mono",monospace; font-size:8.5px; letter-spacing:.08em; text-transform:uppercase; opacity:.85; }
+  .dia[data-e="a"]{ background:var(--serie-a); border-color:transparent; color:#FFFFFF; }
+  .dia[data-e="b"]{ background:var(--serie-b); border-color:transparent; color:#FFFFFF; }
+  .dia[data-e="casa"]{ background:var(--good); border-color:transparent; color:#FFFFFF; }
+  .dia.hoy{ box-shadow:0 0 0 2px var(--ink); }
+  .dia.finde{ background:var(--sunken); color:var(--ink-3); }
+  .dia.finde[data-e="a"], .dia.finde[data-e="b"], .dia.finde[data-e="casa"]{ color:#FFFFFF; }
+  .cal-pie{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-top:18px; }
+  .cal-leyenda{ display:flex; gap:16px; flex-wrap:wrap; font-size:12.5px; color:var(--ink-2); }
+  .cal-leyenda span{ display:inline-flex; align-items:center; gap:7px; }
+  .cal-leyenda i{ width:12px; height:12px; border-radius:3px; display:inline-block; }
+  .tally{ display:grid; grid-template-columns:repeat(4,1fr); gap:22px 26px; margin-top:26px;
+          padding-top:22px; border-top:1px solid var(--hair); }
+  .tally dt{ font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.12em;
+             text-transform:uppercase; color:var(--ink-3); }
+  .tally dd{ margin:8px 0 0; font-family:"Archivo",sans-serif; font-weight:700; font-size:clamp(20px,2.6vw,26px);
+             letter-spacing:-.025em; font-variant-numeric:tabular-nums; }
+  .tally .sub{ font-family:"Public Sans",sans-serif; font-weight:400; font-size:12.5px; color:var(--ink-2); margin-top:6px; }
+  .cierre{ display:flex; align-items:flex-end; gap:16px; flex-wrap:wrap; margin-top:26px;
+           padding-top:22px; border-top:1px solid var(--hair-soft); }
+  .cierre .campo{ max-width:180px; }
+  .hist-vacio{ font-size:13px; color:var(--ink-3); margin-top:16px; }
+
   /* ---- gastos ---- */
   .totales{ display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--hair); margin-bottom:30px; }
   .totales > div{ padding:22px 26px 6px 0; border-right:1px solid var(--hair); }
@@ -313,6 +357,7 @@
   .reset:hover{ border-color:var(--ink-3); color:var(--ink); }
 
   @media (max-width:980px){
+    .tally{ grid-template-columns:1fr 1fr; }
     .totales{ grid-template-columns:1fr; }
     .totales > div{ border-right:0; border-bottom:1px solid var(--hair); padding:18px 0 16px; }
     .totales > div + div{ padding-left:0; }
@@ -332,6 +377,10 @@
   }
   @media (max-width:560px){
     section{ margin-top:40px; }
+    .cal{ gap:5px; }
+    .dia{ font-size:13px; }
+    .dia .et{ display:none; }
+    .tally{ grid-template-columns:1fr 1fr; }
     .g-head{ display:none; }
     .g-row{ grid-template-columns:1fr 92px 26px; gap:8px 10px; padding:14px 0; }
     .g-row > *:nth-child(2){ grid-column:1 / 2; }
@@ -407,6 +456,44 @@
         <p class="fig-sub" id="r3sub"></p>
       </div>
     </div>
+  </section>
+
+  <section aria-labelledby="h-cal">
+    <div class="sec-head">
+      <h2 id="h-cal">El mes, día por día</h2>
+      <span class="hint">Toca cada día: oficina, casa o libre</span>
+    </div>
+    <div class="panel">
+      <div class="cal-barra">
+        <p class="cal-mes" id="calMes"></p>
+        <div class="cal-nav">
+          <button type="button" id="mesAnt" aria-label="Mes anterior">‹ Anterior</button>
+          <button type="button" id="mesHoy">Hoy</button>
+          <button type="button" id="mesSig" aria-label="Mes siguiente">Siguiente ›</button>
+        </div>
+      </div>
+      <div class="cal" id="cal"></div>
+      <div class="cal-pie">
+        <div class="cal-leyenda" id="calLeyenda"></div>
+        <div class="cal-nav">
+          <button type="button" class="accion" id="llenarHabiles">Llenar días hábiles</button>
+          <button type="button" class="accion" id="limpiarMes">Limpiar mes</button>
+        </div>
+      </div>
+      <dl class="tally" id="tally"></dl>
+      <div class="cierre">
+        <div class="campo">
+          <label class="lab" for="apartadoReal">Lo que apartaste</label>
+          <input class="in" type="number" id="apartadoReal" min="0" step="100" value="0">
+        </div>
+        <button type="button" class="accion" id="cerrarMes">Guardar el cierre del mes</button>
+        <span class="hint" id="cierreHint" style="font-size:12.5px; color:var(--ink-3);"></span>
+      </div>
+    </div>
+    <div class="table-scroll" id="histWrap" style="margin-top:26px;">
+      <table id="historial"><thead></thead><tbody></tbody></table>
+    </div>
+    <p class="hist-vacio" id="histVacio"></p>
   </section>
 
   <section aria-labelledby="h-rutas">
@@ -574,6 +661,8 @@
     uber:{ida:240, regreso:259},
     finanzas:{sueldo:12000, horasDia:6, rendimiento:10, rutaBase:"a", meta:100000,
               aporteModo:"uber", aporteFijo:3000},
+    marcas:{},
+    historial:[],
     gastos:[
       {t:"Renta",                      cat:"Casa",     m:3000, f:"mensual"},
       {t:"Despensa",                   cat:"Comida",   m:550,  f:"semanal"},
@@ -622,6 +711,8 @@
     {v:"mensual",   t:"mes",      f:1},
     {v:"anual",     t:"año",      f:1/12}
   ];
+  var DOW = ["L","M","M","J","V","S","D"];
+  var CICLO = ["libre","a","b","casa"];
   var MES_NOMBRE = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
 
   var estado = JSON.parse(JSON.stringify(EJEMPLO));
@@ -666,6 +757,55 @@
   }
   function ahorroMes(d, diasEnCasa){ return gastoMes(d, 0) - gastoMes(d, diasEnCasa); }
   function minutosMes(d, diasEnCasa){ return diasEnCasa * d.viajes * d.minutos; }
+  function claveDia(f){
+    return f.getFullYear() + "-" + ("0" + (f.getMonth()+1)).slice(-2) + "-" + ("0" + f.getDate()).slice(-2);
+  }
+  function claveMes(f){ return f.getFullYear() + "-" + ("0" + (f.getMonth()+1)).slice(-2); }
+  function nombreMes(f){ return MES_NOMBRE[f.getMonth()] + " " + f.getFullYear(); }
+  function esFinde(f){ var d = f.getDay(); return d === 0 || d === 6; }
+  function costoMarca(e){
+    if(e === "a") return costoDiaOficina(estado.destinos[0]);
+    if(e === "b") return costoDiaOficina(estado.destinos[1]);
+    if(e === "casa") return estado.casaExtra;
+    return 0;
+  }
+  function etiquetaMarca(e){
+    if(e === "a") return corto(estado.destinos[0].nombre, 7);
+    if(e === "b") return corto(estado.destinos[1].nombre, 7);
+    if(e === "casa") return "casa";
+    return "";
+  }
+  function colorMarca(e){
+    return e === "a" ? "var(--serie-a)" : e === "b" ? "var(--serie-b)" : e === "casa" ? "var(--good)" : "var(--hair)";
+  }
+  function resumenMes(clave){
+    var r = {oficinaA:0, oficinaB:0, casa:0, gasto:0, marcados:0};
+    Object.keys(estado.marcas || {}).forEach(function(k){
+      if(k.slice(0,7) !== clave) return;
+      var e = estado.marcas[k];
+      if(!e || e === "libre") return;
+      r.marcados++;
+      r.gasto += costoMarca(e);
+      if(e === "a") r.oficinaA++;
+      else if(e === "b") r.oficinaB++;
+      else if(e === "casa") r.casa++;
+    });
+    return r;
+  }
+  function habilesDelMes(f){
+    var total = 0, restantes = 0, hoy = new Date(), clave = claveMes(f);
+    var fin = new Date(f.getFullYear(), f.getMonth() + 1, 0).getDate();
+    for(var d = 1; d <= fin; d++){
+      var dia = new Date(f.getFullYear(), f.getMonth(), d);
+      if(esFinde(dia)) continue;
+      total++;
+      var marcado = (estado.marcas || {})[claveDia(dia)];
+      var pasado = dia < new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+      if(!marcado || marcado === "libre"){ if(!pasado || clave > claveMes(hoy)) restantes++; }
+    }
+    return {total:total, restantes:restantes};
+  }
+
   function factorFrec(f){
     var x = FRECUENCIAS.filter(function(fr){ return fr.v === f; })[0];
     return x ? x.f : 1;
@@ -819,7 +959,10 @@
       nb.type = "text"; nb.className = "nombre"; nb.value = d.nombre;
       nb.setAttribute("aria-label","Nombre del destino "+(i+1));
       nb.style.borderBottomColor = color(i);
-      nb.addEventListener("input", function(){ d.nombre = nb.value || ("Destino "+(i+1)); render(false); });
+      nb.addEventListener("input", function(){
+        d.nombre = nb.value || ("Destino "+(i+1));
+        pintarCalendario(); render(false);
+      });
       top.appendChild(nb);
       var pd = el("div","precio-dia");
       var pdv = el("p","pd-val"); pdv.id = "pd-"+d.id; pdv.style.color = color(i);
@@ -893,6 +1036,109 @@
         });
       });
     });
+  }
+
+  // ---------- calendario ----------
+  var mesVisible = new Date();
+
+  function pintarCalendario(){
+    var cal = document.getElementById("cal");
+    cal.innerHTML = "";
+    DOW.forEach(function(d, i){
+      var e = el("div","dow", d);
+      e.setAttribute("aria-hidden","true");
+      e.title = ["lunes","martes","miércoles","jueves","viernes","sábado","domingo"][i];
+      cal.appendChild(e);
+    });
+
+    var anio = mesVisible.getFullYear(), mes = mesVisible.getMonth();
+    var primero = new Date(anio, mes, 1);
+    var desplaz = (primero.getDay() + 6) % 7;
+    for(var h = 0; h < desplaz; h++) cal.appendChild(el("div","hueco"));
+
+    var ultimo = new Date(anio, mes + 1, 0).getDate();
+    var hoyClave = claveDia(new Date());
+    for(var d = 1; d <= ultimo; d++){
+      (function(dia){
+        var f = new Date(anio, mes, dia), k = claveDia(f);
+        var estadoDia = (estado.marcas || {})[k] || "libre";
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "dia" + (esFinde(f) ? " finde" : "") + (k === hoyClave ? " hoy" : "");
+        b.dataset.e = estadoDia;
+        b.setAttribute("aria-label", dia + " de " + nombreMes(f) + ": " +
+          (estadoDia === "libre" ? "libre" : etiquetaMarca(estadoDia)));
+        b.appendChild(el("span", null, String(dia)));
+        b.appendChild(el("span","et", etiquetaMarca(estadoDia)));
+        b.addEventListener("click", function(){
+          var i = CICLO.indexOf(estado.marcas[k] || "libre");
+          var sig = CICLO[(i + 1) % CICLO.length];
+          if(sig === "libre") delete estado.marcas[k];
+          else estado.marcas[k] = sig;
+          pintarCalendario();
+          render(true);
+        });
+        cal.appendChild(b);
+      })(d);
+    }
+
+    document.getElementById("calMes").textContent = nombreMes(mesVisible);
+    var leyenda = document.getElementById("calLeyenda");
+    leyenda.innerHTML = "";
+    [["a", estado.destinos[0].nombre], ["b", estado.destinos[1].nombre], ["casa", "Desde casa"], ["libre", "Libre"]]
+      .forEach(function(par){
+        var sp = document.createElement("span");
+        var i = document.createElement("i");
+        i.style.background = colorMarca(par[0]);
+        if(par[0] === "libre"){ i.style.background = "var(--surface)"; i.style.border = "1px solid var(--hair)"; }
+        sp.appendChild(i);
+        sp.appendChild(document.createTextNode(corto(par[1], 22)));
+        leyenda.appendChild(sp);
+      });
+  }
+
+  function pintarHistorial(){
+    var thead = document.querySelector("#historial thead"), tbody = document.querySelector("#historial tbody");
+    var vacio = document.getElementById("histVacio"), wrap = document.getElementById("histWrap");
+    thead.innerHTML = ""; tbody.innerHTML = "";
+    var hist = (estado.historial || []).slice().sort(function(a, b){ return a.mes < b.mes ? 1 : -1; });
+    if(!hist.length){
+      wrap.hidden = true;
+      vacio.textContent = "Cuando cierres un mes aparecerá aquí el historial: lo planeado, lo real y lo que apartaste.";
+      return;
+    }
+    wrap.hidden = false;
+    vacio.textContent = "";
+    var tr = document.createElement("tr");
+    ["Mes","Oficina","Casa","Plan","Real","Desviación","Apartado"].forEach(function(t){ tr.appendChild(el("th", null, t)); });
+    thead.appendChild(tr);
+    var sumaApartado = 0;
+    hist.forEach(function(m){
+      sumaApartado += m.apartado || 0;
+      var r = document.createElement("tr");
+      var partes = m.mes.split("-");
+      r.appendChild(el("td", null, MES_NOMBRE[parseInt(partes[1], 10) - 1] + " " + partes[0]));
+      r.appendChild(el("td", null, String(m.oficina)));
+      r.appendChild(el("td", null, String(m.casa)));
+      r.appendChild(el("td", null, dinero(m.plan)));
+      r.appendChild(el("td", null, dinero(m.real)));
+      var dv = m.real - m.plan;
+      var td = el("td", null, (dv > 0 ? "+" : "") + dinero(dv));
+      td.style.color = dv > 0 ? "var(--serie-b)" : "var(--good)";
+      r.appendChild(td);
+      var ta = el("td", null, dinero(m.apartado || 0));
+      ta.style.color = "var(--serie-c)";
+      r.appendChild(ta);
+      tbody.appendChild(r);
+    });
+    var total = document.createElement("tr");
+    total.appendChild(el("td", null, "Apartado en total"));
+    for(var i = 0; i < 5; i++) total.appendChild(el("td", null, ""));
+    var tt = el("td", null, dinero(sumaApartado));
+    tt.style.color = "var(--serie-c)";
+    tt.style.fontWeight = "600";
+    total.appendChild(tt);
+    tbody.appendChild(total);
   }
 
   // ---------- lista de gastos ----------
@@ -1340,6 +1586,43 @@
     document.getElementById("r3").innerHTML = figura(acumulado(aporte, 12, tasa));
     document.getElementById("r3sub").textContent = "apartando " + dinero(aporte) + " al mes con " + pct(tasa) + " anual";
 
+    // el mes real, según el calendario
+    var claveVis = claveMes(mesVisible);
+    var rm = resumenMes(claveVis);
+    var hab = habilesDelMes(mesVisible);
+    var promedioDia = rm.marcados ? rm.gasto / rm.marcados : costoDiaOficina(base);
+    var proyeccion = rm.gasto + hab.restantes * promedioDia;
+    var plan = gastoMes(base, dsel);
+    var desvio = proyeccion - plan;
+
+    var tally = document.getElementById("tally");
+    tally.innerHTML = "";
+    [["Días en la oficina", String(rm.oficinaA + rm.oficinaB),
+      corto(a.nombre, 10) + ": " + rm.oficinaA + " · " + corto(b.nombre, 10) + ": " + rm.oficinaB, null],
+     ["Días desde casa", String(rm.casa), "de " + hab.total + " hábiles del mes", null],
+     ["Gasto real marcado", dinero(rm.gasto), rm.marcados + (rm.marcados === 1 ? " día contado" : " días contados") +
+      " · faltan " + hab.restantes, null],
+     ["Proyección al cierre", dinero(proyeccion),
+      "plan " + dinero(plan) + " · " + (desvio > 0 ? "te pasas " + dinero(desvio) : "ahorras " + dinero(-desvio)),
+      desvio > 0 ? "mal" : "bien"]
+    ].forEach(function(f){
+      var caja = document.createElement("div");
+      caja.appendChild(el("dt", null, f[0]));
+      var dd = el("dd", null, f[1]);
+      if(f[3] === "mal") dd.style.color = "var(--serie-b)";
+      if(f[3] === "bien") dd.style.color = "var(--good)";
+      caja.appendChild(dd);
+      caja.appendChild(el("p","sub", f[2]));
+      tally.appendChild(caja);
+    });
+
+    var yaCerrado = (estado.historial || []).filter(function(m){ return m.mes === claveVis; })[0];
+    document.getElementById("cierreHint").textContent = yaCerrado
+      ? "Ya guardaste " + nombreMes(mesVisible) + ": al guardar otra vez se actualiza."
+      : "Se guarda como " + nombreMes(mesVisible) + " en el historial.";
+    var inpAp = document.getElementById("apartadoReal");
+    if(document.activeElement !== inpAp) inpAp.value = yaCerrado ? yaCerrado.apartado : Math.round(aporte);
+
     // gastos del mes
     var cats = porCategoria(gastoBase, base.nombre);
     var mayor = cats[0] || {cat:"—", v:0};
@@ -1444,6 +1727,18 @@
         rutaBase:g.finanzas.rutaBase === "b" ? "b" : "a"
       };
     }
+    if(g.marcas && typeof g.marcas === "object"){
+      estado.marcas = {};
+      Object.keys(g.marcas).forEach(function(k){
+        if(/^\d{4}-\d{2}-\d{2}$/.test(k) && CICLO.indexOf(g.marcas[k]) > 0) estado.marcas[k] = g.marcas[k];
+      });
+    }
+    if(Array.isArray(g.historial)){
+      estado.historial = g.historial.filter(function(m){ return m && typeof m.mes === "string"; }).map(function(m){
+        return {mes:m.mes, oficina:num(m.oficina, 0), casa:num(m.casa, 0),
+                plan:num(m.plan, 0), real:num(m.real, 0), apartado:num(m.apartado, 0)};
+      });
+    }
     if(Array.isArray(g.gastos)){
       estado.gastos = g.gastos.map(function(x){
         return {
@@ -1484,6 +1779,8 @@
     document.getElementById("rutaBase").dataset.firma = "";
     pintarRutas();
     pintarGastos();
+    pintarCalendario();
+    pintarHistorial();
     render(false);
   }
 
@@ -1504,6 +1801,47 @@
     document.getElementById(par[0]).addEventListener("input", function(e){
       estado.uber[par[1]] = Math.max(0, num(e.target.value, 0)); render(true);
     });
+  });
+  function moverMes(delta){
+    mesVisible = new Date(mesVisible.getFullYear(), mesVisible.getMonth() + delta, 1);
+    pintarCalendario(); render(false);
+  }
+  document.getElementById("mesAnt").addEventListener("click", function(){ moverMes(-1); });
+  document.getElementById("mesSig").addEventListener("click", function(){ moverMes(1); });
+  document.getElementById("mesHoy").addEventListener("click", function(){
+    mesVisible = new Date(); pintarCalendario(); render(false);
+  });
+  document.getElementById("llenarHabiles").addEventListener("click", function(){
+    var anio = mesVisible.getFullYear(), mes = mesVisible.getMonth();
+    var fin = new Date(anio, mes + 1, 0).getDate();
+    var marca = estado.finanzas.rutaBase === "b" ? "b" : "a";
+    for(var d = 1; d <= fin; d++){
+      var f = new Date(anio, mes, d);
+      if(esFinde(f)) continue;
+      var k = claveDia(f);
+      if(!estado.marcas[k]) estado.marcas[k] = marca;
+    }
+    pintarCalendario(); render(true);
+  });
+  document.getElementById("limpiarMes").addEventListener("click", function(){
+    var clave = claveMes(mesVisible);
+    Object.keys(estado.marcas).forEach(function(k){ if(k.slice(0,7) === clave) delete estado.marcas[k]; });
+    pintarCalendario(); render(true);
+  });
+  document.getElementById("cerrarMes").addEventListener("click", function(){
+    var clave = claveMes(mesVisible), rm = resumenMes(clave);
+    var base = estado.destinos.filter(function(d){ return d.id === estado.finanzas.rutaBase; })[0] || estado.destinos[0];
+    var entrada = {
+      mes:clave,
+      oficina:rm.oficinaA + rm.oficinaB,
+      casa:rm.casa,
+      plan:gastoMes(base, estado.diasCasa),
+      real:rm.gasto,
+      apartado:Math.max(0, num(document.getElementById("apartadoReal").value, 0))
+    };
+    estado.historial = (estado.historial || []).filter(function(m){ return m.mes !== clave; }).concat([entrada]);
+    pintarHistorial(); render(true);
+    marcar("Cierre de " + nombreMes(mesVisible) + " guardado");
   });
   document.getElementById("masGasto").addEventListener("click", function(){
     estado.gastos = (estado.gastos || []).concat([{t:"Nuevo gasto", cat:"Otros", m:0, f:"mensual"}]);

@@ -21,6 +21,10 @@ Metrobús $6.
 - **Tu dinero**: con tu sueldo neto mensual calcula cuánto ganas por hora, qué porcentaje
   del sueldo se va en el traslado (y cuánto se iría en Uber), lo que te queda libre y cuánto
   vale el tiempo que pasas en el camino.
+- **El mes, día por día**: calendario donde cada día se marca como oficina (una u otra
+  ruta), desde casa o libre. Suma el gasto real, lo proyecta al cierre con los días hábiles
+  que faltan y lo compara contra el plan. Al cerrar el mes guarda en el historial los días,
+  el plan, lo real, la desviación y lo que apartaste.
 - **Mis gastos del mes**: lista editable de gastos (renta, despensa, comida fuera, servicios,
   apps y suscripciones, salud, gustos…) con categoría y frecuencia — día, semana, quincena,
   mes o año — convertida a su equivalente mensual. El transporte de la ruta elegida entra
