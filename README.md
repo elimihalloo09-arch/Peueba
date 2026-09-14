@@ -1,11 +1,17 @@
 # Proyector de gastos y ahorro de traslados
 
 Herramienta de una sola página para proyectar cuánto cuesta ir a trabajar y cuánto
-se ahorra con cada día de trabajo desde casa, comparando dos destinos (por defecto
-**CPN** y **Bancen**).
+se ahorra con cada día de trabajo desde casa, comparando dos destinos.
+
+Viene cargada con las rutas reales desde Calle 27 #136, Nezahualcóyotl (CP 57210)
+a las dos sedes del SAT — **CPN / El Reloj** (Coyoacán) y **BanCen / Av. Hidalgo 77**
+(Col. Guerrero) — con tarifas oficiales: Mexibús $10, Metro $5, Tren Ligero $3,
+Metrobús $6.
 
 ## Qué hace
 
+- Desglosa el trayecto **tramo por tramo** (Mexibús → Metro → Tren Ligero) y suma ida y vuelta.
+- Compara la ruta económica contra el **Uber** (~$240 ida + ~$259 regreso) con los mismos días presenciales.
 - Calcula el costo de **un día presencial** en cada destino: transporte público,
   vehículo propio o moto (combustible, peajes, parqueadero, mantenimiento por km),
   taxi/app, o bici/a pie — más la comida fuera.

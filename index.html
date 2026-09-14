@@ -58,6 +58,7 @@
     color-scheme: dark;
   }
 
+  *, *::before, *::after{box-sizing:border-box;}
   body{
     background:var(--ground);
     color:var(--ink);
@@ -156,10 +157,25 @@
   .readout div{min-width:92px;}
   .readout dt{font-size:12px; color:var(--ink-3);}
   .readout dd{margin:2px 0 0; font-family:"IBM Plex Mono",monospace; font-size:17px; font-variant-numeric:tabular-nums;}
+  .ruta-nota{font-size:12.5px; color:var(--ink-2); margin-top:-2px; line-height:1.45;}
+  .planb{font-size:12px; color:var(--ink-3); margin-top:6px; padding-left:10px; border-left:2px solid var(--line);}
+  .tramos{display:flex; flex-direction:column; gap:8px;}
+  .tramo{display:grid; grid-template-columns:1fr 96px 28px; gap:8px; align-items:center;}
+  .tramo input[type="text"]{font-family:"Source Sans 3",sans-serif; font-size:13.5px;}
+  .tramo button{
+    font:inherit; line-height:1; color:var(--ink-3); background:transparent; border:1px solid var(--line);
+    border-radius:6px; height:30px; cursor:pointer;
+  }
+  .tramo button:hover{color:var(--ink); border-color:var(--ink-3);}
+  .tramos-foot{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:10px;}
+  .tramos-total{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--ink-2); font-variant-numeric:tabular-nums;}
+  .uber-grid{display:grid; grid-template-columns:150px 150px 1fr; gap:20px; align-items:start;}
+  .uber .readout{margin-top:0; padding-top:0;}
   .compo{margin-top:16px;}
   .bar{display:flex; height:12px; border-radius:3px; overflow:hidden; background:var(--card-2); gap:2px;}
   .bar i{display:block; height:100%;}
   .compo-legend{display:flex; flex-wrap:wrap; gap:4px 16px; margin-top:8px; font-size:12px; color:var(--ink-2);}
+  .compo{padding-bottom:2px;}
   .compo-legend span{display:inline-flex; align-items:center; gap:6px;}
   .compo-legend .sw{width:8px; height:8px; border-radius:2px;}
 
@@ -192,20 +208,25 @@
     .verdict > div:last-child{border-bottom:0;}
     .destinos{grid-template-columns:1fr;}
   }
+  @media (max-width:860px){
+    .uber-grid{grid-template-columns:1fr 1fr;}
+    .uber-grid .readout{grid-column:1 / -1;}
+  }
   @media (max-width:520px){
     .escenario{grid-template-columns:1fr;}
     .grid3{grid-template-columns:1fr 1fr;}
+    .tramo{grid-template-columns:1fr 84px 28px;}
   }
   @media (prefers-reduced-motion:reduce){ *{transition:none !important; animation:none !important;} }
 </style>
 
 <div class="wrap">
   <header>
-    <p class="eyebrow">Proyección de traslados · casa y oficina</p>
+    <p class="eyebrow">Neza CP 57210 · SAT · pesos mexicanos</p>
     <h1>Casa, CPN o Bancen</h1>
-    <p class="lede">Cuánto te cuesta cada día que vas a la oficina, cuánto te devuelve cada día que trabajas desde casa,
-      y cómo se ve la diferencia al mes y al año en cada uno de los dos destinos. Los valores de inicio son un ejemplo:
-      cámbialos por los tuyos y todo se recalcula.</p>
+    <p class="lede">Tus dos rutas reales desde Calle 27 #136, Nezahualcóyotl: El Reloj (CPN) y Hidalgo 77 (BanCen),
+      tramo por tramo y con tarifas oficiales. Mueve los días desde casa y verás el gasto del mes, el ahorro y las
+      horas de trayecto que te devuelves — más la comparación contra el Uber.</p>
     <div class="rule"></div>
   </header>
 
@@ -258,6 +279,24 @@
     </div>
   </section>
 
+  <section class="card card-pad uber" aria-labelledby="h-uber">
+    <div class="card-head">
+      <h2 id="h-uber">Contra el Uber</h2>
+      <span class="hint">Mismos días presenciales, puerta a puerta</span>
+    </div>
+    <div class="uber-grid">
+      <div class="field">
+        <label for="uberIda">Uber de ida</label>
+        <input type="number" id="uberIda" min="0" step="1" value="240">
+      </div>
+      <div class="field">
+        <label for="uberRegreso">Uber de regreso</label>
+        <input type="number" id="uberRegreso" min="0" step="1" value="259">
+      </div>
+      <dl class="readout" id="uberOut"></dl>
+    </div>
+  </section>
+
   <section class="card card-pad" aria-labelledby="h-graf">
     <div class="card-head">
       <h2 id="h-graf">Gasto mensual según los días que trabajes desde casa</h2>
@@ -289,17 +328,18 @@
     <div class="notes">
       <p>Gasto del mes = (días laborales − días desde casa) × costo de un día presencial + días desde casa × gasto extra en casa.</p>
       <ul>
-        <li>Vehículo propio: (km por trayecto × viajes al día ÷ rendimiento) × precio del combustible, más peajes, parqueadero y un costo de mantenimiento por kilómetro.</li>
-        <li>Transporte público: pasajes al día × precio del pasaje. Taxi o app: viajes al día × tarifa por viaje.</li>
-        <li>El ahorro compara cada día en casa contra un día presencial completo, incluida la comida fuera.</li>
-        <li>El año son 12 meses iguales; no incluye vacaciones ni incrementos de tarifa.</li>
+        <li>Transporte público: se suman los tramos de un trayecto y se multiplican por los trayectos del día. Tarifas oficiales cargadas: Mexibús $10, Metro $5, Tren Ligero $3, Metrobús $6 (la L4 al AICM, $30, no aplica aquí).</li>
+        <li>Vehículo propio: (km por trayecto × viajes al día ÷ rendimiento) × precio del combustible, más peajes, parqueadero y mantenimiento por kilómetro. Taxi o app: viajes al día × tarifa por viaje.</li>
+        <li>El ahorro compara cada día en casa contra un día presencial completo. La comida fuera está en $0: ponle tu gasto real si quieres incluirlo.</li>
+        <li>El tiempo recuperado usa los minutos por trayecto puerta a puerta (95 min a El Reloj, 75 min a Hidalgo 77).</li>
+        <li>El año son 12 meses iguales; no incluye vacaciones ni aumentos de tarifa.</li>
       </ul>
     </div>
   </section>
 
   <footer>
     <span id="estado">Los cambios se guardan en este navegador</span>
-    <button class="ghost" id="reset" type="button">Restablecer ejemplo</button>
+    <button class="ghost" id="reset" type="button">Restablecer mis rutas</button>
   </footer>
 </div>
 
@@ -308,12 +348,26 @@
   "use strict";
 
   var EJEMPLO = {
-    moneda:"$", diasLaborales:22, diasCasa:8, casaExtra:2.5,
+    moneda:"$", diasLaborales:20, diasCasa:4, casaExtra:0,
+    uber:{ida:240, regreso:259},
     destinos:[
-      {id:"a", nombre:"CPN",    modo:"publico",  km:14, viajes:2, minutos:40,
-       pasaje:1.10, pasajesDia:2, rendimiento:12, precioComb:1.25, peaje:0, parqueo:0, mantKm:0.05, tarifa:6, comida:7},
-      {id:"b", nombre:"Bancen", modo:"vehiculo", km:9,  viajes:2, minutos:25,
-       pasaje:1.10, pasajesDia:2, rendimiento:12, precioComb:1.25, peaje:0, parqueo:3, mantKm:0.05, tarifa:6, comida:7}
+      {id:"a", nombre:"CPN · El Reloj", modo:"publico", km:0, viajes:2, minutos:95,
+       tramos:[
+         {t:"Mexibús L3 · Vicente Riva Palacio → Pantitlán", p:10},
+         {t:"Metro L9 → Chabacano → L2 → Tasqueña", p:5},
+         {t:"Tren Ligero → Registro Federal", p:3}
+       ],
+       rendimiento:12, precioComb:24, peaje:0, parqueo:0, mantKm:2, tarifa:240, comida:0,
+       nota:"13 min a pie (900 m) a la estación. Salida de casa 9:20–9:25, entrada 11:00; regreso 17:00, casa 18:15–18:30.",
+       planB:"Plan B: combi por Av. Riva Palacios ≈ $14 si falla el Mexibús."},
+      {id:"b", nombre:"BanCen · Hidalgo 77", modo:"publico", km:0, viajes:2, minutos:75,
+       tramos:[
+         {t:"Mexibús L3 · Vicente Riva Palacio → Pantitlán", p:10},
+         {t:"Metro L9 → Chabacano → L2 → Bellas Artes/Hidalgo", p:5}
+       ],
+       rendimiento:12, precioComb:24, peaje:0, parqueo:0, mantKm:2, tarifa:240, comida:0,
+       nota:"De Pantitlán a Hidalgo el Metro tarda ≈ 29 min; caminata corta hasta Av. Hidalgo 77.",
+       planB:"Plan B comodidad: Metrobús L4 a Hidalgo $6 (+$1). No partir de Chimalhuacán ni Bordo: Alameda Oriente + L4 sale ~30 min más lento."}
     ]
   };
 
@@ -329,7 +383,7 @@
   var dbRef = null, guardarTimer = null;
 
   // ---------- utilidades ----------
-  function nf(dec){ return new Intl.NumberFormat("es-ES",{minimumFractionDigits:dec, maximumFractionDigits:dec}); }
+  function nf(dec){ return new Intl.NumberFormat("es-MX",{minimumFractionDigits:dec, maximumFractionDigits:dec}); }
   function dinero(n){ return estado.moneda + " " + nf(2).format(n); }
   function dineroEje(n, dec){ return estado.moneda + nf(dec).format(n); }
   function horas(n){ return nf(n % 1 === 0 ? 0 : 1).format(n) + " h"; }
@@ -339,10 +393,13 @@
   // ---------- modelo ----------
   function usaVehiculo(m){ return m === "vehiculo" || m === "moto"; }
 
+  function sumaTramos(d){
+    return (d.tramos || []).reduce(function(a, t){ return a + (parseFloat(t.p) || 0); }, 0);
+  }
   function partesDia(d){
     var transporte = 0, extras = 0;
     if(d.modo === "publico"){
-      transporte = d.pasaje * d.pasajesDia;
+      transporte = sumaTramos(d) * d.viajes;
     } else if(usaVehiculo(d.modo)){
       var kmDia = d.km * d.viajes;
       var rend = d.rendimiento > 0 ? d.rendimiento : 1;
@@ -369,6 +426,11 @@
     return diasEnCasa * d.viajes * d.minutos;
   }
   function color(i){ return i === 0 ? "var(--serie-a)" : "var(--serie-b)"; }
+  function corto(txt, max){
+    txt = String(txt || "").split(" · ")[0].trim();
+    max = max || 20;
+    return txt.length > max ? txt.slice(0, max - 1).trim() + "…" : txt;
+  }
 
   // ---------- panel de cada destino ----------
   function campo(id, etiqueta, valor, sub, paso){
@@ -379,6 +441,42 @@
     i.type = "number"; i.id = id; i.min = "0"; i.step = paso || "0.01"; i.value = valor;
     f.appendChild(i);
     return f;
+  }
+
+  function tramosUI(d){
+    var caja = el("div","tramos");
+    (d.tramos || []).forEach(function(tr, idx){
+      var fila = el("div","tramo");
+      var et = document.createElement("input");
+      et.type = "text"; et.value = tr.t; et.setAttribute("aria-label","Tramo "+(idx+1));
+      et.addEventListener("input", function(){ tr.t = et.value; render(true); });
+      var pr = document.createElement("input");
+      pr.type = "number"; pr.min = "0"; pr.step = "0.5"; pr.value = tr.p;
+      pr.setAttribute("aria-label","Tarifa del tramo "+(idx+1));
+      pr.addEventListener("input", function(){ tr.p = Math.max(0, num(pr.value, 0)); render(true); });
+      var qu = document.createElement("button");
+      qu.type = "button"; qu.textContent = "×"; qu.title = "Quitar este tramo";
+      qu.setAttribute("aria-label","Quitar el tramo "+(idx+1));
+      qu.addEventListener("click", function(){
+        d.tramos.splice(idx, 1);
+        pintarDestinos(); render(true);
+      });
+      fila.appendChild(et); fila.appendChild(pr); fila.appendChild(qu);
+      caja.appendChild(fila);
+    });
+    var pie = el("div","tramos-foot");
+    var tot = el("span","tramos-total");
+    tot.textContent = "Ida " + dinero(sumaTramos(d)) + " · día " + dinero(sumaTramos(d) * d.viajes);
+    var add = document.createElement("button");
+    add.type = "button"; add.className = "ghost"; add.textContent = "+ Agregar tramo";
+    add.addEventListener("click", function(){
+      d.tramos = (d.tramos || []).concat([{t:"Nuevo tramo", p:0}]);
+      pintarDestinos(); render(true);
+    });
+    pie.appendChild(tot); pie.appendChild(add);
+    var envoltura = document.createElement("div");
+    envoltura.appendChild(caja); envoltura.appendChild(pie);
+    return envoltura;
   }
 
   function pintarDestinos(){
@@ -399,6 +497,7 @@
       var dia = el("span","hint"); dia.id = "diaCosto-"+d.id;
       head.appendChild(dia);
       pad.appendChild(head);
+      if(d.nota) pad.appendChild(el("p","ruta-nota", d.nota));
 
       var g1 = el("div","grid3");
       var fModo = el("div","field");
@@ -413,15 +512,17 @@
       sel.addEventListener("change", function(){ d.modo = sel.value; pintarDestinos(); render(true); });
       fModo.appendChild(sel);
       g1.appendChild(fModo);
-      g1.appendChild(campo("km-"+d.id, "Km por trayecto", d.km, null, "0.1"));
+      if(usaVehiculo(d.modo) || d.modo === "activo"){
+        g1.appendChild(campo("km-"+d.id, "Km por trayecto", d.km, null, "0.1"));
+      }
       g1.appendChild(campo("viajes-"+d.id, "Trayectos al día", d.viajes, "Ida y vuelta = 2", "1"));
       pad.appendChild(g1);
 
-      pad.appendChild(el("p","subhead","Costo del transporte"));
+      pad.appendChild(el("p","subhead", d.modo === "publico" ? "Tramos del trayecto" : "Costo del transporte"));
       var g2 = el("div","grid2");
       if(d.modo === "publico"){
-        g2.appendChild(campo("pasaje-"+d.id, "Precio del pasaje", d.pasaje));
-        g2.appendChild(campo("pasajesDia-"+d.id, "Pasajes al día", d.pasajesDia, "Con transbordos", "1"));
+        pad.appendChild(tramosUI(d));
+        g2 = null;
       } else if(usaVehiculo(d.modo)){
         g2.appendChild(campo("rendimiento-"+d.id, "Rendimiento (km/L)", d.rendimiento, null, "0.1"));
         g2.appendChild(campo("precioComb-"+d.id, "Precio del combustible (L)", d.precioComb));
@@ -435,7 +536,8 @@
         nota.style.color = "var(--ink-3)"; nota.style.gridColumn = "1 / -1";
         g2.appendChild(nota);
       }
-      pad.appendChild(g2);
+      if(g2) pad.appendChild(g2);
+      if(d.planB) pad.appendChild(el("p","planb", d.planB));
 
       pad.appendChild(el("p","subhead","El día presencial"));
       var g3 = el("div","grid2");
@@ -455,7 +557,7 @@
       cont.appendChild(card);
 
       // enlazar campos numéricos del destino
-      [["km","km"],["viajes","viajes"],["minutos","minutos"],["pasaje","pasaje"],["pasajesDia","pasajesDia"],
+      [["km","km"],["viajes","viajes"],["minutos","minutos"],
        ["rendimiento","rendimiento"],["precioComb","precioComb"],["peaje","peaje"],["parqueo","parqueo"],
        ["mantKm","mantKm"],["tarifa","tarifa"],["comida","comida"]].forEach(function(par){
         var input = document.getElementById(par[0]+"-"+d.id);
@@ -485,7 +587,7 @@
     var W = Math.max(340, wrap.clientWidth || 700);
     var H = W < 560 ? 260 : 300;
     var compacto = W < 560;
-    var pad = {t:16, r: compacto ? 18 : 104, b:34, l: compacto ? 58 : 68};
+    var pad = {t:16, r: compacto ? 18 : 122, b:34, l: compacto ? 58 : 68};
     var iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
 
     var series = estado.destinos.map(function(d, i){
@@ -551,14 +653,15 @@
       var fin = series.map(function(s){ return {s:s, y:Y(s.pts[L].y)}; }).sort(function(a,b){ return a.y - b.y; });
       if(fin.length === 2 && fin[1].y - fin[0].y < 38){
         var mid = (fin[0].y + fin[1].y) / 2;
-        fin[0].y = Math.max(pad.t + 12, mid - 19);
-        fin[1].y = Math.min(pad.t + ih, mid + 19);
+        var baja = Math.min(pad.t + ih - 14, mid + 20);
+        fin[1].y = baja;
+        fin[0].y = Math.max(pad.t + 12, baja - 38);
       }
       fin.forEach(function(f){
         var g = svgEl("g", {});
         var t1 = svgEl("text", {x:pad.l+iw+12, y:f.y-2, fill:"var(--ink)", "font-size":"12.5",
           "font-family":"Archivo, sans-serif", "font-weight":"600"});
-        t1.textContent = f.s.nombre;
+        t1.textContent = corto(f.s.nombre, 16);
         var t2 = svgEl("text", {x:pad.l+iw+12, y:f.y+14, fill:"var(--ink-3)", "font-size":"11.5",
           "font-family":"IBM Plex Mono, monospace"});
         t2.textContent = dinero(f.s.pts[L].y);
@@ -688,11 +791,21 @@
 
       var compo = document.getElementById("compo-" + d.id);
       if(compo){
-        var segs = [
-          {t:"Transporte", v:p.transporte, op:"100%"},
-          {t:"Peajes y parqueo", v:p.extras, op:"58%"},
-          {t:"Comida fuera", v:p.comida, op:"30%"}
-        ].filter(function(s){ return s.v > 0; });
+        var segs;
+        if(d.modo === "publico"){
+          var tintes = ["100%","72%","50%","34%"];
+          segs = (d.tramos || []).map(function(tr, k){
+            return {t:corto(tr.t || "Tramo", 22), v:(parseFloat(tr.p) || 0) * d.viajes, op:tintes[Math.min(k, 3)]};
+          });
+          if(p.comida > 0) segs.push({t:"Comida fuera", v:p.comida, op:"22%"});
+        } else {
+          segs = [
+            {t:"Transporte", v:p.transporte, op:"100%"},
+            {t:"Peajes y parqueo", v:p.extras, op:"58%"},
+            {t:"Comida fuera", v:p.comida, op:"30%"}
+          ];
+        }
+        segs = segs.filter(function(s){ return s.v > 0; });
         var bar = compo.querySelector(".bar"), leg = compo.querySelector(".compo-legend");
         bar.innerHTML = ""; leg.innerHTML = "";
         segs.forEach(function(s){
@@ -737,6 +850,32 @@
       ? "Empate · " + dinero(ga) + " al mes"
       : dinero(dif * 12) + " al año de diferencia";
 
+    // comparación contra el Uber
+    var uber = estado.uber || (estado.uber = {ida:0, regreso:0});
+    var uberDia = (uber.ida || 0) + (uber.regreso || 0);
+    var presenciales = L - dsel;
+    var uberMes = uberDia * presenciales;
+    var uo = document.getElementById("uberOut");
+    if(uo){
+      uo.innerHTML = "";
+      var filas = [
+        ["Uber por día", dinero(uberDia), null],
+        ["Uber al mes (" + presenciales + (presenciales === 1 ? " día" : " días") + " presenciales)", dinero(uberMes), null],
+        ["Ahorro al mes con " + a.nombre, dinero(uberMes - ga), "good"],
+        ["Ahorro al mes con " + b.nombre, dinero(uberMes - gb), "good"],
+        ["Ahorro al año con " + a.nombre, dinero((uberMes - ga) * 12), "good"]
+      ];
+      filas.forEach(function(f){
+        var box = document.createElement("div");
+        box.style.minWidth = "128px";
+        box.appendChild(el("dt", null, f[0]));
+        var dd = el("dd", null, f[1]);
+        if(f[2] === "good") dd.style.color = "var(--good)";
+        box.appendChild(dd);
+        uo.appendChild(box);
+      });
+    }
+
     dibujarGrafica();
     pintarTabla();
     if(guardar !== false) programarGuardado();
@@ -748,9 +887,9 @@
     guardarTimer = setTimeout(guardar, 600);
   }
   function guardar(){
-    try{ localStorage.setItem("proyector-traslados", JSON.stringify(estado)); }catch(e){}
+    try{ localStorage.setItem("proyector-traslados-neza-sat", JSON.stringify(estado)); }catch(e){}
     if(dbRef){
-      dbRef.doc("config/escenario").set({escenario:estado, actualizado:Date.now()}).then(function(){
+      dbRef.doc("config/escenario-neza-sat").set({escenario:estado, actualizado:Date.now()}).then(function(){
         marcar("Guardado");
       }).catch(function(){ marcar("Guardado solo en este navegador"); });
     } else {
@@ -768,16 +907,25 @@
     ["moneda","diasLaborales","diasCasa","casaExtra"].forEach(function(k){
       if(guardado[k] !== undefined && guardado[k] !== null) estado[k] = guardado[k];
     });
+    if(guardado.uber) estado.uber = {ida:num(guardado.uber.ida, 0), regreso:num(guardado.uber.regreso, 0)};
     if(Array.isArray(guardado.destinos)){
       guardado.destinos.slice(0,2).forEach(function(g, i){
         if(!estado.destinos[i] || !g) return;
         Object.keys(estado.destinos[i]).forEach(function(k){
           if(k !== "id" && g[k] !== undefined && g[k] !== null) estado.destinos[i][k] = g[k];
         });
+        if(Array.isArray(g.tramos)){
+          estado.destinos[i].tramos = g.tramos.map(function(tr){
+            return {t:String(tr && tr.t != null ? tr.t : "Tramo"), p:num(tr && tr.p, 0)};
+          });
+        }
       });
     }
   }
   function aplicarGuardado(){
+    if(!estado.uber) estado.uber = {ida:0, regreso:0};
+    document.getElementById("uberIda").value = estado.uber.ida;
+    document.getElementById("uberRegreso").value = estado.uber.regreso;
     document.getElementById("moneda").value = estado.moneda;
     document.getElementById("diasLaborales").value = estado.diasLaborales;
     document.getElementById("casaExtra").value = estado.casaExtra;
@@ -803,6 +951,13 @@
     estado.moneda = e.target.value.slice(0,4) || "$";
     render(true);
   });
+  ["ida","regreso"].forEach(function(k){
+    var input = document.getElementById(k === "ida" ? "uberIda" : "uberRegreso");
+    input.addEventListener("input", function(){
+      estado.uber[k] = Math.max(0, num(input.value, 0));
+      render(true);
+    });
+  });
   document.getElementById("reset").addEventListener("click", function(){
     estado = JSON.parse(JSON.stringify(EJEMPLO));
     aplicarGuardado();
@@ -825,7 +980,7 @@
     window.claude.use("db").then(function(db){
       if(!db) return;
       dbRef = db;
-      return db.doc("config/escenario").get().then(function(snap){
+      return db.doc("config/escenario-neza-sat").get().then(function(snap){
         var cuerpo = snap && snap.exists ? snap.data() : null;
         if(cuerpo && cuerpo.escenario){
           fusionar(cuerpo.escenario);
