@@ -211,7 +211,7 @@
               letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
 
   /* ---- gráficas ---- */
-  .chart-wrap{ position:relative; }
+  .chart-wrap{ position:relative; min-height:160px; }
   svg{ display:block; width:100%; height:auto; max-width:100%; }
   .leyenda{ display:flex; gap:20px; flex-wrap:wrap; font-size:13px; color:var(--ink-2); margin-bottom:10px; }
   .leyenda span.i{ display:inline-flex; align-items:center; gap:8px; }
@@ -1057,7 +1057,6 @@
   // ---------- cinta de la ruta ----------
   function dibujarCinta(d, i, caja){
     var viejo = caja.querySelector("svg");
-    if(viejo) viejo.remove();
     var W = Math.max(260, caja.clientWidth || 420), H = 86;
     var hue = color(i);
     var svg = svgEl("svg", {viewBox:"0 0 "+W+" "+H, width:W, height:H, role:"img"});
@@ -1107,7 +1106,7 @@
     fin.textContent = "OFICINA";
     svg.appendChild(fin);
 
-    caja.appendChild(svg);
+    if(viejo) caja.replaceChild(svg, viejo); else caja.appendChild(svg);
   }
 
   // ---------- paneles de ruta ----------
@@ -1168,7 +1167,7 @@
       nb.style.borderBottomColor = color(i);
       nb.addEventListener("input", function(){
         d.nombre = nb.value || ("Destino "+(i+1));
-        pintarCalendario(); render(false);
+        render(true);
       });
       top.appendChild(nb);
       var pd = el("div","precio-dia");
@@ -1465,9 +1464,8 @@
   function dibujarCurvaDeuda(sim){
     var wrap = document.getElementById("deudaWrap");
     var viejo = wrap.querySelector("svg");
-    if(viejo) viejo.remove();
     var pts = sim.curva;
-    if(pts.length < 2) return;
+    if(pts.length < 2){ if(viejo) viejo.remove(); return; }
 
     var W = Math.max(320, wrap.clientWidth || 700);
     var compacto = W < 560, H = compacto ? 210 : 250;
@@ -1542,15 +1540,14 @@
       tip.style.opacity = 0; cross.setAttribute("opacity", 0); dot.setAttribute("opacity", 0);
     });
 
-    wrap.appendChild(svg);
+    if(viejo) wrap.replaceChild(svg, viejo); else wrap.appendChild(svg);
   }
 
   // ---------- barras por categoría ----------
   function dibujarBarras(cats, total, idWrap, tinte, rotulo){
     var wrap = document.getElementById(idWrap || "gastosWrap");
     var viejo = wrap.querySelector("svg");
-    if(viejo) viejo.remove();
-    if(!cats.length) return;
+    if(!cats.length){ if(viejo) viejo.remove(); return; }
 
     var W = Math.max(320, wrap.clientWidth || 700);
     var compacto = W < 560;
@@ -1586,14 +1583,13 @@
     pie.textContent = rotulo || "GASTO MENSUAL POR CATEGORÍA";
     svg.appendChild(pie);
 
-    wrap.appendChild(svg);
+    if(viejo) wrap.replaceChild(svg, viejo); else wrap.appendChild(svg);
   }
 
   // ---------- gráfica del gasto ----------
   function dibujarGrafica(){
     var wrap = document.getElementById("chartWrap");
     var viejo = wrap.querySelector("svg");
-    if(viejo) viejo.remove();
 
     var L = estado.diasLaborales;
     var W = Math.max(320, wrap.clientWidth || 700);
@@ -1698,7 +1694,7 @@
       dots.forEach(function(c){ c.setAttribute("opacity", 0); });
     });
 
-    wrap.appendChild(svg);
+    if(viejo) wrap.replaceChild(svg, viejo); else wrap.appendChild(svg);
 
     var lg = document.getElementById("leyenda");
     lg.innerHTML = "";
@@ -1718,7 +1714,6 @@
   function dibujarBola(aporte){
     var wrap = document.getElementById("bolaWrap");
     var viejo = wrap.querySelector("svg");
-    if(viejo) viejo.remove();
 
     var MESES = 24, tasa = estado.finanzas.rendimiento || 0;
     var W = Math.max(320, wrap.clientWidth || 700);
@@ -1795,7 +1790,7 @@
       tip.style.opacity = 0; cross.setAttribute("opacity", 0); dot.setAttribute("opacity", 0);
     });
 
-    wrap.appendChild(svg);
+    if(viejo) wrap.replaceChild(svg, viejo); else wrap.appendChild(svg);
   }
 
   // ---------- tabla ----------
@@ -1830,6 +1825,42 @@
     document.getElementById("tablaHint").textContent = "Año = 12 meses de " + L + " días laborales";
   }
 
+  // ---------- pintado diferido ----------
+  var pesadoTimer = null, pesadoDatos = null;
+  function programarPesado(datos, inmediato){
+    pesadoDatos = datos;
+    clearTimeout(pesadoTimer);
+    if(inmediato){ pintarPesado(); return; }
+    pesadoTimer = setTimeout(pintarPesado, 180);
+  }
+  function pintarPesado(){
+    var d = pesadoDatos;
+    if(!d) return;
+    estado.destinos.forEach(function(x, i){
+      var c = document.getElementById("cinta-" + x.id);
+      if(c) dibujarCinta(x, i, c);
+    });
+    dibujarGrafica();
+    dibujarBola(d.aporte);
+    dibujarCurvaDeuda(d.sim);
+    dibujarBarras(d.cats, d.gTot);
+    dibujarBarras(d.saldos, d.dTot, "saldosWrap", "var(--deuda)", "SALDO POR ACREEDOR");
+    pintarOrden(d.sim);
+  }
+  function pintarOrden(sim){
+    var ol = document.getElementById("orden");
+    ol.innerHTML = "";
+    sim.orden.forEach(function(o, i){
+      var f = new Date(); f.setMonth(f.getMonth() + o.mes);
+      var li = document.createElement("li");
+      li.appendChild(el("span","n", String(i + 1)));
+      li.appendChild(el("span", null, o.t));
+      li.appendChild(el("span","cuanto", dinero(o.pagado)));
+      li.appendChild(el("span","cuando", "mes " + o.mes + " · " + MES_NOMBRE[f.getMonth()].slice(0,3) + " " + f.getFullYear()));
+      ol.appendChild(li);
+    });
+  }
+
   // ---------- render ----------
   function render(guardar){
     var L = Math.max(1, Math.round(estado.diasLaborales));
@@ -1850,8 +1881,6 @@
       var total = costoDiaOficina(d);
       var pd = document.getElementById("pd-" + d.id);
       if(pd) pd.textContent = dinero(total);
-      var cinta = document.getElementById("cinta-" + d.id);
-      if(cinta) dibujarCinta(d, i, cinta);
       var cif = document.getElementById("cifras-" + d.id);
       if(cif){
         cif.innerHTML = "";
@@ -1983,7 +2012,6 @@
       : "te faltan " + dinero(-sobra) + " para cubrir el mes";
     document.getElementById("g3").innerHTML = figura(mayor.v);
     document.getElementById("g3sub").textContent = mayor.cat + " · " + (gTot > 0 ? pct(mayor.v / gTot * 100) + " de lo que gastas" : "");
-    dibujarBarras(cats, gTot);
 
     // deudas
     var dTot = totalDeuda(), dPagos = pagosDeuda(), dCobranza = deudaPorEstado("cobranza");
@@ -2033,22 +2061,9 @@
       alerta.hidden = true;
     }
 
-    var ol = document.getElementById("orden");
-    ol.innerHTML = "";
-    sim.orden.forEach(function(o, i){
-      var f = new Date(); f.setMonth(f.getMonth() + o.mes);
-      var li = document.createElement("li");
-      li.appendChild(el("span","n", String(i + 1)));
-      li.appendChild(el("span", null, o.t));
-      li.appendChild(el("span","cuanto", dinero(o.pagado)));
-      li.appendChild(el("span","cuando", "mes " + o.mes + " · " + MES_NOMBRE[f.getMonth()].slice(0,3) + " " + f.getFullYear()));
-      ol.appendChild(li);
-    });
-
-    dibujarCurvaDeuda(sim);
-    dibujarBarras((estado.deudas || []).filter(function(d){ return d.saldo > 0 && d.estado !== "entregado"; })
+    var saldos = (estado.deudas || []).filter(function(d){ return d.saldo > 0 && d.estado !== "entregado"; })
       .map(function(d){ return {cat:cortoPlano(d.t, 24), v:d.saldo}; })
-      .sort(function(x, y){ return y.v - x.v; }), dTot, "saldosWrap", "var(--deuda)", "SALDO POR ACREEDOR");
+      .sort(function(x, y){ return y.v - x.v; });
 
     // de dónde sale el aporte
     var cajaFijo = document.getElementById("aporteFijoCaja");
@@ -2092,10 +2107,9 @@
       hitos.appendChild(caja);
     });
 
-    dibujarGrafica();
-    dibujarBola(aporte);
+    programarPesado({aporte:aporte, sim:sim, cats:cats, gTot:gTot, saldos:saldos, dTot:dTot}, guardar === "ya");
     pintarTabla(uberMes);
-    if(guardar !== false) programarGuardado();
+    if(guardar === true) programarGuardado();
   }
 
   // ---------- persistencia ----------
@@ -2203,7 +2217,7 @@
     pintarDeudas();
     pintarCalendario();
     pintarHistorial();
-    render(false);
+    render("ya");
   }
 
   // ---------- eventos ----------
@@ -2301,7 +2315,7 @@
   var reajuste;
   window.addEventListener("resize", function(){
     clearTimeout(reajuste);
-    reajuste = setTimeout(function(){ render(false); }, 150);
+    reajuste = setTimeout(function(){ pintarPesado(); }, 200);
   });
 
   try{
