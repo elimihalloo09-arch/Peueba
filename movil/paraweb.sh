@@ -30,47 +30,74 @@ cat > build/web/index.html <<'HTML'
              color:var(--suave); margin-top:14px; }
   #aviso dd{ margin:4px 0 0; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
              font-size:12.5px; word-break:break-all; }
+  #aviso li{ font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+             font-size:12.5px; word-break:break-all; margin-bottom:4px; }
 </style>
 
 <div id="aviso" hidden>
   <h1>La app no arrancó</h1>
-  <p>Estuvo diez segundos intentando cargar y no lo logró. Pásale estos dos
-     datos a Claude y con eso lo arregla.</p>
+  <p>Buscó sus archivos en varias rutas y ninguna sirvió. Pásale esta lista a
+     Claude y con eso lo arregla.</p>
   <dl>
-    <dt>Ruta que usó</dt><dd id="ruta"></dd>
-    <dt>Qué falló</dt><dd id="detalle"></dd>
+    <dt>Dirección de la página</dt><dd id="aqui"></dd>
+    <dt>Rutas que intentó</dt><dd><ul id="intentos"></ul></dd>
   </dl>
 </div>
 
 <script>
 (function () {
-  // La pagina se sirve en una ruta sin diagonal final, asi que una referencia
-  // relativa buscaria los archivos un nivel arriba. Se fija la base a mano.
+  // No se puede dar por hecho donde quedan los archivos: depende de como los
+  // sirva el alojamiento, y suponerlo ya fallo dos veces. Se prueban las
+  // rutas posibles en orden y se usa la primera que responda.
   var ruta = location.pathname;
-  if (ruta.charAt(ruta.length - 1) !== '/') ruta += '/';
+  var candidatas = [];
+  [
+    ruta.replace(/[^/]*$/, ''),                                  // la carpeta de la pagina
+    ruta.charAt(ruta.length - 1) === '/' ? ruta : ruta + '/',    // la pagina como carpeta
+    '/'                                                          // la raiz del dominio
+  ].forEach(function (c) { if (candidatas.indexOf(c) < 0) candidatas.push(c); });
 
-  var base = document.createElement('base');
-  base.href = ruta;
-  document.head.appendChild(base);
+  var intentos = [];
 
-  var fallo = '';
-  window.addEventListener('error', function (e) {
-    if (e && e.target && e.target.src) fallo = 'no cargo ' + e.target.src;
-    else if (e && e.message) fallo = e.message;
-  }, true);
+  function ponerBase(href) {
+    var b = document.querySelector('base') || document.createElement('base');
+    b.href = href;
+    if (!b.parentNode) document.head.appendChild(b);
+  }
 
-  // Absoluta a proposito: esta primera carga no debe depender del <base>.
-  var s = document.createElement('script');
-  s.src = ruta + 'flutter_bootstrap.js';
-  s.async = true;
-  document.head.appendChild(s);
+  function intentar(i) {
+    if (i >= candidatas.length) return rendirse();
+    var base = candidatas[i];
+    ponerBase(base);                    // el arranque lo usa para lo demas
+    var s = document.createElement('script');
+    s.src = base + 'flutter_bootstrap.js';
+    s.async = true;
+    s.onerror = function () {
+      intentos.push('no ' + s.src);
+      s.parentNode && s.parentNode.removeChild(s);
+      intentar(i + 1);
+    };
+    s.onload = function () { intentos.push('si ' + s.src); };
+    document.head.appendChild(s);
+  }
+
+  function rendirse() {
+    document.getElementById('aqui').textContent = location.href;
+    var ul = document.getElementById('intentos');
+    intentos.forEach(function (t) {
+      var li = document.createElement('li');
+      li.textContent = t;
+      ul.appendChild(li);
+    });
+    document.getElementById('aviso').hidden = false;
+  }
+
+  intentar(0);
 
   setTimeout(function () {
     if (document.querySelector('flutter-view, flt-glass-pane, flt-scene-host')) return;
-    document.getElementById('ruta').textContent = ruta;
-    document.getElementById('detalle').textContent = fallo || 'sin error reportado';
-    document.getElementById('aviso').hidden = false;
-  }, 10000);
+    rendirse();
+  }, 12000);
 })();
 </script>
 HTML
