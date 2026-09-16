@@ -675,8 +675,8 @@
     <div class="dinero-grid">
       <div>
         <label class="lab" for="sueldo">Sueldo neto al mes</label>
-        <input class="in" type="number" id="sueldo" min="0" step="100" value="30000">
-        <p class="hint-in">Neto, lo que te cae</p>
+        <input class="in" type="number" id="sueldo" min="0" step="100" value="17583">
+        <p class="hint-in">Neto de 2 quincenas · bruto $28,227</p>
       </div>
       <div>
         <label class="lab" for="horasDia">Horas de trabajo al día</label>
@@ -779,7 +779,7 @@
   var EJEMPLO = {
     moneda:"$", diasLaborales:20, diasCasa:4, casaExtra:0,
     uber:{ida:240, regreso:259},
-    finanzas:{sueldo:30000, horasDia:6, rendimiento:10, rutaBase:"a",
+    finanzas:{sueldo:17583, horasDia:6, rendimiento:10, rutaBase:"a",
               aporteModo:"uber", aporteFijo:3000, extraDeuda:2000, metodo:"avalancha",
               meta:80000, metaNombre:"Auto más económico"},
     deudas:[
@@ -793,25 +793,25 @@
       {t:"Telcel · línea",            saldo:608,    pago:608,   tasa:0,  estado:"atraso"},
       {t:"CUPRA · dación en pago, contrato cerrado", saldo:0, pago:0, tasa:18, estado:"entregado"},
       {t:"Tenencia y refrendo Morelos · vence 23 sep", saldo:10000, pago:0, tasa:0, estado:"atraso"},
-      {t:"Préstamo ISSSTE · descuento de nómina", saldo:0, pago:0, tasa:12, estado:"corriente"},
+      {t:"Préstamo ISSSTE · nómina, 46 quincenas", saldo:62537, pago:0, tasa:12, estado:"corriente"},
       {t:"Banco Azteca · préstamo",   saldo:26752,  pago:908,   tasa:80, estado:"corriente"},
       {t:"Banco Azteca · préstamo 2", saldo:12960,  pago:469,   tasa:80, estado:"corriente"},
       {t:"Banco Azteca · muebles",    saldo:8619,   pago:734,   tasa:60, estado:"corriente"},
-      {t:"Fonacot · préstamo",        saldo:68237,  pago:2823,  tasa:20, estado:"corriente"}
+      {t:"Fonacot · descuento de nómina", saldo:68237, pago:0,    tasa:20, estado:"corriente"}
     ],
     marcas:{},
     historial:[],
     gastos:[
-      {t:"Casa (predial, mantenimiento)", cat:"Casa",   m:0,    f:"mensual"},
-      {t:"Despensa",                   cat:"Comida",   m:550,  f:"semanal"},
-      {t:"Comida y café fuera",        cat:"Comida",   m:700,  f:"mensual"},
-      {t:"Luz, agua y gas",            cat:"Servicios",m:450,  f:"mensual"},
-      {t:"Internet",                   cat:"Servicios",m:450,  f:"mensual"},
-      {t:"Celular",                    cat:"Servicios",m:250,  f:"mensual"},
-      {t:"Apps y suscripciones",       cat:"Apps",     m:350,  f:"mensual"},
-      {t:"Uber ocasional (fines)",     cat:"Transporte",m:300, f:"mensual"},
-      {t:"Farmacia y salud",           cat:"Salud",    m:300,  f:"mensual"},
-      {t:"Salidas y gustos",           cat:"Gustos",   m:600,  f:"mensual"}
+      {t:"Comida fuera (15 consumos)",      cat:"Comida",    m:6987, f:"mensual"},
+      {t:"SERV Fento, Jurammi, Ogrove…",    cat:"Otros",     m:4348, f:"mensual"},
+      {t:"Efectivo retirado (5 veces)",     cat:"Otros",     m:3600, f:"mensual"},
+      {t:"Perfumería, PayPal y compras",    cat:"Gustos",    m:2784, f:"mensual"},
+      {t:"Compras MercadoPago y comercios", cat:"Gustos",    m:2600, f:"mensual"},
+      {t:"Despensa y abarrotes",            cat:"Comida",    m:1939, f:"mensual"},
+      {t:"OXXO y tiendita (9 visitas)",     cat:"Comida",    m:1884, f:"mensual"},
+      {t:"Suscripciones digitales",         cat:"Apps",      m:1429, f:"mensual"},
+      {t:"Salud y laboratorio",             cat:"Salud",     m:805,  f:"mensual"},
+      {t:"Celular y recargas",              cat:"Servicios", m:525,  f:"mensual"}
     ],
     destinos:[
       {id:"a", nombre:"CPN · El Reloj", modo:"publico", km:0, viajes:2, minutos:95,
