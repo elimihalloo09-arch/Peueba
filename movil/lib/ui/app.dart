@@ -8,6 +8,7 @@ import 'datos.dart';
 import 'pendientes.dart';
 import 'plan.dart';
 import 'resumen.dart';
+import 'rutas.dart';
 
 class AppFinanzas extends StatelessWidget {
   const AppFinanzas(this.repo, {super.key});
@@ -92,6 +93,7 @@ class _MarcoState extends State<_Marco> {
       PantallaResumen(widget.repo),
       PantallaAcreedores(widget.repo),
       PantallaPlan(widget.repo),
+      PantallaRutas(widget.repo),
       PantallaPendientes(widget.repo),
       const PantallaCorreos(),
     ];
@@ -147,6 +149,7 @@ class _MarcoState extends State<_Marco> {
           const NavigationDestination(icon: Icon(Icons.pie_chart_outline), selectedIcon: Icon(Icons.pie_chart), label: 'Resumen'),
           const NavigationDestination(icon: Icon(Icons.account_balance_outlined), selectedIcon: Icon(Icons.account_balance), label: 'Deudas'),
           const NavigationDestination(icon: Icon(Icons.timeline_outlined), selectedIcon: Icon(Icons.timeline), label: 'Plan'),
+          const NavigationDestination(icon: Icon(Icons.directions_transit_outlined), selectedIcon: Icon(Icons.directions_transit), label: 'Rutas'),
           NavigationDestination(
             icon: Badge(
               isLabelVisible: faltan > 0,

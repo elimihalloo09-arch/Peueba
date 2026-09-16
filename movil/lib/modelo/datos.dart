@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'rutas.dart';
+
 /// Todo el dinero se guarda en CENTAVOS. Nunca en punto flotante.
 
 enum Etapa { sinContactar, contactado, conOferta, convenio, pagado, finiquito }
@@ -194,13 +196,18 @@ class Estado {
     required this.movimientos,
     required this.ingresos,
     required this.gastos,
-  });
+    List<Ruta>? rutas,
+    Viaje? viaje,
+  })  : rutas = List.of(rutas ?? const []),
+        viaje = viaje ?? Viaje();
 
   List<Acreedor> acreedores;
   List<Pendiente> pendientes;
   List<Movimiento> movimientos;
   List<Renglon> ingresos;
   List<Renglon> gastos;
+  List<Ruta> rutas;
+  Viaje viaje;
 
   int get ingresoMensual => ingresos.fold(0, (a, r) => a + r.monto);
   int get gastoMensual => gastos.fold(0, (a, r) => a + r.monto);
@@ -237,6 +244,8 @@ class Estado {
         'movimientos': movimientos.map((m) => m.aJson()).toList(),
         'ingresos': ingresos.map((r) => r.aJson()).toList(),
         'gastos': gastos.map((r) => r.aJson()).toList(),
+        'rutas': rutas.map((r) => r.aJson()).toList(),
+        'viaje': viaje.aJson(),
       });
 
   static Estado deTexto(String texto) {
@@ -251,6 +260,10 @@ class Estado {
       movimientos: lista('movimientos', Movimiento.deJson),
       ingresos: lista('ingresos', Renglon.deJson),
       gastos: lista('gastos', Renglon.deJson),
+      rutas: lista('rutas', Ruta.deJson),
+      viaje: j['viaje'] == null
+          ? null
+          : Viaje.deJson(j['viaje'] as Map<String, dynamic>),
     );
   }
 }
