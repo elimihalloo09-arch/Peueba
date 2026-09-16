@@ -1,0 +1,344 @@
+<meta charset="utf-8">
+<title>Mi Plan de Dinero</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+  :root{
+    --papel:#FBFAF8;
+    --ground:#EDEBE6;
+    --hair:#D8D5CE;
+    --hair-soft:#E6E3DC;
+    --ink:#161512;
+    --ink-2:#4E4B44;
+    --ink-3:#817D74;
+    --acento:#0B6F79;
+    --deuda:#A93A2F;
+    --bien:#2C6B40;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --papel:#17191A;
+      --ground:#0F1112;
+      --hair:#2C2F31;
+      --hair-soft:#232628;
+      --ink:#EDEBE6;
+      --ink-2:#ADA9A1;
+      --ink-3:#827E76;
+      --acento:#35A3AC;
+      --deuda:#E07B6F;
+      --bien:#63B37C;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --papel:#17191A; --ground:#0F1112; --hair:#2C2F31; --hair-soft:#232628;
+    --ink:#EDEBE6; --ink-2:#ADA9A1; --ink-3:#827E76;
+    --acento:#35A3AC; --deuda:#E07B6F; --bien:#63B37C;
+    color-scheme: dark;
+  }
+
+  *, *::before, *::after{ box-sizing:border-box; }
+  body{ background:var(--ground); color:var(--ink);
+        font-family:"Source Serif 4", Georgia, serif; font-size:16px; line-height:1.6; }
+  .hoja{ max-width:860px; margin:0 auto; background:var(--papel);
+         padding:56px 60px 64px; }
+  @media (max-width:640px){ .hoja{ padding:34px 20px 44px; } }
+
+  h1,h2,h3,.cifra,.tl-num{ font-family:"Archivo", system-ui, sans-serif; margin:0; }
+  h1{ font-size:clamp(30px,5vw,44px); font-weight:800; font-stretch:108%; letter-spacing:-.03em;
+      line-height:1.02; text-wrap:balance; }
+  h2{ font-size:clamp(18px,2.4vw,22px); font-weight:700; font-stretch:104%; letter-spacing:-.02em;
+      margin:44px 0 14px; padding-bottom:9px; border-bottom:1.5px solid var(--ink); }
+  h3{ font-size:15px; font-weight:700; margin:24px 0 6px; }
+  p{ margin:0 0 14px; }
+  .kicker{ font-family:"IBM Plex Mono", monospace; font-size:11px; letter-spacing:.2em;
+           text-transform:uppercase; color:var(--ink-3); }
+  .de{ font-size:15px; color:var(--ink-2); margin-top:14px; }
+  .de b{ color:var(--ink); font-weight:600; }
+  .num{ font-family:"IBM Plex Mono", monospace; font-variant-numeric:tabular-nums; }
+
+  .pedido{ margin:30px 0 0; padding:22px 24px; background:var(--ground); border-left:4px solid var(--acento); }
+  .pedido p{ margin:0; font-size:clamp(17px,2.2vw,20px); line-height:1.45; }
+  .pedido b{ font-weight:600; }
+
+  .cifras{ display:grid; grid-template-columns:repeat(5,1fr); gap:0; margin:34px 0 0;
+           border-top:1px solid var(--hair); }
+  .cifras > div{ padding:18px 16px 10px 0; border-right:1px solid var(--hair); }
+  .cifras > div + div{ padding-left:16px; }
+  .cifras > div:last-child{ border-right:0; }
+  .cifras dt{ font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.11em;
+              text-transform:uppercase; color:var(--ink-3); min-height:2.6em; }
+  .cifras dd{ margin:0; }
+  .cifra{ font-size:clamp(19px,2.6vw,25px); font-weight:800; letter-spacing:-.03em; margin-top:7px;
+          font-variant-numeric:tabular-nums; }
+  @media (max-width:720px){
+    .cifras{ grid-template-columns:1fr 1fr; }
+    .cifras > div{ border-right:0; border-bottom:1px solid var(--hair); padding:14px 0 12px; }
+    .cifras > div + div{ padding-left:0; }
+  }
+
+  table{ border-collapse:collapse; width:100%; font-size:14.5px; margin:8px 0 0; }
+  th,td{ text-align:right; padding:9px 10px; }
+  th:first-child, td:first-child{ text-align:left; padding-left:0; }
+  th:last-child, td:last-child{ padding-right:0; }
+  thead th{ font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.11em;
+            text-transform:uppercase; color:var(--ink-3); font-weight:400;
+            border-bottom:1px solid var(--ink); }
+  tbody td{ border-bottom:1px solid var(--hair-soft); }
+  tbody td:not(:first-child){ font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; }
+  tbody tr.suma td{ border-top:1px solid var(--ink); border-bottom:0; font-weight:600; }
+  tbody tr.suma td:first-child{ font-family:"Archivo",sans-serif; }
+  .tag{ font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+        padding:2px 8px; border-radius:999px; border:1px solid currentColor; white-space:nowrap; }
+  .t-cob{ color:var(--deuda); } .t-atr{ color:#9A6A12; } .t-cor{ color:var(--bien); }
+  .tabla-scroll{ overflow-x:auto; }
+
+  .linea{ margin:22px 0 6px; }
+  .tl{ display:grid; grid-template-columns:repeat(12,1fr); gap:3px; margin-top:10px; }
+  .tl span{ height:34px; border-radius:3px; display:flex; align-items:center; justify-content:center;
+            font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:#FFFFFF; }
+  .tl .f1{ background:var(--acento); }
+  .tl .f2{ background:var(--deuda); }
+  .tl-leyenda{ display:flex; gap:20px; flex-wrap:wrap; margin-top:12px; font-size:13.5px; color:var(--ink-2); }
+  .tl-leyenda span{ display:inline-flex; align-items:center; gap:8px; }
+  .tl-leyenda i{ width:12px; height:12px; border-radius:3px; }
+
+  ul.lista{ margin:6px 0 0; padding-left:0; list-style:none; }
+  ul.lista li{ position:relative; padding-left:26px; margin-bottom:10px; }
+  ul.lista li::before{ content:"—"; position:absolute; left:0; color:var(--acento); font-weight:700; }
+  ol.pasos{ margin:6px 0 0; padding-left:20px; }
+  ol.pasos li{ margin-bottom:10px; }
+
+  .dosc{ display:grid; grid-template-columns:1fr 1fr; gap:28px 40px; }
+  @media (max-width:640px){ .dosc{ grid-template-columns:1fr; gap:6px; } }
+
+  .firma{ display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-top:52px; }
+  .firma div{ border-top:1px solid var(--ink); padding-top:8px; font-size:13px; color:var(--ink-2); }
+  @media (max-width:640px){ .firma{ grid-template-columns:1fr; gap:34px; } }
+  .nota{ font-size:12.5px; color:var(--ink-3); margin-top:40px; padding-top:16px;
+         border-top:1px solid var(--hair); }
+
+  @media print{
+    body{ background:#FFFFFF; }
+    .hoja{ max-width:none; padding:0; background:#FFFFFF; }
+    h2{ break-after:avoid; }
+    table, .tl, .pedido{ break-inside:avoid; }
+  }
+</style>
+
+<style>
+  .fase{ display:grid; grid-template-columns:96px 1fr; gap:22px; padding:20px 0; border-top:1px solid var(--hair); }
+  .fase:last-of-type{ border-bottom:1px solid var(--hair); }
+  .fase .num{ font-family:"Archivo",sans-serif; font-weight:800; font-size:13px; letter-spacing:.06em;
+              text-transform:uppercase; color:var(--acento); padding-top:3px; }
+  .fase h3{ margin:0 0 6px; font-size:17px; }
+  .fase p{ margin:0 0 8px; font-size:15px; }
+  .regla{ display:grid; grid-template-columns:34px 1fr; gap:14px; padding:14px 0; border-bottom:1px solid var(--hair-soft); align-items:start; }
+  .regla b.n{ font-family:"Archivo",sans-serif; font-weight:800; font-size:18px; color:var(--deuda); line-height:1.1; }
+  .regla p{ margin:0; font-size:15px; }
+  .bolsa{ display:grid; grid-template-columns:repeat(4,1fr); gap:0; border-top:1px solid var(--hair); margin-top:6px; }
+  .bolsa > div{ padding:18px 16px 12px 0; border-right:1px solid var(--hair); }
+  .bolsa > div + div{ padding-left:16px; }
+  .bolsa > div:last-child{ border-right:0; }
+  .bolsa dt{ font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.11em;
+             text-transform:uppercase; color:var(--ink-3); }
+  .bolsa dd{ margin:7px 0 0; font-family:"Archivo",sans-serif; font-weight:800; font-size:clamp(18px,2.4vw,23px);
+             letter-spacing:-.03em; font-variant-numeric:tabular-nums; }
+  .bolsa .q{ font-family:"Source Serif 4",serif; font-weight:400; font-size:13px; color:var(--ink-2); margin-top:7px; }
+  .urgente{ background:var(--ground); border-left:4px solid var(--deuda); padding:20px 22px; margin:26px 0; }
+  .urgente p{ margin:0 0 8px; }
+  .urgente p:last-child{ margin:0; }
+  @media (max-width:640px){
+    .fase{ grid-template-columns:1fr; gap:8px; }
+    .bolsa{ grid-template-columns:1fr 1fr; }
+    .bolsa > div{ border-right:0; border-bottom:1px solid var(--hair); padding:14px 0; }
+    .bolsa > div + div{ padding-left:0; }
+  }
+</style>
+<div class="hoja">
+  <p class="kicker">Documento personal · Carlos Hernández Montes · septiembre 2026</p>
+  <h1>Mi plan de dinero</h1>
+  <p class="de">Todo lo que gano, todo lo que debo, y la regla de qué hago con cada peso.
+    <b>Este documento no se le enseña a nadie:</b> es el mío.</p>
+
+  <div class="urgente">
+    <p><b>Antes que cualquier otra cosa: el 23 de septiembre.</b></p>
+    <p>Vencen los ~$10,000 de tenencia y refrendo de Morelos. Sin eso no puedo dar de baja las placas del
+      CUPRA que ya entregué, y las multas de un coche que ya no es mío me van a seguir llegando a mí. Esto
+      va primero, antes de abonar un peso a cualquier deuda.</p>
+  </div>
+
+  <h2>1 · Dónde estoy parado hoy</h2>
+  <div class="tabla-scroll">
+    <table>
+      <thead><tr><th>Lo que entra al mes</th><th>Monto</th></tr></thead>
+      <tbody>
+        <tr><td>Mi neto del SAT (2 quincenas de $8,791.66)</td><td>$17,583</td></tr>
+        <tr><td>Neto de Wendy (ISSEMyM, quincena normal sin retroactivos)</td><td>$10,125</td></tr>
+        <tr class="suma"><td>Ingreso del hogar</td><td>$27,708</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:18px;">De mi bruto de $28,227 nunca veo $10,644: se van antes de que el dinero
+    llegue al banco. <b>Eso no es un gasto que yo decida, es una realidad de mi recibo.</b></p>
+  <div class="tabla-scroll">
+    <table>
+      <thead><tr><th>Lo que me descuentan de nómina</th><th>Al mes</th><th>Saldo que falta</th></tr></thead>
+      <tbody>
+        <tr><td>ISR</td><td>$4,141</td><td>—</td></tr>
+        <tr><td>Préstamo ISSSTE (46 quincenas, ~23 meses)</td><td>$2,719</td><td>$62,537</td></tr>
+        <tr><td>FONACOT</td><td>$2,823</td><td>$68,237</td></tr>
+        <tr><td>Cuotas y seguros ISSSTE</td><td>$961</td><td>—</td></tr>
+        <tr class="suma"><td>Total que nunca veo</td><td>$10,644</td><td>$130,774</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>2 · Todo lo que debo</h2>
+  <div class="tabla-scroll">
+    <table>
+      <thead><tr><th>Bloque</th><th>Saldo</th><th>Cómo se paga</th></tr></thead>
+      <tbody>
+        <tr><td><b>Deuda cara</b> (Fintopia, NU, Klar, Coppel, HeyBanco, BanCoppel, Azteca, Telcel)</td><td>$134,551</td><td>Con efectivo, al 60–90% anual</td></tr>
+        <tr><td>Tenencia y refrendo Morelos</td><td>$10,000</td><td>Vence el 23 de septiembre</td></tr>
+        <tr><td>Mario</td><td>$43,000</td><td>Préstamo personal, sin intereses</td></tr>
+        <tr><td>Préstamo ISSSTE y FONACOT</td><td>$130,774</td><td>Nómina, ya descontado</td></tr>
+        <tr><td>Consupago de Wendy</td><td>por confirmar</td><td>Nómina de ella, $4,179 al mes</td></tr>
+        <tr class="suma"><td>Deuda total conocida</td><td>$318,325</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:18px;"><b>$179,105 de esa deuda está al corriente</b> y nunca se me ha caído:
+    Fonacot, ISSSTE y los tres de Banco Azteca. ¿Por qué? Porque se descuentan antes de que yo vea el
+    dinero. <b>Esa es la lección más cara que me dio este año:</b> lo que se automatiza se paga; lo que
+    depende de mi disciplina a fin de mes, no.</p>
+
+  <h2>3 · La verdad de mi gasto</h2>
+  <p>Del 25 de julio al 24 de agosto gasté <b>$34,116 en consumo directo</b> con un ingreso de hogar de
+    $27,708. El hueco lo tapé con transferencias de mi mamá, de Wendy y con tarjetas. Eso es lo que tumbó
+    cinco cuentas a cobranza — no el auto solo, también esto.</p>
+  <div class="tabla-scroll">
+    <table>
+      <thead><tr><th>Lo que recorté</th><th>Antes</th><th>Ahora</th><th>Libera</th></tr></thead>
+      <tbody>
+        <tr><td>Mensualidad del CUPRA</td><td>$16,691</td><td>$0</td><td>$16,691</td></tr>
+        <tr><td>Gasolina</td><td>$2,886</td><td>$0</td><td>$2,886</td></tr>
+        <tr><td>Uber al trabajo (22 viajes)</td><td>$3,737</td><td>$576</td><td>$3,161</td></tr>
+        <tr><td>Comida fuera (15 consumos)</td><td>$6,987</td><td>$2,000</td><td>$4,987</td></tr>
+        <tr><td>OXXO, compras y efectivo suelto</td><td>$8,084</td><td>$2,900</td><td>$5,184</td></tr>
+        <tr><td>Suscripciones (dejo Cursor y Claude)</td><td>$1,429</td><td>$763</td><td>$666</td></tr>
+        <tr class="suma"><td>Total liberado al mes</td><td></td><td></td><td>$33,575</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>4 · Cómo manejo cada peso, desde la próxima quincena</h2>
+  <p>El día que cae la nómina —15 y último— el dinero <b>se reparte antes de gastar nada</b>. No al revés.
+    Cuatro bolsas, en este orden:</p>
+  <dl class="bolsa">
+    <div>
+      <dt>Bolsa 1 · Vida</dt>
+      <dd>$13,780</dd>
+      <p class="q">Despensa, servicios, celular, transporte, salud, bebé. Se maneja con débito o efectivo semanal de $3,445.</p>
+    </div>
+    <div>
+      <dt>Bolsa 2 · Deuda</dt>
+      <dd>$13,352</dd>
+      <p class="q">De aquí sale cada pago. Domiciliado el mismo día de la quincena, sin decidirlo cada mes.</p>
+    </div>
+    <div>
+      <dt>Bolsa 3 · Bebé</dt>
+      <dd>$0 → $2,000</dd>
+      <p class="q">Arranca cuando muera la deuda cara. Marzo 2027 no se negocia.</p>
+    </div>
+    <div>
+      <dt>Bolsa 4 · Ingreso propio</dt>
+      <dd>100%</dd>
+      <p class="q">Lo que cobre por desarrollo no entra al gasto: acelera deuda y después es colchón.</p>
+    </div>
+  </dl>
+
+  <h2>5 · Mis seis reglas</h2>
+  <div class="regla"><b class="n">1</b><p><b>Todo se domicilia.</b> Lo que depende de que yo me acuerde a fin de mes, se cae. Lo aprendí caro: lo único que nunca fallé es lo que me descuentan solo.</p></div>
+  <div class="regla"><b class="n">2</b><p><b>Ninguna línea de crédito nueva.</b> Ni tarjeta, ni fintech, ni meses sin intereses, ni préstamo de nómina, mientras le deba a Mario un peso.</p></div>
+  <div class="regla"><b class="n">3</b><p><b>El efectivo es semanal, no ilimitado.</b> $3,445 el lunes. Cuando se acaba, se acabó. Los $3,600 de retiros sueltos del mes pasado son exactamente lo que no vuelve a pasar.</p></div>
+  <div class="regla"><b class="n">4</b><p><b>Mexibús y Metro, no Uber.</b> $576 al mes contra $3,737. Uber solo si es emergencia médica o si Wendy lo necesita estando embarazada.</p></div>
+  <div class="regla"><b class="n">5</b><p><b>Cero faltas y retardos.</b> Una sola quincena me costó $2,493 de descuento. Eso es más de cuatro meses de transporte tirados por llegar tarde.</p></div>
+  <div class="regla"><b class="n">6</b><p><b>Lo que cobre por fuera no se gasta.</b> Va íntegro a deuda hasta el mes 19, y después al colchón. Si lo mezclo con el gasto, desaparece.</p></div>
+
+  <h2>6 · El calendario, fase por fase</h2>
+  <div class="fase">
+    <div class="num">Ahora</div>
+    <div>
+      <h3>Los próximos 10 días</h3>
+      <p>Pagar la tenencia de Morelos antes del 23 y tramitar la baja de placas. Presentarle el plan a
+        Mario. Pedirle a Víctor la nivelación —y solo si dice que no, el respaldo. Pedir a VW la carta
+        finiquito del CUPRA por escrito.</p>
+    </div>
+  </div>
+  <div class="fase">
+    <div class="num">Meses 1–8</div>
+    <div>
+      <h3>Matar lo caro</h3>
+      <p>Todo el dinero disponible contra las deudas de 60 a 90%, de la tasa más alta hacia abajo:
+        Fintopia, NU, los Azteca, Klar, Coppel, HeyBanco, BanCoppel. Con la ampliación de Mario y el
+        ingreso propio, no queda una sola deuda cara viva. <b>Aquí no se ahorra nada: pagar al 90% rinde
+        más que cualquier inversión.</b></p>
+    </div>
+  </div>
+  <div class="fase">
+    <div class="num">Meses 7–19</div>
+    <div>
+      <h3>Pagarle a Mario y recibir al bebé</h3>
+      <p>$8,000 mensuales a Mario hasta cubrir los $103,000. El bebé nace en el mes 7 —marzo de 2027— y el
+        parto va por ISSSTE y el ISSEMyM de Wendy. La bolsa del bebé arranca en cuanto muera la deuda cara.</p>
+    </div>
+  </div>
+  <div class="fase">
+    <div class="num">Meses 20–30</div>
+    <div>
+      <h3>Colchón y auto</h3>
+      <p>Sin deuda cara ni deuda con Mario, quedan libres más de $13,000 al mes. Primero el <b>fondo de
+        emergencia: tres meses de gasto, $41,340</b>. Después el auto económico de contado, sin financiar
+        nada. El préstamo ISSSTE y el FONACOT terminan solos por nómina en ese tramo.</p>
+    </div>
+  </div>
+  <div class="fase">
+    <div class="num">Años 3–4</div>
+    <div>
+      <h3>Que el ingreso propio alcance para soltarme</h3>
+      <p>La meta no es ahorrar para renunciar: es que lo que cobro por desarrollo llegue a cubrir mi gasto
+        de vida antes de que se acabe el tiempo en el SAT. Rust, Angular y Cursor son el activo.
+        <b>Salgo cuando el ingreso propio sostenga la casa, no cuando se me acabe la paciencia.</b></p>
+    </div>
+  </div>
+
+  <h2>7 · Lo que todavía no sé y tengo que averiguar</h2>
+  <ul class="lista">
+    <li><b>Los "SERV" de $4,348 al mes</b> —Fento, Jurammi, Ogrove, Yaggar— en mi estado de cuenta.</li>
+    <li><b>El saldo del Consupago de Wendy</b> y cuántas quincenas le faltan.</li>
+    <li><b>La carta finiquito del CUPRA</b>: si quedó en ceros de verdad o si VW va a reclamar diferencia.</li>
+    <li><b>Las tasas reales</b> de cada tarjeta, de mis estados de cuenta, no de mi suposición.</li>
+    <li><b>Los convenios y quitas</b> que acepten NU, Klar, Coppel y Fintopia: con ellas en cobranza, casi
+      siempre se negocia a menos del saldo.</li>
+  </ul>
+
+  <h2>8 · Lo que me estoy prometiendo</h2>
+  <p>Que el dinero que hoy se va en intereses del 90% se va a ir en mi hijo. Que no voy a volver a pedir
+    prestado para tapar un mes. Que la disciplina no va a depender de mi memoria sino de que todo esté
+    domiciliado. Y que dentro de cuatro años me voy del SAT por decisión, no por deuda.</p>
+  <p><b>Hoy debo $318,325. En el mes 19 no debo nada.</b> Ese es todo el plan.</p>
+
+  <div class="firma">
+    <div>Carlos Hernández Montes<br><span class="num">Fecha: ____ / ____ / 2026</span></div>
+    <div>Revisado con Wendy<br><span class="num">Fecha: ____ / ____ / 2026</span></div>
+  </div>
+
+  <p class="nota">Ingresos tomados de mis recibos de nómina del SAT y del comprobante del ISSEMyM de Wendy,
+    usando la quincena normal sin retroactivos. Gasto medido del estado de cuenta BBVA del 25 de julio al
+    24 de agosto de 2026. Saldos de deuda del Reporte de Crédito Especial de Buró de Crédito del 31 de
+    agosto de 2026, más el préstamo ISSSTE y el FONACOT que van por nómina y no aparecen ahí. El CUPRA se
+    entregó en dación en pago el 8 de septiembre y el buró tarda unos 120 días hábiles en reflejarlo. Las
+    tasas de interés son aproximadas: el reporte de Buró no las incluye.</p>
+</div>
