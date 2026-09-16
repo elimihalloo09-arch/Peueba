@@ -1,0 +1,314 @@
+<meta charset="utf-8">
+<title>Cómo Llego a 100 Mil</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+  :root{
+    --papel:#FBFAF8;
+    --ground:#EDEBE6;
+    --hair:#D8D5CE;
+    --hair-soft:#E6E3DC;
+    --ink:#161512;
+    --ink-2:#4E4B44;
+    --ink-3:#817D74;
+    --acento:#0B6F79;
+    --deuda:#A93A2F;
+    --bien:#2C6B40;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --papel:#17191A;
+      --ground:#0F1112;
+      --hair:#2C2F31;
+      --hair-soft:#232628;
+      --ink:#EDEBE6;
+      --ink-2:#ADA9A1;
+      --ink-3:#827E76;
+      --acento:#35A3AC;
+      --deuda:#E07B6F;
+      --bien:#63B37C;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --papel:#17191A; --ground:#0F1112; --hair:#2C2F31; --hair-soft:#232628;
+    --ink:#EDEBE6; --ink-2:#ADA9A1; --ink-3:#827E76;
+    --acento:#35A3AC; --deuda:#E07B6F; --bien:#63B37C;
+    color-scheme: dark;
+  }
+
+  *, *::before, *::after{ box-sizing:border-box; }
+  body{ background:var(--ground); color:var(--ink);
+        font-family:"Source Serif 4", Georgia, serif; font-size:16px; line-height:1.6; }
+  .hoja{ max-width:860px; margin:0 auto; background:var(--papel);
+         padding:56px 60px 64px; }
+  @media (max-width:640px){ .hoja{ padding:34px 20px 44px; } }
+
+  h1,h2,h3,.cifra,.tl-num{ font-family:"Archivo", system-ui, sans-serif; margin:0; }
+  h1{ font-size:clamp(30px,5vw,44px); font-weight:800; font-stretch:108%; letter-spacing:-.03em;
+      line-height:1.02; text-wrap:balance; }
+  h2{ font-size:clamp(18px,2.4vw,22px); font-weight:700; font-stretch:104%; letter-spacing:-.02em;
+      margin:44px 0 14px; padding-bottom:9px; border-bottom:1.5px solid var(--ink); }
+  h3{ font-size:15px; font-weight:700; margin:24px 0 6px; }
+  p{ margin:0 0 14px; }
+  .kicker{ font-family:"IBM Plex Mono", monospace; font-size:11px; letter-spacing:.2em;
+           text-transform:uppercase; color:var(--ink-3); }
+  .de{ font-size:15px; color:var(--ink-2); margin-top:14px; }
+  .de b{ color:var(--ink); font-weight:600; }
+  .num{ font-family:"IBM Plex Mono", monospace; font-variant-numeric:tabular-nums; }
+
+  .pedido{ margin:30px 0 0; padding:22px 24px; background:var(--ground); border-left:4px solid var(--acento); }
+  .pedido p{ margin:0; font-size:clamp(17px,2.2vw,20px); line-height:1.45; }
+  .pedido b{ font-weight:600; }
+
+  .cifras{ display:grid; grid-template-columns:repeat(5,1fr); gap:0; margin:34px 0 0;
+           border-top:1px solid var(--hair); }
+  .cifras > div{ padding:18px 16px 10px 0; border-right:1px solid var(--hair); }
+  .cifras > div + div{ padding-left:16px; }
+  .cifras > div:last-child{ border-right:0; }
+  .cifras dt{ font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.11em;
+              text-transform:uppercase; color:var(--ink-3); min-height:2.6em; }
+  .cifras dd{ margin:0; }
+  .cifra{ font-size:clamp(19px,2.6vw,25px); font-weight:800; letter-spacing:-.03em; margin-top:7px;
+          font-variant-numeric:tabular-nums; }
+  @media (max-width:720px){
+    .cifras{ grid-template-columns:1fr 1fr; }
+    .cifras > div{ border-right:0; border-bottom:1px solid var(--hair); padding:14px 0 12px; }
+    .cifras > div + div{ padding-left:0; }
+  }
+
+  table{ border-collapse:collapse; width:100%; font-size:14.5px; margin:8px 0 0; }
+  th,td{ text-align:right; padding:9px 10px; }
+  th:first-child, td:first-child{ text-align:left; padding-left:0; }
+  th:last-child, td:last-child{ padding-right:0; }
+  thead th{ font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.11em;
+            text-transform:uppercase; color:var(--ink-3); font-weight:400;
+            border-bottom:1px solid var(--ink); }
+  tbody td{ border-bottom:1px solid var(--hair-soft); }
+  tbody td:not(:first-child){ font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; }
+  tbody tr.suma td{ border-top:1px solid var(--ink); border-bottom:0; font-weight:600; }
+  tbody tr.suma td:first-child{ font-family:"Archivo",sans-serif; }
+  .tag{ font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+        padding:2px 8px; border-radius:999px; border:1px solid currentColor; white-space:nowrap; }
+  .t-cob{ color:var(--deuda); } .t-atr{ color:#9A6A12; } .t-cor{ color:var(--bien); }
+  .tabla-scroll{ overflow-x:auto; }
+
+  .linea{ margin:22px 0 6px; }
+  .tl{ display:grid; grid-template-columns:repeat(12,1fr); gap:3px; margin-top:10px; }
+  .tl span{ height:34px; border-radius:3px; display:flex; align-items:center; justify-content:center;
+            font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:#FFFFFF; }
+  .tl .f1{ background:var(--acento); }
+  .tl .f2{ background:var(--deuda); }
+  .tl-leyenda{ display:flex; gap:20px; flex-wrap:wrap; margin-top:12px; font-size:13.5px; color:var(--ink-2); }
+  .tl-leyenda span{ display:inline-flex; align-items:center; gap:8px; }
+  .tl-leyenda i{ width:12px; height:12px; border-radius:3px; }
+
+  ul.lista{ margin:6px 0 0; padding-left:0; list-style:none; }
+  ul.lista li{ position:relative; padding-left:26px; margin-bottom:10px; }
+  ul.lista li::before{ content:"—"; position:absolute; left:0; color:var(--acento); font-weight:700; }
+  ol.pasos{ margin:6px 0 0; padding-left:20px; }
+  ol.pasos li{ margin-bottom:10px; }
+
+  .dosc{ display:grid; grid-template-columns:1fr 1fr; gap:28px 40px; }
+  @media (max-width:640px){ .dosc{ grid-template-columns:1fr; gap:6px; } }
+
+  .firma{ display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-top:52px; }
+  .firma div{ border-top:1px solid var(--ink); padding-top:8px; font-size:13px; color:var(--ink-2); }
+  @media (max-width:640px){ .firma{ grid-template-columns:1fr; gap:34px; } }
+  .nota{ font-size:12.5px; color:var(--ink-3); margin-top:40px; padding-top:16px;
+         border-top:1px solid var(--hair); }
+
+  @media print{
+    body{ background:#FFFFFF; }
+    .hoja{ max-width:none; padding:0; background:#FFFFFF; }
+    h2{ break-after:avoid; }
+    table, .tl, .pedido{ break-inside:avoid; }
+  }
+</style>
+
+<style>
+  .escalon{ display:grid; grid-template-columns:110px 1fr 150px; gap:24px; padding:22px 0;
+            border-top:1px solid var(--hair); align-items:start; }
+  .escalon:last-of-type{ border-bottom:1px solid var(--hair); }
+  .escalon .cuando{ font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.11em;
+                    text-transform:uppercase; color:var(--ink-3); padding-top:5px; }
+  .escalon h3{ margin:0 0 6px; font-size:17px; }
+  .escalon p{ margin:0; font-size:15px; }
+  .escalon .monto{ font-family:"Archivo",sans-serif; font-weight:800; font-size:clamp(20px,2.6vw,26px);
+                   letter-spacing:-.03em; text-align:right; font-variant-numeric:tabular-nums; color:var(--acento); }
+  .escalon .monto small{ display:block; font-family:"Source Serif 4",serif; font-weight:400; font-size:12.5px;
+                         color:var(--ink-3); letter-spacing:0; margin-top:5px; }
+  .dosnum{ display:grid; grid-template-columns:1fr 1fr; gap:0; border-top:1px solid var(--hair);
+           border-bottom:1px solid var(--hair); margin:26px 0; }
+  .dosnum > div{ padding:24px 26px 22px 0; }
+  .dosnum > div:first-child{ border-right:1px solid var(--hair); }
+  .dosnum > div:last-child{ padding-left:26px; }
+  .dosnum dt{ font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.11em;
+              text-transform:uppercase; color:var(--ink-3); }
+  .dosnum dd{ margin:9px 0 0; font-family:"Archivo",sans-serif; font-weight:800;
+              font-size:clamp(30px,4.6vw,44px); letter-spacing:-.035em; font-variant-numeric:tabular-nums; }
+  .dosnum p{ font-size:14px; color:var(--ink-2); margin:10px 0 0; }
+  @media (max-width:640px){
+    .escalon{ grid-template-columns:1fr; gap:8px; }
+    .escalon .monto{ text-align:left; }
+    .dosnum{ grid-template-columns:1fr; }
+    .dosnum > div:first-child{ border-right:0; border-bottom:1px solid var(--hair); }
+    .dosnum > div{ padding:20px 0; }
+    .dosnum > div:last-child{ padding-left:0; }
+  }
+</style>
+<div class="hoja">
+  <p class="kicker">Plan de independencia · Carlos Hernández Montes · septiembre 2026</p>
+  <h1>Cómo llego a $100,000<br>sin apostar la casa</h1>
+  <p class="de">De desarrollador con sueldo a desarrollador con clientes. Cuatro años, cuatro escalones y
+    un umbral de salida que llega mucho antes que la meta.</p>
+
+  <h2>Los dos números que tienes que separar</h2>
+  <p>Te estás poniendo una meta de $100,000 y un umbral de salida al mismo tiempo, y no son el mismo
+    número. Confundirlos es lo que hace que la gente nunca se vaya.</p>
+  <dl class="dosnum">
+    <div>
+      <dt>Umbral de salida</dt>
+      <dd>$20,000</dd>
+      <p>Lo que necesitas ganar por tu cuenta, estable, para poder renunciar sin arriesgar a tu familia.
+        Tu gasto de vida es $13,780 y Wendy aporta $10,125: tú solo tienes que cubrir $3,655 más
+        impuestos, colchón y los meses flojos. <b>Esto llega en 18 a 24 meses.</b></p>
+    </div>
+    <div>
+      <dt>Meta de crecimiento</dt>
+      <dd>$100,000</dd>
+      <p>Lo que quieres construir después de salir, no antes. Nadie salta de $0 a $100,000 estando
+        empleado: se llega escalando tarifa y clientes cuando ya tienes el día completo.
+        <b>Esto es año 3 o 4.</b></p>
+    </div>
+  </dl>
+  <p><b>La secuencia correcta es: primero deuda, luego umbral, luego salida, luego meta.</b> Si intentas
+    llegar a $100,000 sin salir del SAT, no vas a llegar: no hay horas suficientes en la semana.</p>
+
+  <h2>Cómo se ven $100,000 al mes, por camino</h2>
+  <div class="tabla-scroll">
+    <table>
+      <thead><tr><th>Camino</th><th>Qué significa en la práctica</th><th>Qué exige</th></tr></thead>
+      <tbody>
+        <tr><td>Consultoría por hora</td><td>83 a 125 horas al mes, a $800–1,200 la hora</td><td>Día completo; si paras, para el ingreso</td></tr>
+        <tr><td><b>Remoto en dólares</b></td><td>USD 5,000–6,000 al mes = $97,500–117,000</td><td>Inglés técnico y pasar entrevistas; <b>el camino más rápido</b></td></tr>
+        <tr><td>Producto recurrente</td><td>125 a 250 clientes pagando $400–800 al mes</td><td>2 a 3 años de construcción; el único que crece sin ti</td></tr>
+        <tr><td>Agencia chica</td><td>Tú vendiendo y 2–3 devs entregando</td><td>Dejar de programar para administrar</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:16px;">El que yo combinaría en tu caso: <b>remoto en dólares como base</b> —te da el
+    ingreso alto y estable sin inventario ni clientes que perseguir— <b>y producto propio construido
+    encima</b>, con lo que aprendas del dominio fiscal que ya dominas. El sueldo en dólares paga la vida
+    mientras el producto madura.</p>
+
+  <h2>La escalera, con horas que sí existen</h2>
+  <p>Esto está calculado con las horas que de verdad vas a tener, no con las que uno se imagina un domingo.
+    <b>Tu bebé nace en marzo de 2027</b>: los primeros meses del escalón 2 son con un recién nacido en
+    casa, y por eso no subo las horas, subo la tarifa.</p>
+
+  <div class="escalon">
+    <div class="cuando">Meses 1–6<br>oct 26 – mar 27</div>
+    <div>
+      <h3>Primer cliente y primera factura</h3>
+      <p>4 horas por semana, a $500 la hora. La meta de este escalón no es el dinero: es <b>tener
+        evidencia</b> — un cliente que pagó, un proyecto entregado, una factura emitida. Ese es el activo
+        que te permite cobrar el doble después.</p>
+    </div>
+    <div class="monto">$8,660<span><small>al mes</small></span></div>
+  </div>
+
+  <div class="escalon">
+    <div class="cuando">Meses 7–18<br>abr 27 – mar 28</div>
+    <div>
+      <h3>Subir tarifa, no horas</h3>
+      <p>6 horas por semana a $700. Con dos o tres trabajos entregados ya puedes cobrar más y
+        <b>empezar a decir que no a lo barato</b>. Aquí también arranca el inglés técnico si vas por el
+        camino de dólares, y aquí es donde termina tu deuda.</p>
+    </div>
+    <div class="monto">$18,186<span><small>al mes · cruzas el umbral</small></span></div>
+  </div>
+
+  <div class="escalon">
+    <div class="cuando">Meses 19–30<br>abr 28 – mar 29</div>
+    <div>
+      <h3>Sin deuda: aquí se decide todo</h3>
+      <p>10 horas por semana a $900. Sin deuda y con colchón, este es el momento de <b>buscar el contrato
+        remoto en dólares</b> o de meterle en serio al producto. Todavía con sueldo del SAT: es el punto de
+        máxima seguridad para arriesgar.</p>
+    </div>
+    <div class="monto">$38,970<span><small>al mes + tu sueldo</small></span></div>
+  </div>
+
+  <div class="escalon">
+    <div class="cuando">Años 3–4<br>2029 – 2030</div>
+    <div>
+      <h3>Salir y crecer</h3>
+      <p>25 horas por semana a $1,100, o un contrato remoto de USD 5,000–6,000. <b>Renuncias cuando ya
+        estás ganando esto, no antes.</b> El día que sales, el ingreso no arranca: ya venía corriendo.</p>
+    </div>
+    <div class="monto">$119,075<span><small>al mes</small></span></div>
+  </div>
+
+  <h2>Los próximos 90 días, concretos</h2>
+  <div class="tabla-scroll">
+    <table>
+      <thead><tr><th>Cuándo</th><th>Qué haces</th></tr></thead>
+      <tbody>
+        <tr><td>Semana 1</td><td>Das de alta actividad empresarial en tu RFC y te registras en RESICO. Con ingresos de hasta 3.5 millones al año, el ISR va de 1% a 2.5% sobre lo cobrado: a $100,000 al mes pagarías cerca de $24,000 de ISR <b>al año</b>.</td></tr>
+        <tr><td>Semana 2</td><td>Escribes en una hoja qué vendes exactamente. No "desarrollo de software": <i>"automatizo la descarga masiva y la conciliación de CFDI para despachos contables"</i>. Lo específico se vende; lo general se cotiza a la baja.</td></tr>
+        <tr><td>Semana 3</td><td>Haces una lista de 20 personas que ya saben cómo trabajas y que no son del SAT. Les escribes a diez. No pidiendo trabajo: preguntando qué les duele.</td></tr>
+        <tr><td>Semana 4–6</td><td>Primer proyecto, aunque sea chico. <b>Cobrado 50% por adelantado.</b> La regla que nunca se rompe: si no hay anticipo, no hay código.</td></tr>
+        <tr><td>Semana 7–12</td><td>Lo entregas, pides que te recomienden, y subes la tarifa para el siguiente. Documentas lo que hiciste: ese es tu portafolio.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Las reglas de esta etapa</h2>
+  <ul class="lista">
+    <li><b>Nada que toque tu trabajo en el SAT.</b> Ni clientes que sean contribuyentes con asuntos ahí, ni
+      software que compita con lo que desarrollas adentro. Tu ventaja es el conocimiento del dominio, no el
+      acceso. Esa línea se cuida sola si nunca la cruzas.</li>
+    <li><b>Cobrado por adelantado, siempre.</b> Mínimo 50%. No construyes seis meses en la oscuridad
+      esperando que alguien pague al final.</li>
+    <li><b>Lo que cobres no entra al gasto.</b> Hasta el mes 19 va íntegro a deuda; después, al colchón y al
+      negocio. Si se mezcla con el gasto de la casa, desaparece y no sabrás nunca si funcionaba.</li>
+    <li><b>Subes tarifa cada tres clientes.</b> No cuando te sientas listo: cuando tengas la evidencia.</li>
+    <li><b>No renuncias hasta tener seis meses de gasto guardados</b> y tres meses seguidos ganando arriba
+      del umbral. Con un hijo, la valentía se planea.</li>
+    <li><b>Rust y Cursor son tu ventaja, no tu hobby.</b> Poca gente en México tiene Rust en producción. Eso
+      es lo que te paga en dólares, no el HTML.</li>
+  </ul>
+
+  <h2>Lo que tengo que decidir o averiguar</h2>
+  <ul class="lista">
+    <li><b>Mi inglés técnico:</b> qué tan lejos estoy de una entrevista en inglés. Es la única puerta entre
+      $40,000 y $100,000, y se puede trabajar en 12 meses.</li>
+    <li><b>Régimen fiscal:</b> RESICO como persona física para empezar; si crezco arriba de 3.5 millones o
+      necesito facturar a gobierno, moverme a persona moral.</li>
+    <li><b>Qué vendo primero:</b> automatización para despachos, desarrollo a la medida, o consultoría en
+      Rust. Elegir uno y ser el mejor ahí gana a ofrecer los tres.</li>
+    <li><b>Cuánto tiempo real tengo</b> después de que nazca el bebé. Prefiero prometerme 4 horas y
+      cumplirlas que prometerme 20 y abandonar al segundo mes.</li>
+  </ul>
+
+  <h2>Lo que me estoy prometiendo</h2>
+  <p>Que no voy a esperar a que se acabe el tiempo en el SAT para empezar. Que el primer cliente llega este
+    año, aunque me pague poco, porque lo que me da no es dinero sino prueba de que esto funciona. Y que voy
+    a salir el día que el ingreso propio ya sostenga mi casa — no antes por impaciencia, ni después por
+    miedo.</p>
+  <p><b>El transporte público no es un sacrificio temporal: es la razón por la que voy a poder decir que
+    no a un mal cliente.</b> El que gasta poco es el que puede escoger.</p>
+
+  <div class="firma">
+    <div>Carlos Hernández Montes<br><span class="num">Fecha: ____ / ____ / 2026</span></div>
+    <div>Primera revisión<br><span class="num">Fecha: ____ / ____ / 2027</span></div>
+  </div>
+
+  <p class="nota">Tarifas y montos calculados sobre el mercado mexicano de desarrollo a septiembre de 2026 y
+    sobre mi gasto de vida real de $13,780 al mes. El tipo de cambio usado para los ingresos en dólares es
+    aproximado. Las tasas de RESICO corresponden al régimen simplificado de confianza para personas físicas
+    con actividad empresarial, con límite de 3.5 millones de pesos de ingresos anuales; conviene
+    confirmarlas contra la resolución vigente del ejercicio.</p>
+</div>
