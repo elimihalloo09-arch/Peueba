@@ -3,6 +3,10 @@ name: Pages
 # Compila la app y la publica en GitHub Pages, que es lo que le da una
 # direccion propia y permite dejarla como icono en la pantalla de inicio.
 #
+# Requisito que solo se hace una vez, y no desde aqui: en Settings > Pages,
+# poner Source en "GitHub Actions". El token de Actions no puede crear el
+# sitio la primera vez; solo el dueno de la cuenta puede.
+#
 # Compila desde el codigo en vez de publicar una carpeta ya generada, para que
 # el sitio no pueda quedarse viejo respecto del codigo.
 
@@ -28,13 +32,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Preparar Pages
-        id: pages
-        uses: actions/configure-pages@v5
-        with:
-          # Deja Pages activado sin tener que tocar Settings a mano.
-          enablement: true
 
       - uses: subosito/flutter-action@v2
         with:
