@@ -10,7 +10,13 @@ Estado estadoViejo() {
   e.gastos.add(
     Renglon(id: 'g2', concepto: 'SERV sin identificar', monto: 434800, recortable: true),
   );
-  e.pendientes.removeWhere((p) => p.id == 'p9' || p.id == 'p10');
+  e.pendientes.removeWhere(
+      (p) => p.id == 'p9' || p.id == 'p10' || p.id == 'p11' || p.id == 'p12');
+  e.acreedores.removeWhere(
+      (a) => a.id == 'personal10500' || a.id == 'personal5000');
+  for (final a in e.acreedores.where((a) => a.id == 'coppel')) {
+    a.nota = 'Más de 12 meses de atraso: el mayor margen de quita.';
+  }
   for (final a in e.acreedores.where((a) => a.id == 'bancoppel')) {
     a.saldoOriginal = 481200;
     a.montoAPagar = 481200;
@@ -85,6 +91,48 @@ void main() {
 
     expect(banCoppel(e).montoAPagar, 600000);
     expect(banCoppel(e).pagoMensual, 150000);
+  });
+
+  test('entran los dos préstamos semanales', () {
+    final e = estadoViejo();
+    final deudaAntes = e.deudaPorPagar;
+
+    // Desde la 3, para que la correccion de BanCoppel no mueva el total y la
+    // cuenta mida solo lo que agrega este paso.
+    migrar(e, 3);
+
+    final uno = e.acreedores.firstWhere((a) => a.id == 'personal10500');
+    final dos = e.acreedores.firstWhere((a) => a.id == 'personal5000');
+    expect(uno.montoAPagar, 1033000);
+    expect(dos.montoAPagar, 504100);
+    expect(e.deudaPorPagar, deudaAntes + 1033000 + 504100);
+  });
+
+  test('son las tasas más altas de la lista', () {
+    final e = estadoViejo();
+    migrar(e, 1);
+
+    final mayor = e.vivos.map((a) => a.tasaAnual).reduce((a, b) => a > b ? a : b);
+    expect(mayor, 137);
+  });
+
+  test('Coppel queda marcado como posible duplicado', () {
+    final e = estadoViejo();
+    migrar(e, 1);
+    final c = e.acreedores.firstWhere((a) => a.id == 'coppel');
+    expect(c.nota, contains('POR VERIFICAR'));
+  });
+
+  test('migrar dos veces no duplica los préstamos ni la marca de Coppel', () {
+    final e = estadoViejo();
+    migrar(e, 1);
+    final acreedores = e.acreedores.length;
+    final nota = e.acreedores.firstWhere((a) => a.id == 'coppel').nota;
+
+    migrar(e, 1);
+
+    expect(e.acreedores.length, acreedores);
+    expect(e.acreedores.firstWhere((a) => a.id == 'coppel').nota, nota);
   });
 
   test('un estado ya al día no se toca', () {

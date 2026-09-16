@@ -50,7 +50,9 @@ Estado semilla() => Estado(
           saldoOriginal: 1825300,
           montoAPagar: 638900,
           tasaAnual: 70,
-          nota: 'Más de 12 meses de atraso: el mayor margen de quita.',
+          nota: 'Más de 12 meses de atraso: el mayor margen de quita. '
+              'POR VERIFICAR: puede ser la misma deuda que los dos préstamos '
+              'personales semanales, y entonces estaría contada dos veces.',
         ),
         Acreedor(
           id: 'fintopia',
@@ -82,6 +84,30 @@ Estado semilla() => Estado(
               '\$1,306.33, fecha límite INMEDIATO. Ya cobra moratorios al '
               '74.4% sobre \$472.50. Pagando el mínimo se liquida en 5 meses '
               'con \$606 de intereses. CAT 98.7%.',
+        ),
+        Acreedor(
+          id: 'personal10500',
+          nombre: 'Préstamo personal de \$10,500',
+          saldoOriginal: 1033000,
+          montoAPagar: 1033000,
+          tasaAnual: 128,
+          pagoMensual: 79733,
+          admiteQuita: false,
+          nota: 'Semanal de \$184 en la app (\$195 en sucursal). Dispuesto el '
+              '4-feb-2026 a 154 semanas; llevas 30. Liquidarlo hoy cuesta '
+              '\$10,330 contra \$22,816 de seguir pagando: ahorras \$12,486.',
+        ),
+        Acreedor(
+          id: 'personal5000',
+          nombre: 'Préstamo personal de \$5,000',
+          saldoOriginal: 504100,
+          montoAPagar: 504100,
+          tasaAnual: 137,
+          pagoMensual: 41167,
+          admiteQuita: false,
+          nota: 'Semanal de \$95 en la app (\$100 en sucursal). Dispuesto el '
+              '10-jun-2026 a 128 semanas; llevas 12. Liquidarlo hoy cuesta '
+              '\$5,041 contra \$11,020 de seguir pagando: ahorras \$5,979.',
         ),
         Acreedor(
           id: 'telcel',
@@ -144,6 +170,16 @@ Estado semilla() => Estado(
           id: 'p10',
           texto: 'Pagar el mínimo de BanCoppel, \$1,306, antes del corte del 20',
           vence: DateTime(2026, 9, 20),
+        ),
+        Pendiente(
+          id: 'p11',
+          texto: 'Liquidar el préstamo de \$10,330 con el primer apoyo de Mario',
+          vence: DateTime(2026, 10, 15),
+        ),
+        Pendiente(
+          id: 'p12',
+          texto: 'Verificar si los préstamos semanales ya están dentro del saldo de Coppel',
+          vence: DateTime(2026, 9, 22),
         ),
       ],
       movimientos: [

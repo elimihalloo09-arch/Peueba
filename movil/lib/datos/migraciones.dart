@@ -6,7 +6,7 @@ import '../modelo/datos.dart';
 /// era falsa no basta con corregir la semilla: lo que ya está guardado hay
 /// que corregirlo también, sin borrar lo que se haya capturado encima.
 /// Cada corrección sube este número y agrega un paso en [migrar].
-const int revisionActual = 3;
+const int revisionActual = 4;
 
 /// Lleva un estado guardado desde la revisión [desde] hasta [revisionActual]
 /// y devuelve la revisión en la que quedó.
@@ -19,6 +19,10 @@ int migrar(Estado e, int desde) {
   if (r < 3) {
     _corregirBanCoppelConSuEstadoDeCuenta(e);
     r = 3;
+  }
+  if (r < 4) {
+    _agregarLosPrestamosSemanales(e);
+    r = 4;
   }
   return r;
 }
@@ -70,4 +74,64 @@ void _corregirBanCoppelConSuEstadoDeCuenta(Estado e) {
       ),
     );
   }
+}
+
+/// Dos préstamos personales que se pagan por semana y que no estaban en la
+/// lista. Son, con mucho, lo más caro que se debe: 128% y 137% anual contra
+/// el 90% de Fintopia, que hasta ahora encabezaba.
+///
+/// Lo que los vuelve urgentes no es la tasa sino la diferencia entre seguir
+/// pagando y liquidar: \$33,836 contra \$15,371.
+void _agregarLosPrestamosSemanales(Estado e) {
+  void agregar(Acreedor a) {
+    if (e.acreedores.any((x) => x.id == a.id)) return;
+    e.acreedores.add(a);
+  }
+
+  agregar(
+    Acreedor(
+      id: 'personal10500',
+      nombre: 'Préstamo personal de \$10,500',
+      saldoOriginal: 1033000,
+      montoAPagar: 1033000,
+      tasaAnual: 128,
+      pagoMensual: 79733,
+      admiteQuita: false,
+      nota: 'Semanal de \$184 en la app (\$195 en sucursal). Dispuesto el '
+          '4-feb-2026 a 154 semanas; llevas 30. Liquidarlo hoy cuesta '
+          '\$10,330 contra \$22,816 de seguir pagando: ahorras \$12,486.',
+    ),
+  );
+  agregar(
+    Acreedor(
+      id: 'personal5000',
+      nombre: 'Préstamo personal de \$5,000',
+      saldoOriginal: 504100,
+      montoAPagar: 504100,
+      tasaAnual: 137,
+      pagoMensual: 41167,
+      admiteQuita: false,
+      nota: 'Semanal de \$95 en la app (\$100 en sucursal). Dispuesto el '
+          '10-jun-2026 a 128 semanas; llevas 12. Liquidarlo hoy cuesta '
+          '\$5,041 contra \$11,020 de seguir pagando: ahorras \$5,979.',
+    ),
+  );
+
+  for (final a in e.acreedores.where((a) => a.id == 'coppel')) {
+    if (!a.nota.contains('POR VERIFICAR')) {
+      a.nota = '\${a.nota} POR VERIFICAR: puede ser la misma deuda que los dos '
+          'préstamos personales semanales, y entonces estaría contada dos veces.';
+    }
+  }
+
+  void pendiente(String id, String texto, DateTime vence) {
+    if (e.pendientes.any((p) => p.id == id)) return;
+    e.pendientes.add(Pendiente(id: id, texto: texto, vence: vence));
+  }
+
+  pendiente('p11', 'Liquidar el préstamo de \$10,330 con el primer apoyo de Mario',
+      DateTime(2026, 10, 15));
+  pendiente('p12',
+      'Verificar si los préstamos semanales ya están dentro del saldo de Coppel',
+      DateTime(2026, 9, 22));
 }
