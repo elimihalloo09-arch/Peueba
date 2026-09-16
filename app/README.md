@@ -10,6 +10,15 @@ nunca en punto flotante.
 
 ## Correr
 
+Con los scripts:
+
+```bash
+./arranca.sh     # levanta base, backend y frontend
+./prueba.sh      # verifica que la API responde y que los números cuadran
+```
+
+O a mano:
+
 ```bash
 # 1. Base de datos
 docker compose up -d
