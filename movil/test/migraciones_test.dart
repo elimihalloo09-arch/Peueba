@@ -10,9 +10,19 @@ Estado estadoViejo() {
   e.gastos.add(
     Renglon(id: 'g2', concepto: 'SERV sin identificar', monto: 434800, recortable: true),
   );
-  e.pendientes.removeWhere((p) => p.id == 'p9');
+  e.pendientes.removeWhere((p) => p.id == 'p9' || p.id == 'p10');
+  for (final a in e.acreedores.where((a) => a.id == 'bancoppel')) {
+    a.saldoOriginal = 481200;
+    a.montoAPagar = 481200;
+    a.tasaAnual = 70;
+    a.pagoMensual = 90100;
+    a.nota = 'Atraso corto, de 1 a 29 días. Probablemente sin quita.';
+  }
   return e;
 }
+
+Acreedor banCoppel(Estado e) =>
+    e.acreedores.firstWhere((a) => a.id == 'bancoppel');
 
 void main() {
   test('la migración quita la gasolina del CUPRA', () {
@@ -52,6 +62,29 @@ void main() {
 
     expect(e.gastoMensual, gastos);
     expect(e.pendientes.length, pendientes);
+  });
+
+  test('BanCoppel toma las cifras de su estado de cuenta', () {
+    final e = estadoViejo();
+    migrar(e, 1);
+
+    final b = banCoppel(e);
+    expect(b.montoAPagar, 513269);
+    expect(b.pagoMensual, 130633);
+    expect(b.tasaAnual, 69.4);
+    expect(b.nota, contains('20-ago-2026'));
+  });
+
+  test('si BanCoppel ya se edito a mano, la migracion no lo pisa', () {
+    final e = estadoViejo();
+    final b = banCoppel(e);
+    b.montoAPagar = 600000;
+    b.pagoMensual = 150000;
+
+    migrar(e, 1);
+
+    expect(banCoppel(e).montoAPagar, 600000);
+    expect(banCoppel(e).pagoMensual, 150000);
   });
 
   test('un estado ya al día no se toca', () {

@@ -106,7 +106,9 @@ class _Tarjeta extends StatelessWidget {
                   ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
+            const Rotulo('Papeles que ya tienes'),
+            const SizedBox(height: 6),
             Wrap(
               spacing: 6,
               children: [

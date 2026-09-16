@@ -73,12 +73,15 @@ Estado semilla() => Estado(
         Acreedor(
           id: 'bancoppel',
           nombre: 'BanCoppel · tarjeta',
-          saldoOriginal: 481200,
-          montoAPagar: 481200,
-          tasaAnual: 70,
-          pagoMensual: 90100,
+          saldoOriginal: 513269,
+          montoAPagar: 513269,
+          tasaAnual: 69.4,
+          pagoMensual: 130633,
           admiteQuita: false,
-          nota: 'Atraso corto, de 1 a 29 días. Probablemente sin quita.',
+          nota: 'Estado de cuenta al 20-ago-2026: saldo \$5,132.69, mínimo '
+              '\$1,306.33, fecha límite INMEDIATO. Ya cobra moratorios al '
+              '74.4% sobre \$472.50. Pagando el mínimo se liquida en 5 meses '
+              'con \$606 de intereses. CAT 98.7%.',
         ),
         Acreedor(
           id: 'telcel',
@@ -136,6 +139,11 @@ Estado semilla() => Estado(
           id: 'p9',
           texto: 'Confirmar en el estado de cuenta de octubre que ya no hay gasolina',
           vence: DateTime(2026, 11, 5),
+        ),
+        Pendiente(
+          id: 'p10',
+          texto: 'Pagar el mínimo de BanCoppel, \$1,306, antes del corte del 20',
+          vence: DateTime(2026, 9, 20),
         ),
       ],
       movimientos: [
