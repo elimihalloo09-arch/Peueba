@@ -15,10 +15,10 @@ revisa() { # nombre, comando, patrón esperado
 
 echo "Probando $API"
 revisa "el servidor responde"        "curl -s $API/health" "ok"
-revisa "hay acreedores cargados"     "curl -s $API/api/acreedores" "HeyBanco"
+revisa "los acreedores responden"   "curl -s $API/api/acreedores" "\["
 revisa "el resumen calcula"          "curl -s $API/api/resumen" "ingreso_mensual"
-revisa "hay pendientes"              "curl -s $API/api/pendientes" "HeyBanco"
-revisa "el préstamo de Mario está"   "curl -s $API/api/movimientos" "Mario"
+revisa "los pendientes responden"   "curl -s $API/api/pendientes" "\["
+revisa "los movimientos responden"  "curl -s $API/api/movimientos" "\["
 revisa "el plan simula"              "curl -s '$API/api/plan?capacidad=1335200&metodo=avalancha&apoyo_mensual=1000000&meses_apoyo=6'" '"meses"'
 revisa "una etapa inválida rebota"   "curl -s -X PUT $API/api/acreedores/00000000-0000-0000-0000-000000000000 -H 'Content-Type: application/json' -d '{\"etapa\":\"inventada\"}'" "etapa desconocida"
 

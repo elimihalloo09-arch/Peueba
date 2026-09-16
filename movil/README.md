@@ -9,11 +9,14 @@ computadora. Todo se guarda en el propio telefono.
 - **Acreedores** — los 12 con saldo, tasa, minimo, quita negociada y etapa
   (pendiente / negociando / acordado / pagando / liquidado).
 - **Plan** — simulador de pagos: avalancha o bola de nieve, con el apoyo
-  mensual de Mario. Dice el mes exacto en que quedas libre y cuanto interes
+  mensual de quien te apoye. Dice el mes exacto en que quedas libre y cuanto interes
   pagas de mas segun el metodo.
 - **Pendientes** — lo que falta hacer, con lo urgente arriba.
-- **Correos** — los textos ya escritos para HeyBanco y Klar, listos para
-  copiar y pegar.
+- **Correos** — plantillas para negociar quitas con los acreedores, listas
+  para copiar y personalizar.
+
+La app no trae cifras de nadie: arranca vacia y los datos se cargan desde
+un respaldo o se capturan a mano. Viven solo en el aparato.
 
 Los montos se guardan en **centavos enteros**, nunca en decimales, para que
 no se pierdan pesos por redondeo.

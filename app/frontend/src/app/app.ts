@@ -8,7 +8,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
   template: `
     <div class="marco">
       <header>
-        <p class="kicker">Carlos Hernández Montes</p>
+        <p class="kicker">Finanzas personales</p>
         <h1>Finanzas</h1>
         <nav>
           <a routerLink="/resumen" routerLinkActive="activo">Resumen</a>

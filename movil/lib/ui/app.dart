@@ -4,6 +4,7 @@ import '../datos/repositorio.dart';
 import 'acreedores.dart';
 import 'comunes.dart';
 import 'correos.dart';
+import 'datos.dart';
 import 'pendientes.dart';
 import 'plan.dart';
 import 'resumen.dart';
@@ -19,9 +20,42 @@ class AppFinanzas extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: tema(Brightness.light),
       darkTheme: tema(Brightness.dark),
-      home: _Marco(repo),
+      home: _Puerta(repo),
     );
   }
+}
+
+/// Decide entre la bienvenida y la app, y vuelve a decidir cuando el
+/// repositorio avisa que algo cambio.
+class _Puerta extends StatefulWidget {
+  const _Puerta(this.repo);
+  final Repositorio repo;
+
+  @override
+  State<_Puerta> createState() => _PuertaState();
+}
+
+class _PuertaState extends State<_Puerta> {
+  @override
+  void initState() {
+    super.initState();
+    widget.repo.addListener(_refrescar);
+  }
+
+  @override
+  void dispose() {
+    widget.repo.removeListener(_refrescar);
+    super.dispose();
+  }
+
+  void _refrescar() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.repo.arrancado
+      ? _Marco(widget.repo)
+      : PantallaBienvenida(widget.repo);
 }
 
 class _Marco extends StatefulWidget {
@@ -74,12 +108,19 @@ class _MarcoState extends State<_Marco> {
             ),
           PopupMenuButton<String>(
             onSelected: (v) async {
-              if (v == 'restablecer') {
+              if (v == 'exportar') {
+                await exportar(context, widget.repo);
+              } else if (v == 'importar') {
+                await importar(context, widget.repo);
+              } else if (v == 'restablecer') {
                 final ok = await showDialog<bool>(
                   context: context,
                   builder: (c) => AlertDialog(
-                    title: const Text('¿Restablecer todo?'),
-                    content: const Text('Se pierde lo que hayas cambiado y vuelven los datos iniciales.'),
+                    title: const Text('¿Borrar todo?'),
+                    content: const Text(
+                        'Se borran tus cifras de este aparato y la app vuelve a '
+                        'arrancar vacía. Si tienes un respaldo exportado, lo '
+                        'puedes volver a cargar.'),
                     actions: [
                       TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('No')),
                       FilledButton(onPressed: () => Navigator.pop(c, true), child: const Text('Sí')),
@@ -90,7 +131,10 @@ class _MarcoState extends State<_Marco> {
               }
             },
             itemBuilder: (c) => const [
-              PopupMenuItem(value: 'restablecer', child: Text('Restablecer datos')),
+              PopupMenuItem(value: 'exportar', child: Text('Exportar respaldo')),
+              PopupMenuItem(value: 'importar', child: Text('Importar respaldo')),
+              PopupMenuDivider(),
+              PopupMenuItem(value: 'restablecer', child: Text('Borrar todo')),
             ],
           ),
         ],

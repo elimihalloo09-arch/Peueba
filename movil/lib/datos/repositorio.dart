@@ -2,55 +2,46 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../modelo/datos.dart';
-import 'migraciones.dart';
 import 'semilla.dart';
 
-/// Guarda todo el estado como un solo JSON en el teléfono. Sin servidor:
-/// la app funciona completa sin internet.
+/// Guarda todo el estado como un solo JSON en el aparato. Sin servidor: la app
+/// funciona completa sin internet, y las cifras no salen de aquí.
 class Repositorio extends ChangeNotifier {
-  Repositorio._(this._prefs, this.estado);
+  Repositorio._(this._prefs, this.estado, this.arrancado);
 
   static const _clave = 'estado_finanzas_v1';
-  static const _claveRevision = 'revision_finanzas_v1';
+  static const _claveArrancado = 'arrancado_v1';
 
   final SharedPreferences _prefs;
   Estado estado;
+
+  /// Falso solo hasta que se carga un respaldo o se decide empezar de cero.
+  /// Distingue "todavía no dice qué quiere" de "empezó vacío a propósito".
+  bool arrancado;
   bool guardando = false;
 
   static Future<Repositorio> abrir() async {
     final prefs = await SharedPreferences.getInstance();
     final texto = prefs.getString(_clave);
     Estado estado;
-    var revision = revisionActual;
     if (texto == null) {
-      estado = semilla();
+      estado = vacio();
     } else {
       try {
         estado = Estado.deTexto(texto);
-        // Lo guardado antes de que existieran las revisiones es la 1.
-        revision = prefs.getInt(_claveRevision) ?? 1;
       } catch (_) {
-        // Si lo guardado quedó corrupto, mejor arrancar con la semilla que
-        // dejar la app inservible.
-        estado = semilla();
+        // Si lo guardado quedó corrupto, mejor arrancar vacío que dejar la
+        // app inservible: el respaldo se puede volver a cargar.
+        estado = vacio();
       }
     }
-
-    final repo = Repositorio._(prefs, estado);
-    if (revision < revisionActual) {
-      // Corrige los datos viejos conservando lo capturado, y lo deja guardado
-      // para no repetir el trabajo en cada arranque.
-      migrar(estado, revision);
-      await repo.guardar();
-    }
-    return repo;
+    return Repositorio._(prefs, estado, prefs.getBool(_claveArrancado) ?? false);
   }
 
   Future<void> guardar() async {
     guardando = true;
     notifyListeners();
     await _prefs.setString(_clave, estado.aTexto());
-    await _prefs.setInt(_claveRevision, revisionActual);
     guardando = false;
     notifyListeners();
   }
@@ -61,8 +52,16 @@ class Repositorio extends ChangeNotifier {
     await guardar();
   }
 
+  Future<void> arrancar() async {
+    arrancado = true;
+    await _prefs.setBool(_claveArrancado, true);
+    await guardar();
+  }
+
   Future<void> restablecer() async {
-    estado = semilla();
+    estado = vacio();
+    arrancado = false;
+    await _prefs.setBool(_claveArrancado, false);
     await guardar();
   }
 
@@ -71,7 +70,7 @@ class Repositorio extends ChangeNotifier {
   Future<bool> importar(String texto) async {
     try {
       estado = Estado.deTexto(texto);
-      await guardar();
+      await arrancar();
       return true;
     } catch (_) {
       return false;

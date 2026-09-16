@@ -137,7 +137,7 @@ class PantallaResumen extends StatelessWidget {
   }
 
   Future<void> _registrar(BuildContext context) async {
-    final persona = await pedirTexto(context, '¿Con quién?', inicial: 'Mario');
+    final persona = await pedirTexto(context, '¿Con quién?', inicial: '');
     if (persona == null || persona.isEmpty || !context.mounted) return;
     final monto = await pedirMonto(context, 'Monto');
     if (monto == null || monto <= 0 || !context.mounted) return;
