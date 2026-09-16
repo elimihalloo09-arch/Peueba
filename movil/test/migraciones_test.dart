@@ -17,6 +17,13 @@ Estado estadoViejo() {
   for (final a in e.acreedores.where((a) => a.id == 'coppel')) {
     a.nota = 'Más de 12 meses de atraso: el mayor margen de quita.';
   }
+  for (final a in e.acreedores.where((a) => a.id == 'azteca')) {
+    a.nombre = 'Banco Azteca · tres créditos';
+    a.saldoOriginal = 4833100;
+    a.montoAPagar = 4833100;
+    a.tasaAnual = 75;
+    a.pagoMensual = 211100;
+  }
   for (final a in e.acreedores.where((a) => a.id == 'bancoppel')) {
     a.saldoOriginal = 481200;
     a.montoAPagar = 481200;
@@ -95,17 +102,15 @@ void main() {
 
   test('entran los dos préstamos semanales', () {
     final e = estadoViejo();
-    final deudaAntes = e.deudaPorPagar;
 
-    // Desde la 3, para que la correccion de BanCoppel no mueva el total y la
-    // cuenta mida solo lo que agrega este paso.
-    migrar(e, 3);
+    migrar(e, 1);
 
     final uno = e.acreedores.firstWhere((a) => a.id == 'personal10500');
     final dos = e.acreedores.firstWhere((a) => a.id == 'personal5000');
     expect(uno.montoAPagar, 1033000);
+    expect(uno.pagoMensual, 79733);
     expect(dos.montoAPagar, 504100);
-    expect(e.deudaPorPagar, deudaAntes + 1033000 + 504100);
+    expect(dos.pagoMensual, 41167);
   });
 
   test('son las tasas más altas de la lista', () {
@@ -116,11 +121,45 @@ void main() {
     expect(mayor, 137);
   });
 
-  test('Coppel queda marcado como posible duplicado', () {
+  test('Coppel queda confirmado como deuda aparte', () {
     final e = estadoViejo();
     migrar(e, 1);
     final c = e.acreedores.firstWhere((a) => a.id == 'coppel');
-    expect(c.nota, contains('POR VERIFICAR'));
+    expect(c.nota, isNot(contains('POR VERIFICAR')));
+    expect(c.nota, contains('nada que ver con BanCoppel'));
+  });
+
+  test('Azteca deja de contar dos veces los semanales', () {
+    final e = estadoViejo();
+    final deudaAntes = e.deudaPorPagar;
+
+    migrar(e, 3);
+
+    final tercero = e.acreedores.firstWhere((a) => a.id == 'azteca');
+    expect(tercero.montoAPagar, 1449500);
+    // Entran los dos semanales (+\$15,371) y el renglon de los tres baja de
+    // \$48,331 a \$14,495, asi que el total cae \$33,836.
+    expect(e.deudaPorPagar, deudaAntes + 1537100 - 3383600);
+  });
+
+  test('los tres de Azteca suman el semanal que cobra el banco', () {
+    final e = estadoViejo();
+    migrar(e, 1);
+
+    final mensual = e.acreedores
+        .where((a) => a.id == 'azteca' || a.id.startsWith('personal'))
+        .fold<int>(0, (t, a) => t + a.pagoMensual);
+    // \$486 a la semana llevados a mes.
+    expect((mensual / 100 * 12 / 52).round(), 486);
+  });
+
+  test('los semanales quedan nombrados como de Azteca', () {
+    final e = estadoViejo();
+    migrar(e, 1);
+    for (final id in ['personal10500', 'personal5000']) {
+      expect(e.acreedores.firstWhere((a) => a.id == id).nombre,
+          startsWith('Banco Azteca'));
+    }
   });
 
   test('migrar dos veces no duplica los préstamos ni la marca de Coppel', () {

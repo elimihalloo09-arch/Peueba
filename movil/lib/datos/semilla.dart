@@ -50,9 +50,8 @@ Estado semilla() => Estado(
           saldoOriginal: 1825300,
           montoAPagar: 638900,
           tasaAnual: 70,
-          nota: 'Más de 12 meses de atraso: el mayor margen de quita. '
-              'POR VERIFICAR: puede ser la misma deuda que los dos préstamos '
-              'personales semanales, y entonces estaría contada dos veces.',
+          nota: 'Más de 12 meses de atraso: el mayor margen de quita. Es la '
+              'grande, y no tiene nada que ver con BanCoppel ni con Azteca.',
         ),
         Acreedor(
           id: 'fintopia',
@@ -87,7 +86,7 @@ Estado semilla() => Estado(
         ),
         Acreedor(
           id: 'personal10500',
-          nombre: 'Préstamo personal de \$10,500',
+          nombre: 'Banco Azteca · préstamo de \$10,500',
           saldoOriginal: 1033000,
           montoAPagar: 1033000,
           tasaAnual: 128,
@@ -99,7 +98,7 @@ Estado semilla() => Estado(
         ),
         Acreedor(
           id: 'personal5000',
-          nombre: 'Préstamo personal de \$5,000',
+          nombre: 'Banco Azteca · préstamo de \$5,000',
           saldoOriginal: 504100,
           montoAPagar: 504100,
           tasaAnual: 137,
@@ -120,13 +119,19 @@ Estado semilla() => Estado(
         ),
         Acreedor(
           id: 'azteca',
-          nombre: 'Banco Azteca · tres créditos',
-          saldoOriginal: 4833100,
-          montoAPagar: 4833100,
-          tasaAnual: 75,
-          pagoMensual: 211100,
+          nombre: 'Banco Azteca · tercer crédito',
+          saldoOriginal: 1449500,
+          montoAPagar: 1449500,
+          tasaAnual: 128,
+          pagoMensual: 89700,
           admiteQuita: false,
-          nota: 'Al corriente, pago semanal de \$486. Sin atraso no hay quita.',
+          nota: 'El tercero de los tres de Azteca, el único sin pantalla. '
+              'Sale de restar: el semanal de \$486 menos los \$184 y \$95 de '
+              'los otros dos deja \$207, y los \$48,331 del Buró menos lo que '
+              'falta de esos dos dejan \$14,495. Eso son PAGOS POR VENIR, no '
+              'saldo: liquidarlo hoy debe costar bastante menos, como en los '
+              'otros dos. Falta su pantalla de "si liquidas hoy". La tasa es '
+              'la de sus hermanos, estimada.',
         ),
         Acreedor(
           id: 'fonacot',
@@ -177,8 +182,8 @@ Estado semilla() => Estado(
           vence: DateTime(2026, 10, 15),
         ),
         Pendiente(
-          id: 'p12',
-          texto: 'Verificar si los préstamos semanales ya están dentro del saldo de Coppel',
+          id: 'p13',
+          texto: 'Sacar la pantalla de "si liquidas hoy" del tercer crédito de Azteca',
           vence: DateTime(2026, 9, 22),
         ),
       ],

@@ -6,7 +6,7 @@ import '../modelo/datos.dart';
 /// era falsa no basta con corregir la semilla: lo que ya está guardado hay
 /// que corregirlo también, sin borrar lo que se haya capturado encima.
 /// Cada corrección sube este número y agrega un paso en [migrar].
-const int revisionActual = 4;
+const int revisionActual = 5;
 
 /// Lleva un estado guardado desde la revisión [desde] hasta [revisionActual]
 /// y devuelve la revisión en la que quedó.
@@ -23,6 +23,10 @@ int migrar(Estado e, int desde) {
   if (r < 4) {
     _agregarLosPrestamosSemanales(e);
     r = 4;
+  }
+  if (r < 5) {
+    _losSemanalesEranDeBancoAzteca(e);
+    r = 5;
   }
   return r;
 }
@@ -134,4 +138,58 @@ void _agregarLosPrestamosSemanales(Estado e) {
   pendiente('p12',
       'Verificar si los préstamos semanales ya están dentro del saldo de Coppel',
       DateTime(2026, 9, 22));
+}
+
+/// Los dos préstamos semanales resultaron ser de Banco Azteca, no de Coppel,
+/// y ya estaban dentro del renglón de "tres créditos" que venía del Buró: se
+/// estaban contando dos veces.
+///
+/// Las cuentas cierran por dos lados. El semanal: \$184 + \$95 + \$207 = \$486.
+/// Y el total: lo que falta de los dos conocidos, \$33,836, más \$14,495 del
+/// tercero, da los \$48,331 del Buró. De paso eso revela que la cifra del Buró
+/// no es un saldo sino la suma de las mensualidades que faltan.
+void _losSemanalesEranDeBancoAzteca(Estado e) {
+  for (final a in e.acreedores) {
+    switch (a.id) {
+      case 'personal10500':
+        if (a.nombre.startsWith('Préstamo')) {
+          a.nombre = 'Banco Azteca · préstamo de \$10,500';
+        }
+      case 'personal5000':
+        if (a.nombre.startsWith('Préstamo')) {
+          a.nombre = 'Banco Azteca · préstamo de \$5,000';
+        }
+      case 'azteca':
+        // Solo si sigue con lo que reportaba el Buró para los tres juntos.
+        if (a.saldoOriginal == 4833100 && a.pagoMensual == 211100) {
+          a.nombre = 'Banco Azteca · tercer crédito';
+          a.saldoOriginal = 1449500;
+          a.montoAPagar = 1449500;
+          a.tasaAnual = 128;
+          a.pagoMensual = 89700;
+          a.nota = 'El tercero de los tres de Azteca, el único sin pantalla. '
+              'Sale de restar: el semanal de \$486 menos los \$184 y \$95 de '
+              'los otros dos deja \$207, y los \$48,331 del Buró menos lo que '
+              'falta de esos dos dejan \$14,495. Eso son PAGOS POR VENIR, no '
+              'saldo: liquidarlo hoy debe costar bastante menos, como en los '
+              'otros dos. Falta su pantalla de "si liquidas hoy". La tasa es '
+              'la de sus hermanos, estimada.';
+        }
+      case 'coppel':
+        a.nota = 'Más de 12 meses de atraso: el mayor margen de quita. Es la '
+            'grande, y no tiene nada que ver con BanCoppel ni con Azteca.';
+    }
+  }
+
+  // Ya se resolvió de quién eran.
+  e.pendientes.removeWhere((p) => p.id == 'p12');
+  if (!e.pendientes.any((p) => p.id == 'p13')) {
+    e.pendientes.add(
+      Pendiente(
+        id: 'p13',
+        texto: 'Sacar la pantalla de "si liquidas hoy" del tercer crédito de Azteca',
+        vence: DateTime(2026, 9, 22),
+      ),
+    );
+  }
 }
