@@ -1,7 +1,10 @@
 name: APK
 
-# Compila el APK de Android de la app movil y lo publica para descargarlo
-# desde el telefono, sin necesitar una computadora.
+# Compila la app: el APK de Android y el paquete web.
+#
+# Los dos llevan dentro los datos financieros reales, asi que solo se
+# publican cuando el repositorio es privado. Mientras sea publico el
+# trabajo se compila y se verifica, pero no se sube a ningun lado.
 
 on:
   push:
@@ -22,6 +25,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Avisar si el repositorio es publico
+        if: ${{ !github.event.repository.private }}
+        run: |
+          echo "::warning::El repositorio es PUBLICO. Se compila pero no se publica" \
+               "el APK ni el paquete web, porque llevan datos financieros reales." \
+               "Cambia la visibilidad a privado en Settings para que se publiquen."
 
       - uses: actions/setup-java@v4
         with:
@@ -46,27 +56,45 @@ jobs:
       - name: Compilar APK
         run: flutter build apk --release
 
-      - name: Nombrar el APK con el numero de build
-        run: mv build/app/outputs/flutter-apk/app-release.apk finanzas-${{ github.run_number }}.apk
+      - name: Compilar web
+        run: |
+          flutter build web --release --web-renderer html --pwa-strategy offline-first
+          # CanvasKit no se usa con el renderizador html y son 19 MB de mas.
+          rm -rf build/web/canvaskit
+          # Rutas relativas, para poder servirlo desde cualquier subdirectorio.
+          sed -i 's|<base href="/">|<base href="./">|' build/web/index.html
+
+      - name: Empaquetar
+        run: |
+          mv build/app/outputs/flutter-apk/app-release.apk finanzas-${{ github.run_number }}.apk
+          ( cd build/web && zip -qr ../../finanzas-web-${{ github.run_number }}.zip . )
+          ls -lh finanzas-*.apk finanzas-web-*.zip
 
       - name: Subir como artefacto
+        if: ${{ github.event.repository.private }}
         uses: actions/upload-artifact@v4
         with:
-          name: finanzas-apk
-          path: movil/finanzas-${{ github.run_number }}.apk
+          name: finanzas
+          path: |
+            movil/finanzas-${{ github.run_number }}.apk
+            movil/finanzas-web-${{ github.run_number }}.zip
           if-no-files-found: error
 
       - name: Publicar release descargable
+        if: ${{ github.event.repository.private }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: apk-${{ github.run_number }}
           name: Mis Finanzas - build ${{ github.run_number }}
           body: |
-            APK listo para instalar en el telefono.
-
-            Descarga `finanzas-${{ github.run_number }}.apk` de aqui abajo,
+            Descarga `finanzas-${{ github.run_number }}.apk` para instalarlo en Android:
             abrelo desde las descargas y acepta instalar de origen desconocido.
 
+            `finanzas-web-${{ github.run_number }}.zip` es la version web, la que
+            se usa en iPhone.
+
             Commit: ${{ github.sha }}
-          files: movil/finanzas-${{ github.run_number }}.apk
+          files: |
+            movil/finanzas-${{ github.run_number }}.apk
+            movil/finanzas-web-${{ github.run_number }}.zip
           make_latest: true

@@ -20,6 +20,22 @@ no se pierdan pesos por redondeo.
 
 ## Instalar en el telefono (sin computadora)
 
+### iPhone
+
+iOS no instala APKs, y la version nativa exige una Mac y la membresia de
+desarrollador de Apple. La salida es la version web, que en iOS queda con su
+propio icono y a pantalla completa:
+
+1. Abre la app en **Safari**.
+2. Boton **Compartir** (el cuadro con la flecha hacia arriba).
+3. **Agregar a pantalla de inicio**.
+
+Queda como **Mis Finanzas**. Los datos se guardan en el almacenamiento de
+Safari, asi que si limpias los datos del navegador se borran: usa
+**Exportar** del menu de los tres puntos y guardate ese texto.
+
+### Android
+
 1. En el celular abre el repositorio en GitHub.
 2. Entra a **Releases** (o al run mas reciente en **Actions → APK**).
 3. Descarga el archivo `finanzas-<numero>.apk`.
@@ -29,6 +45,43 @@ no se pierdan pesos por redondeo.
 
 Cada vez que cambie el codigo, GitHub compila un APK nuevo y publica otro
 release. Instalas encima y se conservan tus datos.
+
+El APK y el paquete web llevan dentro los datos financieros reales, asi que
+el workflow **solo los publica si el repositorio es privado**. Mientras sea
+publico compila y verifica, pero no sube nada.
+
+## Compilar sin computadora
+
+En el iPhone no se puede compilar: Apple no permite compiladores en iOS. Lo
+que si se puede es compilar en la nube y manejarlo desde el telefono. Tres
+formas, de la mas comoda a la mas laboriosa:
+
+**1. Pedirselo a Claude Code.** Compila, prueba y publica la version nueva.
+Es lo que conviene para cualquier cambio de fondo.
+
+**2. Editar en github.com y dejar que Actions compile.** Abre el archivo en
+el navegador del telefono, el icono del lapiz, cambia, **Commit**. El
+workflow `.github/workflows/apk.yml` analiza, prueba y compila solo. Sirve
+para ajustes chicos: un texto, una cifra, un color.
+
+**3. Un Codespace.** Es una maquina Linux completa dentro del navegador, con
+terminal de verdad. En el repositorio: **Code → Codespaces → Create**. El
+`.devcontainer/` de este repo instala Flutter solo la primera vez (tarda unos
+minutos). Despues:
+
+```bash
+cd movil
+flutter run -d web-server --web-port 8080 --web-hostname 0.0.0.0
+```
+
+GitHub reenvia el puerto 8080 y te da una liga para abrirla en el mismo
+telefono. Escribir codigo en el teclado del celular es incomodo, pero
+funciona y no cuesta nada dentro de las horas gratis de la cuenta.
+
+**La version nativa de iOS no sale por ninguna de las tres.** Necesita una
+Mac o un runner de macOS **y** la membresia de desarrollador de Apple, 99
+dolares al ano, porque sin firmar la app el iPhone no la instala. La version
+web instalada en la pantalla de inicio evita ese costo.
 
 ## Correr en desarrollo
 
