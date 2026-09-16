@@ -669,14 +669,19 @@
 
   <section class="band" aria-labelledby="h-dinero">
     <div class="sec-head">
-      <h2 id="h-dinero">Tu dinero</h2>
-      <span class="hint" style="color:var(--band-ink-3)">Tu sueldo no lo sé: escríbelo y se queda en tu navegador</span>
+      <h2 id="h-dinero">El dinero del hogar</h2>
+      <span class="hint" style="color:var(--band-ink-3)">Nómina del SAT y del ISSEMyM, netas de descuentos</span>
     </div>
     <div class="dinero-grid">
       <div>
         <label class="lab" for="sueldo">Sueldo neto al mes</label>
         <input class="in" type="number" id="sueldo" min="0" step="100" value="17583">
         <p class="hint-in">Neto de 2 quincenas · bruto $28,227</p>
+      </div>
+      <div>
+        <label class="lab" for="sueldoPareja">Ingreso de Wendy</label>
+        <input class="in" type="number" id="sueldoPareja" min="0" step="100" value="10125">
+        <p class="hint-in">Neto normal, sin retroactivos</p>
       </div>
       <div>
         <label class="lab" for="horasDia">Horas de trabajo al día</label>
@@ -779,7 +784,7 @@
   var EJEMPLO = {
     moneda:"$", diasLaborales:20, diasCasa:4, casaExtra:0,
     uber:{ida:240, regreso:259},
-    finanzas:{sueldo:17583, horasDia:6, rendimiento:10, rutaBase:"a",
+    finanzas:{sueldo:17583, sueldoPareja:10125, horasDia:6, rendimiento:10, rutaBase:"a",
               aporteModo:"uber", aporteFijo:3000, extraDeuda:2000, metodo:"avalancha",
               meta:80000, metaNombre:"Auto más económico"},
     deudas:[
@@ -794,6 +799,7 @@
       {t:"CUPRA · dación en pago, contrato cerrado", saldo:0, pago:0, tasa:18, estado:"entregado"},
       {t:"Tenencia y refrendo Morelos · vence 23 sep", saldo:10000, pago:0, tasa:0, estado:"atraso"},
       {t:"Préstamo ISSSTE · nómina, 46 quincenas", saldo:62537, pago:0, tasa:12, estado:"corriente"},
+      {t:"Consupago de Wendy · nómina, falta saldo", saldo:0, pago:0, tasa:60, estado:"corriente"},
       {t:"Banco Azteca · préstamo",   saldo:26752,  pago:908,   tasa:80, estado:"corriente"},
       {t:"Banco Azteca · préstamo 2", saldo:12960,  pago:469,   tasa:80, estado:"corriente"},
       {t:"Banco Azteca · muebles",    saldo:8619,   pago:734,   tasa:60, estado:"corriente"},
@@ -1919,9 +1925,10 @@
     var gastoBase = gastoMes(base, dsel);
     var uberDia = (estado.uber.ida || 0) + (estado.uber.regreso || 0);
     var uberMes = uberDia * presenciales;
+    var hogar = (fin.sueldo || 0) + (fin.sueldoPareja || 0);
     var aporteUber = Math.max(0, uberMes - gastoBase);
     var gTot = totalGastos(gastoBase);
-    var sobra = fin.sueldo - gTot;
+    var sobra = hogar - gTot;
     var aporte = fin.aporteModo === "sobra" ? Math.max(0, sobra)
                : fin.aporteModo === "fijo" ? Math.max(0, fin.aporteFijo || 0)
                : aporteUber;
@@ -1929,7 +1936,7 @@
     var horasTrabajo = (fin.horasDia || 0) * L;
     var porHora = horasTrabajo > 0 ? fin.sueldo / horasTrabajo : 0;
     var horasTraslado = presenciales * base.viajes * base.minutos / 60;
-    var conSueldo = fin.sueldo > 0;
+    var conSueldo = hogar > 0;
 
     var selRuta = document.getElementById("rutaBase");
     var firma = estado.destinos.map(function(d){ return d.nombre; }).join("|");
@@ -2005,7 +2012,7 @@
     document.getElementById("gTotal").textContent = (estado.gastos || []).length +
       " gastos escritos + transporte + pagos de deuda · " + dinero(gTot) + " al mes";
     document.getElementById("g1").innerHTML = figura(gTot);
-    document.getElementById("g1sub").textContent = (conSueldo ? pct(gTot / fin.sueldo * 100) + " de tu sueldo · " : "") +
+    document.getElementById("g1sub").textContent = (conSueldo ? pct(gTot / hogar * 100) + " del ingreso del hogar · " : "") +
       "incluye " + dinero(gastoBase) + " de transporte y " + dinero(pagosDeuda()) + " de deudas";
     document.getElementById("g2").innerHTML = figura(sobra);
     document.getElementById("g2").style.color = sobra >= 0 ? "var(--good)" : "var(--serie-b)";
@@ -2024,7 +2031,7 @@
       " créditos que sigues pagando" + (entregada > 0 ? " · " + dinero(entregada) + " entregado, por finiquitar" : "");
     document.getElementById("d2").innerHTML = figura(dPagos);
     document.getElementById("d2sub").textContent = conSueldo
-      ? pct(dPagos / fin.sueldo * 100) + " de tu sueldo en pagos fijos"
+      ? pct(dPagos / hogar * 100) + " del ingreso del hogar"
       : "suma de los pagos mensuales";
     document.getElementById("d3").innerHTML = figura(dCobranza);
     document.getElementById("d3sub").textContent = "lo que ya te exigen completo · con atraso: " + dinero(deudaPorEstado("atraso"));
@@ -2080,9 +2087,9 @@
     var met = document.getElementById("metricas");
     met.innerHTML = "";
     [["Ganas por hora", conSueldo ? dinero(porHora) : "—", null],
-     ["Traslado a " + corto(base.nombre, 12), conSueldo ? pct(gastoBase / fin.sueldo * 100) + " del sueldo" : "—", null],
-     ["En Uber sería", conSueldo ? pct(uberMes / fin.sueldo * 100) + " del sueldo" : "—", null],
-     ["Te queda tras gastos y deudas", conSueldo ? dinero(fin.sueldo - gTot) : "—", (fin.sueldo - gTot) < 0 ? "acento" : null],
+     ["Traslado a " + corto(base.nombre, 12), conSueldo ? pct(gastoBase / hogar * 100) + " del ingreso" : "—", null],
+     ["En Uber sería", conSueldo ? pct(uberMes / hogar * 100) + " del ingreso" : "—", null],
+     ["Te queda tras gastos y deudas", conSueldo ? dinero(hogar - gTot) : "—", (hogar - gTot) < 0 ? "acento" : null],
      ["Horas al mes en traslado", horas(horasTraslado), null],
      ["Ese tiempo vale", conSueldo ? dinero(horasTraslado * porHora) : "—", null],
      ["Uber por día", dinero(uberDia), null],
@@ -2141,6 +2148,7 @@
     if(g.finanzas){
       estado.finanzas = {
         sueldo:num(g.finanzas.sueldo, 0),
+        sueldoPareja:num(g.finanzas.sueldoPareja, 0),
         horasDia:num(g.finanzas.horasDia, 8),
         rendimiento:num(g.finanzas.rendimiento, 0),
         meta:num(g.finanzas.meta, 0),
@@ -2205,6 +2213,7 @@
     document.getElementById("uberIda").value = estado.uber.ida;
     document.getElementById("uberRegreso").value = estado.uber.regreso;
     document.getElementById("sueldo").value = estado.finanzas.sueldo;
+    document.getElementById("sueldoPareja").value = estado.finanzas.sueldoPareja || 0;
     document.getElementById("horasDia").value = estado.finanzas.horasDia;
     document.getElementById("rendimiento").value = estado.finanzas.rendimiento;
     document.getElementById("meta").value = estado.finanzas.meta;
@@ -2301,7 +2310,7 @@
   document.getElementById("aporteModo").addEventListener("change", function(e){
     estado.finanzas.aporteModo = e.target.value; render(true);
   });
-  ["sueldo","horasDia","rendimiento","meta","aporteFijo"].forEach(function(k){
+  ["sueldo","sueldoPareja","horasDia","rendimiento","meta","aporteFijo"].forEach(function(k){
     document.getElementById(k).addEventListener("input", function(e){
       estado.finanzas[k] = Math.max(0, num(e.target.value, 0)); render(true);
     });
