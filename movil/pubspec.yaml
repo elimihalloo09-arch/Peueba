@@ -20,3 +20,23 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  fonts:
+    - family: Bricolage
+      fonts:
+        - asset: assets/fuentes/Bricolage-600.ttf
+          weight: 600
+        - asset: assets/fuentes/Bricolage-700.ttf
+          weight: 700
+        - asset: assets/fuentes/Bricolage-800.ttf
+          weight: 800
+    - family: PublicSans
+      fonts:
+        - asset: assets/fuentes/PublicSans-400.ttf
+          weight: 400
+        - asset: assets/fuentes/PublicSans-500.ttf
+          weight: 500
+        - asset: assets/fuentes/PublicSans-600.ttf
+          weight: 600
+        - asset: assets/fuentes/PublicSans-700.ttf
+          weight: 700

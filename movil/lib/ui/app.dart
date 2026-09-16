@@ -67,6 +67,8 @@ class _Marco extends StatefulWidget {
   State<_Marco> createState() => _MarcoState();
 }
 
+const _titulos = ['Mis Finanzas', 'Acreedores', 'Plan de pagos', 'Rutas', 'Hoy', 'Correos'];
+
 class _MarcoState extends State<_Marco> {
   int tab = 0;
 
@@ -101,12 +103,14 @@ class _MarcoState extends State<_Marco> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Finanzas', style: TextStyle(fontWeight: FontWeight.w800, letterSpacing: -0.5)),
+        title: Text(_titulos[tab]),
         actions: [
           if (widget.repo.guardando)
             const Padding(
-              padding: EdgeInsets.only(right: 16),
-              child: Center(child: SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))),
+              padding: EdgeInsets.only(right: 12),
+              child: Center(
+                  child: SizedBox(
+                      width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 1.8))),
             ),
           PopupMenuButton<String>(
             onSelected: (v) async {
