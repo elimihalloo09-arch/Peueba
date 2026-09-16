@@ -1,0 +1,76 @@
+name: Pages
+
+# Compila la app y la publica en GitHub Pages, que es lo que le da una
+# direccion propia y permite dejarla como icono en la pantalla de inicio.
+#
+# Compila desde el codigo en vez de publicar una carpeta ya generada, para que
+# el sitio no pueda quedarse viejo respecto del codigo.
+
+on:
+  push:
+    paths:
+      - 'movil/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Una sola publicacion a la vez; si llegan dos seguidas, gana la ultima.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Preparar Pages
+        id: pages
+        uses: actions/configure-pages@v5
+        with:
+          # Deja Pages activado sin tener que tocar Settings a mano.
+          enablement: true
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+          channel: stable
+          cache: true
+
+      - name: Dependencias
+        run: flutter pub get
+        working-directory: movil
+
+      - name: Pruebas
+        run: flutter test
+        working-directory: movil
+
+      - name: Compilar
+        # La ruta base tiene que ser la del repositorio, porque el sitio cuelga
+        # de https://<usuario>.github.io/<repositorio>/
+        run: |
+          flutter build web --release \
+            --web-renderer html \
+            --base-href "/${GITHUB_REPOSITORY#*/}/" \
+            --pwa-strategy offline-first
+          rm -rf build/web/canvaskit build/web/.last_build_id
+        working-directory: movil
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: movil/build/web
+
+  publicar:
+    needs: construir
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

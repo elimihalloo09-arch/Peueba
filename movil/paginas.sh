@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Compila el sitio que sirve GitHub Pages y lo deja en docs/, que es de donde
-# Pages publica. La direccion queda en:
+# Compila el sitio igual que lo hace el workflow de Pages, para poder verlo
+# en local antes de publicarlo. La direccion queda en:
 #   https://<usuario>.github.io/<repositorio>/
 set -euo pipefail
 export PATH="$HOME/flutter/bin:$PATH"
@@ -16,11 +16,4 @@ flutter build web --release \
 # CanvasKit no se usa con el renderizador html: son 19 MB de mas.
 rm -rf build/web/canvaskit build/web/.last_build_id
 
-rm -rf ../docs
-mkdir -p ../docs
-cp -r build/web/. ../docs/
-# Sin esto GitHub Pages ignora los archivos y carpetas que empiezan con guion
-# bajo, que Flutter si genera.
-touch ../docs/.nojekyll
-
-echo "docs/ listo, $(du -sh ../docs | cut -f1)"
+echo "build/web listo, $(du -sh build/web | cut -f1)"
