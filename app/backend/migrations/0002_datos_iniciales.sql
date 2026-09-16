@@ -40,7 +40,6 @@ WHERE NOT EXISTS (SELECT 1 FROM ingresos);
 INSERT INTO gastos (concepto, categoria, mensual, recortable)
 SELECT * FROM (VALUES
   ('Comida fuera', 'Comida', 698700::bigint, true),
-  ('SERV sin identificar (Fento, Jurammi, Ogrove)', 'Otros', 434800::bigint, true),
   ('Efectivo retirado', 'Otros', 360000::bigint, true),
   ('Perfumería, PayPal y compras', 'Gustos', 278400::bigint, true),
   ('Compras MercadoPago y comercios', 'Gustos', 260000::bigint, true),

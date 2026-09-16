@@ -132,6 +132,11 @@ Estado semilla() => Estado(
         Pendiente(id: 'p6', texto: 'Tramitar baja de placas del CUPRA', vence: DateTime(2026, 9, 30)),
         Pendiente(id: 'p7', texto: 'Pedir a VW la carta finiquito del CUPRA', vence: DateTime(2026, 9, 30)),
         Pendiente(id: 'p8', texto: 'Conseguir el saldo del Consupago de Wendy'),
+        Pendiente(
+          id: 'p9',
+          texto: 'Confirmar en el estado de cuenta de octubre que ya no hay gasolina',
+          vence: DateTime(2026, 11, 5),
+        ),
       ],
       movimientos: [
         Movimiento(
@@ -149,7 +154,6 @@ Estado semilla() => Estado(
       ],
       gastos: [
         Renglon(id: 'g1', concepto: 'Comida fuera', monto: 698700, recortable: true),
-        Renglon(id: 'g2', concepto: 'SERV sin identificar', monto: 434800, recortable: true),
         Renglon(id: 'g3', concepto: 'Efectivo retirado', monto: 360000, recortable: true),
         Renglon(id: 'g4', concepto: 'Perfumería, PayPal y compras', monto: 278400, recortable: true),
         Renglon(id: 'g5', concepto: 'Compras MercadoPago', monto: 260000, recortable: true),
