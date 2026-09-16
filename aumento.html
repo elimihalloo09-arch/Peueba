@@ -1,0 +1,204 @@
+<meta charset="utf-8">
+<title>AKAMBA y mi Nivelación</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+  :root{
+    --papel:#FBFAF8;
+    --ground:#EDEBE6;
+    --hair:#D8D5CE;
+    --hair-soft:#E6E3DC;
+    --ink:#161512;
+    --ink-2:#4E4B44;
+    --ink-3:#817D74;
+    --acento:#0B6F79;
+    --deuda:#A93A2F;
+    --bien:#2C6B40;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --papel:#17191A;
+      --ground:#0F1112;
+      --hair:#2C2F31;
+      --hair-soft:#232628;
+      --ink:#EDEBE6;
+      --ink-2:#ADA9A1;
+      --ink-3:#827E76;
+      --acento:#35A3AC;
+      --deuda:#E07B6F;
+      --bien:#63B37C;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --papel:#17191A; --ground:#0F1112; --hair:#2C2F31; --hair-soft:#232628;
+    --ink:#EDEBE6; --ink-2:#ADA9A1; --ink-3:#827E76;
+    --acento:#35A3AC; --deuda:#E07B6F; --bien:#63B37C;
+    color-scheme: dark;
+  }
+
+  *, *::before, *::after{ box-sizing:border-box; }
+  body{ background:var(--ground); color:var(--ink);
+        font-family:"Source Serif 4", Georgia, serif; font-size:16px; line-height:1.6; }
+  .hoja{ max-width:860px; margin:0 auto; background:var(--papel);
+         padding:56px 60px 64px; }
+  @media (max-width:640px){ .hoja{ padding:34px 20px 44px; } }
+
+  h1,h2,h3,.cifra,.tl-num{ font-family:"Archivo", system-ui, sans-serif; margin:0; }
+  h1{ font-size:clamp(30px,5vw,44px); font-weight:800; font-stretch:108%; letter-spacing:-.03em;
+      line-height:1.02; text-wrap:balance; }
+  h2{ font-size:clamp(18px,2.4vw,22px); font-weight:700; font-stretch:104%; letter-spacing:-.02em;
+      margin:44px 0 14px; padding-bottom:9px; border-bottom:1.5px solid var(--ink); }
+  h3{ font-size:15px; font-weight:700; margin:24px 0 6px; }
+  p{ margin:0 0 14px; }
+  .kicker{ font-family:"IBM Plex Mono", monospace; font-size:11px; letter-spacing:.2em;
+           text-transform:uppercase; color:var(--ink-3); }
+  .de{ font-size:15px; color:var(--ink-2); margin-top:14px; }
+  .de b{ color:var(--ink); font-weight:600; }
+  .num{ font-family:"IBM Plex Mono", monospace; font-variant-numeric:tabular-nums; }
+
+  .pedido{ margin:30px 0 0; padding:22px 24px; background:var(--ground); border-left:4px solid var(--acento); }
+  .pedido p{ margin:0; font-size:clamp(17px,2.2vw,20px); line-height:1.45; }
+  .pedido b{ font-weight:600; }
+
+  .cifras{ display:grid; grid-template-columns:repeat(5,1fr); gap:0; margin:34px 0 0;
+           border-top:1px solid var(--hair); }
+  .cifras > div{ padding:18px 16px 10px 0; border-right:1px solid var(--hair); }
+  .cifras > div + div{ padding-left:16px; }
+  .cifras > div:last-child{ border-right:0; }
+  .cifras dt{ font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.11em;
+              text-transform:uppercase; color:var(--ink-3); min-height:2.6em; }
+  .cifras dd{ margin:0; }
+  .cifra{ font-size:clamp(19px,2.6vw,25px); font-weight:800; letter-spacing:-.03em; margin-top:7px;
+          font-variant-numeric:tabular-nums; }
+  @media (max-width:720px){
+    .cifras{ grid-template-columns:1fr 1fr; }
+    .cifras > div{ border-right:0; border-bottom:1px solid var(--hair); padding:14px 0 12px; }
+    .cifras > div + div{ padding-left:0; }
+  }
+
+  table{ border-collapse:collapse; width:100%; font-size:14.5px; margin:8px 0 0; }
+  th,td{ text-align:right; padding:9px 10px; }
+  th:first-child, td:first-child{ text-align:left; padding-left:0; }
+  th:last-child, td:last-child{ padding-right:0; }
+  thead th{ font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.11em;
+            text-transform:uppercase; color:var(--ink-3); font-weight:400;
+            border-bottom:1px solid var(--ink); }
+  tbody td{ border-bottom:1px solid var(--hair-soft); }
+  tbody td:not(:first-child){ font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; }
+  tbody tr.suma td{ border-top:1px solid var(--ink); border-bottom:0; font-weight:600; }
+  tbody tr.suma td:first-child{ font-family:"Archivo",sans-serif; }
+  .tag{ font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+        padding:2px 8px; border-radius:999px; border:1px solid currentColor; white-space:nowrap; }
+  .t-cob{ color:var(--deuda); } .t-atr{ color:#9A6A12; } .t-cor{ color:var(--bien); }
+  .tabla-scroll{ overflow-x:auto; }
+
+  .linea{ margin:22px 0 6px; }
+  .tl{ display:grid; grid-template-columns:repeat(12,1fr); gap:3px; margin-top:10px; }
+  .tl span{ height:34px; border-radius:3px; display:flex; align-items:center; justify-content:center;
+            font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:#FFFFFF; }
+  .tl .f1{ background:var(--acento); }
+  .tl .f2{ background:var(--deuda); }
+  .tl-leyenda{ display:flex; gap:20px; flex-wrap:wrap; margin-top:12px; font-size:13.5px; color:var(--ink-2); }
+  .tl-leyenda span{ display:inline-flex; align-items:center; gap:8px; }
+  .tl-leyenda i{ width:12px; height:12px; border-radius:3px; }
+
+  ul.lista{ margin:6px 0 0; padding-left:0; list-style:none; }
+  ul.lista li{ position:relative; padding-left:26px; margin-bottom:10px; }
+  ul.lista li::before{ content:"—"; position:absolute; left:0; color:var(--acento); font-weight:700; }
+  ol.pasos{ margin:6px 0 0; padding-left:20px; }
+  ol.pasos li{ margin-bottom:10px; }
+
+  .dosc{ display:grid; grid-template-columns:1fr 1fr; gap:28px 40px; }
+  @media (max-width:640px){ .dosc{ grid-template-columns:1fr; gap:6px; } }
+
+  .firma{ display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-top:52px; }
+  .firma div{ border-top:1px solid var(--ink); padding-top:8px; font-size:13px; color:var(--ink-2); }
+  @media (max-width:640px){ .firma{ grid-template-columns:1fr; gap:34px; } }
+  .nota{ font-size:12.5px; color:var(--ink-3); margin-top:40px; padding-top:16px;
+         border-top:1px solid var(--hair); }
+
+  @media print{
+    body{ background:#FFFFFF; }
+    .hoja{ max-width:none; padding:0; background:#FFFFFF; }
+    h2{ break-after:avoid; }
+    table, .tl, .pedido{ break-inside:avoid; }
+  }
+</style>
+
+<div class="hoja">
+  <p class="kicker">Solicitud de nivelación salarial · septiembre 2026</p>
+  <h1>Lo que sostengo hoy<br>y la nivelación que pido</h1>
+  <p class="de">De <b>Carlos Hernández Montes</b> · Jefe de Departamento ·
+    AGCTI / ACSMC · Plaza de confianza CFO100D104, nivel D104</p>
+
+  <div class="pedido">
+    <p>Pido una <b>nivelación de mi compensación de $28,227 a entre $35,000 y $40,000 brutos mensuales</b>,
+      por el alcance que hoy sostengo como líder técnico de AKAMBA y por el perfil que ese trabajo exige.
+      Abajo está el detalle de lo que llevo, lo que estoy cerrando y a qué me comprometo.</p>
+  </div>
+
+  <dl class="cifras">
+    <div><dt>Compensación actual</dt><dd class="cifra">$28,227</dd></div>
+    <div><dt>Nivelación que pido</dt><dd class="cifra" style="color:var(--acento)">$35–40k</dd></div>
+    <div><dt>Sistemas que lidero</dt><dd class="cifra">2</dd></div>
+    <div><dt>Frentes abiertos en AKAMBA</dt><dd class="cifra">5</dd></div>
+    <div><dt>Tecnologías de base</dt><dd class="cifra">4</dd></div>
+  </dl>
+
+  <h2>Lo que sostengo hoy</h2>
+  <p>Soy <b>líder técnico de AKAMBA</b>: arquitectura, decisiones técnicas, coordinación con el área
+    usuaria y responsabilidad sobre el despliegue. El sistema corre sobre <b>Rust, Angular, PostgreSQL y
+    GitLab</b>, y ACAPE es quien lo usa y a quien le respondo por cada entrega.</p>
+  <p>En paralelo participo en <b>TLACALLI</b>, con ajustes al aplicativo y coordinación directa con el área
+    de Omega Angélica García Mora.</p>
+
+  <h2>Los frentes que estoy cerrando</h2>
+  <div class="tabla-scroll">
+    <table>
+      <thead><tr><th>Frente</th><th>Qué resuelve</th></tr></thead>
+      <tbody>
+        <tr><td>Nginx y ruteo</td><td>Que el sistema sea alcanzable y estable en el ambiente real, no solo en desarrollo</td></tr>
+        <tr><td>Modularización y despliegue</td><td>Poder liberar por partes, sin tumbar todo el sistema en cada cambio</td></tr>
+        <tr><td>Pruebas por bandejas</td><td>Validar el flujo como lo vive el usuario de ACAPE, no como lo imagina el desarrollador</td></tr>
+        <tr><td>Folio único</td><td>Trazabilidad de cada asunto de punta a punta</td></tr>
+        <tr><td>Vista por EUACAPE</td><td>Que cada área vea lo suyo, con la información que le corresponde</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Por qué este perfil no es intercambiable</h2>
+  <p><b>Rust no es un lenguaje común en el sector público.</b> No es como cubrir una vacante de Java o
+    .NET: el universo de gente que puede tomar AKAMBA, entender su arquitectura y seguir liberando es
+    chico, y en el mercado privado ese perfil se cotiza muy por encima de lo que gano hoy.</p>
+  <p>A eso le sumo algo que no estaba en la descripción de mi puesto y que hoy uso todos los días:
+    <b>desarrollo asistido con Cursor</b> —reglas, MCP y hooks de verificación— que es lo que me permite
+    sostener dos sistemas al mismo tiempo con la velocidad con la que los estoy sosteniendo.</p>
+  <p>Y hay un costo que no se ve en el tabulador: <b>si esta plaza se queda sin quien la lleve, AKAMBA no
+    se pausa, se atrasa</b>, y recuperar el contexto de un sistema en Rust a medio desplegar toma meses,
+    no semanas.</p>
+
+  <h2>A qué me comprometo</h2>
+  <ul class="lista">
+    <li><b>Cerrar los cinco frentes</b> de AKAMBA con fechas comprometidas y visibles para ACAPE.</li>
+    <li><b>Dejar documentada la arquitectura y el despliegue</b>, para que el sistema no dependa de que yo
+      esté disponible un martes a las tres de la tarde.</li>
+    <li><b>Formar a alguien más del equipo</b> en el stack, para que deje de ser una sola persona la que
+      puede tocar el core.</li>
+    <li><b>Seguir cubriendo TLACALLI</b> sin que AKAMBA pierda ritmo.</li>
+  </ul>
+
+  <h2>Lo que pido, concretamente</h2>
+  <p>Una nivelación a <b>entre $35,000 y $40,000 brutos mensuales</b>, por la vía que corresponda: ajuste
+    de compensación garantizada, cambio de nivel salarial, o la figura que el tabulador permita para un
+    Jefe de Departamento con responsabilidad de líder técnico.</p>
+  <p>Si hoy no es posible por techo presupuestal, te pido algo que sí está en tu mano: <b>una fecha</b>.
+    Cuándo se revisa, contra qué entregables, y qué tengo que demostrar para llegar ahí. Con una fecha
+    clara yo trabajo igual de tranquilo.</p>
+
+  <div class="firma">
+    <div>Carlos Hernández Montes<br><span class="num">Fecha: ____ / ____ / 2026</span></div>
+    <div>Recibido<br><span class="num">Fecha: ____ / ____ / 2026</span></div>
+  </div>
+</div>

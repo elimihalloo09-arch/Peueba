@@ -1,0 +1,246 @@
+<meta charset="utf-8">
+<title>Plan de Respaldo con Víctor</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+  :root{
+    --papel:#FBFAF8;
+    --ground:#EDEBE6;
+    --hair:#D8D5CE;
+    --hair-soft:#E6E3DC;
+    --ink:#161512;
+    --ink-2:#4E4B44;
+    --ink-3:#817D74;
+    --acento:#0B6F79;
+    --deuda:#A93A2F;
+    --bien:#2C6B40;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --papel:#17191A;
+      --ground:#0F1112;
+      --hair:#2C2F31;
+      --hair-soft:#232628;
+      --ink:#EDEBE6;
+      --ink-2:#ADA9A1;
+      --ink-3:#827E76;
+      --acento:#35A3AC;
+      --deuda:#E07B6F;
+      --bien:#63B37C;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --papel:#17191A; --ground:#0F1112; --hair:#2C2F31; --hair-soft:#232628;
+    --ink:#EDEBE6; --ink-2:#ADA9A1; --ink-3:#827E76;
+    --acento:#35A3AC; --deuda:#E07B6F; --bien:#63B37C;
+    color-scheme: dark;
+  }
+
+  *, *::before, *::after{ box-sizing:border-box; }
+  body{ background:var(--ground); color:var(--ink);
+        font-family:"Source Serif 4", Georgia, serif; font-size:16px; line-height:1.6; }
+  .hoja{ max-width:860px; margin:0 auto; background:var(--papel);
+         padding:56px 60px 64px; }
+  @media (max-width:640px){ .hoja{ padding:34px 20px 44px; } }
+
+  h1,h2,h3,.cifra,.tl-num{ font-family:"Archivo", system-ui, sans-serif; margin:0; }
+  h1{ font-size:clamp(30px,5vw,44px); font-weight:800; font-stretch:108%; letter-spacing:-.03em;
+      line-height:1.02; text-wrap:balance; }
+  h2{ font-size:clamp(18px,2.4vw,22px); font-weight:700; font-stretch:104%; letter-spacing:-.02em;
+      margin:44px 0 14px; padding-bottom:9px; border-bottom:1.5px solid var(--ink); }
+  h3{ font-size:15px; font-weight:700; margin:24px 0 6px; }
+  p{ margin:0 0 14px; }
+  .kicker{ font-family:"IBM Plex Mono", monospace; font-size:11px; letter-spacing:.2em;
+           text-transform:uppercase; color:var(--ink-3); }
+  .de{ font-size:15px; color:var(--ink-2); margin-top:14px; }
+  .de b{ color:var(--ink); font-weight:600; }
+  .num{ font-family:"IBM Plex Mono", monospace; font-variant-numeric:tabular-nums; }
+
+  .pedido{ margin:30px 0 0; padding:22px 24px; background:var(--ground); border-left:4px solid var(--acento); }
+  .pedido p{ margin:0; font-size:clamp(17px,2.2vw,20px); line-height:1.45; }
+  .pedido b{ font-weight:600; }
+
+  .cifras{ display:grid; grid-template-columns:repeat(5,1fr); gap:0; margin:34px 0 0;
+           border-top:1px solid var(--hair); }
+  .cifras > div{ padding:18px 16px 10px 0; border-right:1px solid var(--hair); }
+  .cifras > div + div{ padding-left:16px; }
+  .cifras > div:last-child{ border-right:0; }
+  .cifras dt{ font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.11em;
+              text-transform:uppercase; color:var(--ink-3); min-height:2.6em; }
+  .cifras dd{ margin:0; }
+  .cifra{ font-size:clamp(19px,2.6vw,25px); font-weight:800; letter-spacing:-.03em; margin-top:7px;
+          font-variant-numeric:tabular-nums; }
+  @media (max-width:720px){
+    .cifras{ grid-template-columns:1fr 1fr; }
+    .cifras > div{ border-right:0; border-bottom:1px solid var(--hair); padding:14px 0 12px; }
+    .cifras > div + div{ padding-left:0; }
+  }
+
+  table{ border-collapse:collapse; width:100%; font-size:14.5px; margin:8px 0 0; }
+  th,td{ text-align:right; padding:9px 10px; }
+  th:first-child, td:first-child{ text-align:left; padding-left:0; }
+  th:last-child, td:last-child{ padding-right:0; }
+  thead th{ font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.11em;
+            text-transform:uppercase; color:var(--ink-3); font-weight:400;
+            border-bottom:1px solid var(--ink); }
+  tbody td{ border-bottom:1px solid var(--hair-soft); }
+  tbody td:not(:first-child){ font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; }
+  tbody tr.suma td{ border-top:1px solid var(--ink); border-bottom:0; font-weight:600; }
+  tbody tr.suma td:first-child{ font-family:"Archivo",sans-serif; }
+  .tag{ font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+        padding:2px 8px; border-radius:999px; border:1px solid currentColor; white-space:nowrap; }
+  .t-cob{ color:var(--deuda); } .t-atr{ color:#9A6A12; } .t-cor{ color:var(--bien); }
+  .tabla-scroll{ overflow-x:auto; }
+
+  .linea{ margin:22px 0 6px; }
+  .tl{ display:grid; grid-template-columns:repeat(12,1fr); gap:3px; margin-top:10px; }
+  .tl span{ height:34px; border-radius:3px; display:flex; align-items:center; justify-content:center;
+            font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:#FFFFFF; }
+  .tl .f1{ background:var(--acento); }
+  .tl .f2{ background:var(--deuda); }
+  .tl-leyenda{ display:flex; gap:20px; flex-wrap:wrap; margin-top:12px; font-size:13.5px; color:var(--ink-2); }
+  .tl-leyenda span{ display:inline-flex; align-items:center; gap:8px; }
+  .tl-leyenda i{ width:12px; height:12px; border-radius:3px; }
+
+  ul.lista{ margin:6px 0 0; padding-left:0; list-style:none; }
+  ul.lista li{ position:relative; padding-left:26px; margin-bottom:10px; }
+  ul.lista li::before{ content:"—"; position:absolute; left:0; color:var(--acento); font-weight:700; }
+  ol.pasos{ margin:6px 0 0; padding-left:20px; }
+  ol.pasos li{ margin-bottom:10px; }
+
+  .dosc{ display:grid; grid-template-columns:1fr 1fr; gap:28px 40px; }
+  @media (max-width:640px){ .dosc{ grid-template-columns:1fr; gap:6px; } }
+
+  .firma{ display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-top:52px; }
+  .firma div{ border-top:1px solid var(--ink); padding-top:8px; font-size:13px; color:var(--ink-2); }
+  @media (max-width:640px){ .firma{ grid-template-columns:1fr; gap:34px; } }
+  .nota{ font-size:12.5px; color:var(--ink-3); margin-top:40px; padding-top:16px;
+         border-top:1px solid var(--hair); }
+
+  @media print{
+    body{ background:#FFFFFF; }
+    .hoja{ max-width:none; padding:0; background:#FFFFFF; }
+    h2{ break-after:avoid; }
+    table, .tl, .pedido{ break-inside:avoid; }
+  }
+</style>
+
+<div class="hoja">
+  <p class="kicker">Plan de respaldo · solo si la nivelación no procede</p>
+  <h1>$70,000 en una exhibición<br>y te devuelvo en 18 meses</h1>
+  <p class="de">De <b>Carlos Hernández Montes</b> · Jefe de Departamento en el SAT ·
+    Plaza de confianza · Ingreso comprobable por recibo de nómina</p>
+
+  <div class="pedido">
+    <p>Te pido <b>$70,000 en una sola exhibición</b> para liquidar de golpe las deudas que hoy me cobran
+      entre 60% y 90% de interés anual. Te devuelvo <b>$4,000 al mes del mes 7 al 24</b>, sin excepción y
+      el día que me cae la quincena. Antes de seguir leyendo hay algo que quiero que sepas por mí y no por
+      alguien más: <b>Mario ya me prestó $43,000 y estoy pidiéndole ampliarlos a $103,000.</b> No te lo
+      estoy ocultando porque no quiero que te enteres después.</p>
+  </div>
+
+  <dl class="cifras">
+    <div><dt>Ingreso del hogar</dt><dd class="cifra">$27,708</dd></div>
+    <div><dt>Deuda cara actual</dt><dd class="cifra" style="color:var(--deuda)">$144,551</dd></div>
+    <div><dt>Lo que te pido</dt><dd class="cifra" style="color:var(--acento)">$70,000</dd></div>
+    <div><dt>Devolución mensual</dt><dd class="cifra">$4,000</dd></div>
+    <div><dt>Quedas pagado</dt><dd class="cifra">Mes 24</dd></div>
+  </dl>
+
+  <h2>Mi situación, sin adornos</h2>
+  <p>Gano $17,583 netos: $28,227 brutos menos ISR, cuotas del ISSSTE, mi préstamo del ISSSTE y el FONACOT,
+    que se descuentan antes de que yo vea el dinero. Mi esposa es maestra y aporta $10,125. Vivimos en casa
+    propia, sin renta. <b>El ingreso del hogar es $27,708.</b></p>
+  <p>El 8 de septiembre <b>entregué mi auto en dación en pago</b>: un CUPRA en leasing de $16,691 al mes,
+    más de la mitad de mi sueldo. El contrato quedó cerrado en ceros. Con él se fueron $2,886 de gasolina,
+    y cambié el Uber diario de $3,737 al mes por una ruta de Mexibús y Metro de $576. Sumando los recortes
+    de comida fuera y compras, <b>dejé de gastar $33,575 al mes</b>. Esa parte ya está hecha, no es
+    promesa.</p>
+
+  <h2>Panorama completo de mis deudas</h2>
+  <div class="tabla-scroll">
+    <table>
+      <thead><tr><th>Acreedor</th><th>Saldo</th><th>Tasa aprox.</th><th>Estado</th></tr></thead>
+      <tbody>
+        <tr><td>Mario (préstamo personal)</td><td>$43,000</td><td>0%</td><td><span class="tag t-cor">Con plan firmado</span></td></tr>
+        <tr><td>Tenencia y refrendo Morelos</td><td>$10,000</td><td>—</td><td><span class="tag t-atr">Vence 23 sep</span></td></tr>
+        <tr><td>Fintopia</td><td>$10,715</td><td>90%</td><td><span class="tag t-cob">En cobranza</span></td></tr>
+        <tr><td>NU (tarjeta y préstamo)</td><td>$24,689</td><td>70-80%</td><td><span class="tag t-cob">En cobranza</span></td></tr>
+        <tr><td>Klar</td><td>$13,424</td><td>70%</td><td><span class="tag t-cob">En cobranza</span></td></tr>
+        <tr><td>Coppel</td><td>$18,253</td><td>70%</td><td><span class="tag t-cob">En cobranza</span></td></tr>
+        <tr><td>HeyBanco y BanCoppel</td><td>$18,531</td><td>70%</td><td><span class="tag t-atr">Con atraso</span></td></tr>
+        <tr><td>Banco Azteca (tres créditos)</td><td>$48,331</td><td>60-80%</td><td><span class="tag t-cor">Al corriente</span></td></tr>
+        <tr><td>Telcel</td><td>$608</td><td>—</td><td><span class="tag t-atr">Con atraso</span></td></tr>
+        <tr class="suma"><td>Deuda cara, la que tu dinero mata</td><td>$144,551</td><td></td><td></td></tr>
+        <tr><td>Fonacot y préstamo ISSSTE (nómina)</td><td>$130,774</td><td>12-20%</td><td><span class="tag t-cor">Al corriente</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:16px;"><b>$179,105 de mi deuda está al corriente</b> —Fonacot, ISSSTE y los tres de
+    Banco Azteca— porque se descuentan antes de que yo vea el dinero. Lo que se me cayó fue lo que dependía
+    de mi disciplina cuando el auto se llevaba medio sueldo. El auto ya no está.</p>
+
+  <h2>Qué hace tu dinero</h2>
+  <p>Una exhibición de $70,000 rinde mucho más que la misma cantidad repartida en mensualidades, porque
+    mata los saldos caros antes de que sigan generando intereses:</p>
+  <div class="tabla-scroll">
+    <table>
+      <thead><tr><th>Mes</th><th>Queda liquidado</th></tr></thead>
+      <tbody>
+        <tr><td>Mes 1</td><td>Tenencia Morelos, Fintopia, NU préstamo, NU tarjeta, los dos préstamos Azteca, Telcel</td></tr>
+        <tr><td>Mes 2</td><td>Klar</td></tr>
+        <tr><td>Mes 3</td><td>Coppel</td></tr>
+        <tr><td>Mes 4</td><td>HeyBanco, BanCoppel, Azteca muebles</td></tr>
+        <tr class="suma"><td>Mes 4</td><td>No me queda una sola deuda cara</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:16px;">Sin tu apoyo, esas deudas me cuestan <b>$51,298 de intereses</b>. Con él:
+    <b>$14,907</b>. Tu dinero al 0% me ahorra <b>$36,391</b>, y de ahí sale mi capacidad para devolvértelo
+    sin retrasarme contigo ni con Mario.</p>
+
+  <h2>Cómo te pago</h2>
+  <div class="tabla-scroll">
+    <table>
+      <thead><tr><th>Etapa</th><th>A deudas</th><th>Para Mario</th><th>Para ti</th></tr></thead>
+      <tbody>
+        <tr><td>Meses 1 a 6</td><td>todo</td><td>$0</td><td>$0</td></tr>
+        <tr><td>Meses 7 a 19</td><td>lo que quede</td><td>$8,000</td><td>$4,000</td></tr>
+        <tr><td>Meses 20 a 24</td><td>$0</td><td>pagado</td><td>$4,000</td></tr>
+        <tr class="suma"><td>Mes 24</td><td>Deuda en $0</td><td>$103,000</td><td>$70,000</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:16px;">Si la nivelación salarial sale adelante, esos $5,326 netos adicionales van
+    directo a adelantarte pagos, y cierro contigo mucho antes del mes 24.</p>
+
+  <h2>Qué te garantiza que esto funcione</h2>
+  <ul class="lista">
+    <li><b>La parte difícil ya está hecha:</b> entregué el auto y me quité $16,691 de gasto al mes.</li>
+    <li><b>Ingreso estable y comprobable</b>, el mío y el de mi esposa, con recibos de nómina.</li>
+    <li><b>Firmo pagaré</b> por los $70,000 con esta tabla anexa.</li>
+    <li><b>Te enseño mi buró completo</b> cuando quieras, y el comprobante de cada deuda que liquide.</li>
+    <li><b>No abro ninguna línea de crédito nueva</b> mientras te deba, ni contigo ni con nadie.</li>
+    <li><b>Además de mi sueldo estoy generando ingreso propio</b> como desarrollador. No cuento con él para
+      pagarte: es para terminar antes.</li>
+  </ul>
+
+  <h2>Por qué te lo pido a ti</h2>
+  <p>Voy a ser papá en marzo. Quiero que lo que hoy se va en intereses del 90% se vaya en mi hijo. Te lo
+    pido a ti porque hay confianza de por medio y porque prefiero deberle a alguien que me va a exigir de
+    frente, que seguir debiéndole a financieras que solo me cobran. Si me dices que no, lo entiendo
+    perfectamente y el plan sigue: me toma 25 meses en vez de 24 y me cuesta más caro, pero sale.</p>
+
+  <div class="firma">
+    <div>Carlos Hernández Montes<br><span class="num">Fecha: ____ / ____ / 2026</span></div>
+    <div>Conforme<br><span class="num">Fecha: ____ / ____ / 2026</span></div>
+  </div>
+
+  <p class="nota">Saldos tomados de mi Reporte de Crédito Especial de Buró de Crédito del 31 de agosto de
+    2026; el auto entregado en dación en pago aún no se refleja porque la actualización tarda unos 120 días
+    hábiles. El préstamo ISSSTE y el FONACOT no salen en buró porque van por nómina: vienen de mis recibos
+    del SAT. Los ingresos netos salen de esos recibos y del comprobante del ISSEMyM de mi esposa, tomando
+    la quincena normal sin retroactivos. Las tasas son aproximadas porque el reporte no las incluye.</p>
+</div>
