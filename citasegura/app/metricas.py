@@ -26,10 +26,14 @@ def calcular(desde: datetime, hasta: datetime) -> dict:
             rango,
         ).fetchone()
         nuevas = c.execute(
-            f"SELECT COUNT(*) FROM citas WHERE {VALIDA} AND creado >= ? AND creado < ?", rango
+            f"SELECT COUNT(*) FROM citas WHERE {VALIDA} AND creado >= ? AND creado <= ?", rango  # incluye este minuto
         ).fetchone()[0]
     m = dict(f)
     m["nuevas"] = nuevas
+    with db.conn() as c:  # lugares cancelados que la lista de espera volvio a llenar
+        m["rellenados"] = c.execute(
+            "SELECT COUNT(*) FROM espera WHERE estado='tomada' AND tomada_en >= ? AND tomada_en <= ?", rango
+        ).fetchone()[0]
     m["atendibles"] = m["total"] - m["canceladas"]  # las que el consultorio esperaba
     m["asistencias"] = m["atendibles"] - m["faltas"]
     m["tasa_faltas"] = m["faltas"] / m["atendibles"] if m["atendibles"] else 0.0
@@ -60,6 +64,7 @@ def reporte(ahora: datetime | None = None) -> str:
         f"Citas agendadas por el asistente: {semana['nuevas']}",
         f"Citas de la semana: {semana['total']}",
         f"• Canceladas con aviso (horario liberado): {semana['canceladas']}",
+        f"• Lugares liberados que se volvieron a llenar con la lista de espera: {semana['rellenados']}",
         f"• Confirmadas por WhatsApp: {semana['confirmadas']} ({_pct(semana['tasa_confirmacion'])})",
         f"• Asistieron: {semana['asistencias']}",
         f"• Faltaron: {semana['faltas']}",

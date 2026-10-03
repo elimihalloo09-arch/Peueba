@@ -60,11 +60,13 @@ app/
                    botones del recordatorio y comandos del consultorio (#reporte, #hoy,
                    #falta, #asistio, #bot)
   ia.py            Claude + herramientas: ver_horarios, agendar_cita, mis_citas,
-                   confirmar_cita, cancelar_cita, reprogramar_cita, pasar_a_humano
+                   confirmar_cita, cancelar_cita, reprogramar_cita, lista_de_espera,
+                   pasar_a_humano
   agenda.py        logica de horarios y citas
   recordatorios.py recordatorios 48 h (con botones) y 2 h (direccion y Maps) con plantilla
   metricas.py      calculo de metricas y reporte semanal (lunes 9:00)
   avisos.py        avisos al consultorio: cita nueva, cancelada, movida, urgencia
+  espera.py        lista de espera: ofrece horarios liberados (Lo quiero / No, gracias)
   whatsapp.py      enviar_texto, enviar_plantilla
   db.py            SQLite: mensajes, citas, humano, procesados (+ migracion de columnas)
   clinica.py       datos de la clinica, SYSTEM_PROMPT y como_llegar() (lee llegada.txt)
@@ -136,7 +138,8 @@ Pendiente de probar con llaves reales: Claude + Meta.
 
 Mejoras propuestas (ideas del usuario a partir del mensaje de un asistente humano real):
 - ~~Indicaciones de llegada completas~~ (hecho: llegada.txt + Maps + Waze, al agendar/mover y al Confirmo).
-- Lista de espera: al cancelar, ofrecer el horario a quien lo queria (lo que mas vende).
+- ~~Lista de espera~~ (hecho: app/espera.py; estados esperando/ofrecida/tomada/resuelta/rechazada/
+  vencida; `WA_TEMPLATE_LISTA_ESPERA`, `OFERTA_MINUTOS`; el reporte cuenta los lugares rellenados).
 - Recordatorio de regreso a los 6 meses (probablemente categoria marketing en Meta: plan mas caro).
 - Entender notas de voz (requiere servicio de voz a texto: preguntar antes de agregar).
 - Mandar archivos (QR de acceso, PDF de indicaciones previas), tono configurable con emojis.

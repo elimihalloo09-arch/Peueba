@@ -5,7 +5,7 @@ from datetime import datetime
 
 from anthropic import Anthropic
 
-from . import agenda, db
+from . import agenda, db, espera
 from .clinica import SYSTEM_PROMPT, como_llegar
 
 _client = None
@@ -73,6 +73,20 @@ TOOLS = [
         },
     },
     {
+        "name": "lista_de_espera",
+        "description": "Anota al paciente en la lista de espera de una fecha que ya no tiene horarios libres. "
+        "Si alguien cancela ese dia, se le ofrece el lugar por WhatsApp. Pide antes nombre y motivo.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "nombre": {"type": "string"},
+                "motivo": {"type": "string"},
+                "fecha": {"type": "string", "description": "YYYY-MM-DD"},
+            },
+            "required": ["nombre", "motivo", "fecha"],
+        },
+    },
+    {
         "name": "pasar_a_humano",
         "description": "Pasa la conversacion a una persona de la clinica (urgencias, dolor, quejas).",
         "input_schema": {"type": "object", "properties": {"motivo": {"type": "string"}}},
@@ -109,6 +123,8 @@ def _correr_herramienta(nombre_tool, args, telefono) -> str:
         return agenda.reprogramar(telefono, args["cita_id"], args["fecha"], args["hora"])
     if nombre_tool == "cancelar_cita":
         return agenda.cambiar_estado(telefono, args["cita_id"], "cancelada")
+    if nombre_tool == "lista_de_espera":
+        return espera.anotar(telefono, args["nombre"], args["motivo"], args["fecha"])
     if nombre_tool == "pasar_a_humano":
         db.activar_humano(telefono)
         return "Conversacion marcada para atencion humana."

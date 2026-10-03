@@ -44,6 +44,18 @@ def init():
             telefono TEXT PRIMARY KEY,      -- conversaciones que atiende una persona
             desde TEXT DEFAULT (datetime('now','localtime'))
         );
+        CREATE TABLE IF NOT EXISTS espera (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            telefono TEXT NOT NULL,
+            nombre TEXT NOT NULL,
+            motivo TEXT,
+            fecha TEXT NOT NULL,            -- 'YYYY-MM-DD' que queria el paciente
+            estado TEXT DEFAULT 'esperando', -- esperando, ofrecida, tomada, resuelta, rechazada, vencida
+            ofrecido TEXT,                  -- horario ofrecido 'YYYY-MM-DD HH:MM'
+            ofrecido_en TEXT,
+            tomada_en TEXT,
+            creado TEXT DEFAULT (datetime('now','localtime'))
+        );
         CREATE TABLE IF NOT EXISTS procesados (
             wamid TEXT PRIMARY KEY          -- evita contestar dos veces el mismo mensaje
         );

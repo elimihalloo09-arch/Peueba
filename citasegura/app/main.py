@@ -14,7 +14,7 @@ load_dotenv()
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request  # noqa: E402
 from fastapi.responses import PlainTextResponse  # noqa: E402
 
-from . import agenda, avisos, clinica, db, ia, metricas, recordatorios, whatsapp  # noqa: E402
+from . import agenda, avisos, clinica, db, espera, ia, metricas, recordatorios, whatsapp  # noqa: E402
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("citasegura")
@@ -37,6 +37,7 @@ async def ciclo(app):
     revisar_configuracion()
     db.init()
     scheduler.add_job(recordatorios.revisar, "interval", minutes=10)
+    scheduler.add_job(espera.revisar, "interval", minutes=10)
     scheduler.add_job(metricas.enviar_reporte, "cron", day_of_week="mon", hour=9)  # lunes 9:00
     scheduler.start()
     yield
@@ -175,7 +176,12 @@ def procesar(msg: dict):
     db.guardar_mensaje(telefono, "user", texto)
     if db.en_modo_humano(telefono):
         return  # una persona de la clinica esta atendiendo esta conversacion
-    respuestas = _boton_recordatorio(telefono, texto) if msg.get("type") == "button" else None
+    respuestas = None
+    oferta = texto.strip().lower().rstrip(".!")
+    if oferta in ("lo quiero", "no, gracias", "no gracias"):  # respuesta a un lugar de la lista de espera
+        respuestas = espera.responder(telefono, acepta=oferta == "lo quiero")
+    if respuestas is None and msg.get("type") == "button":
+        respuestas = _boton_recordatorio(telefono, texto)
     if respuestas is None:
         antes = {c["id"] for c in agenda.citas_del_paciente(telefono)}
         try:

@@ -86,6 +86,25 @@ Cuando Meta la apruebe pon `WA_TEMPLATE_RECORDATORIO_2H=recordatorio_2h` en `.en
 Mientras tanto se usa la primera. Llena `CLINICA_DIRECCION` y `CLINICA_MAPS` (en Google
 Maps: busca el consultorio -> Compartir -> Copiar vinculo).
 
+## Lista de espera
+Si el dia que quiere el paciente esta lleno, el bot le ofrece otro dia y tambien anotarlo en
+la **lista de espera** de ese dia. Cuando alguien **cancela o mueve** su cita, ese horario se
+le ofrece al primero de la lista con dos botones: **Lo quiero** / **No, gracias**.
+- Si acepta, queda agendado y le llegan las indicaciones para llegar.
+- Si dice que no, o no contesta en `OFERTA_MINUTOS` (90), pasa al siguiente.
+- El lugar no se aparta: si otra persona lo agenda primero, se le avisa y sigue en la lista.
+- Al consultorio le llega "Nueva cita (lugar liberado, de la lista de espera)" y el reporte
+  del lunes cuenta los lugares que se volvieron a llenar.
+
+La oferta casi siempre llega dias despues de que el paciente escribio, fuera de la ventana de
+24 h, asi que necesita una plantilla **Utilidad**, es_MX, nombre `lugar_liberado`, con
+botones de respuesta rapida, puesta en `WA_TEMPLATE_LISTA_ESPERA`:
+
+> Hola {{1}}, se libero un lugar en {{2}} el {{3}}. ¿Lo quieres? Si no nos contestas pronto se lo ofreceremos a otra persona.
+> [Lo quiero] [No, gracias]
+
+Sin plantilla solo se ofrece a quien escribio en las ultimas 24 h.
+
 ## Indicaciones para llegar
 Copia `llegada.ejemplo.txt` a `llegada.txt` y escribe como llegar al consultorio con tus
 palabras (estacionamiento, entrada, piso, numero de consultorio). Con la direccion, Google Maps

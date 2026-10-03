@@ -57,7 +57,11 @@ def agendar(telefono, nombre, motivo, fecha, hora) -> str:
             _insertar(c, telefono, nombre, motivo, fecha, hora)
     except sqlite3.IntegrityError:  # otro paciente la tomo en el mismo instante
         return "Ese horario ya no esta disponible."
-    avisos.avisar(f"Nueva cita: {nombre}, {avisos.cuando(f'{fecha} {hora}')} ({motivo}). Tel {telefono}")
+    from . import espera  # aqui para evitar importacion circular
+
+    de_espera = espera.al_agendar(telefono, f"{fecha} {hora}")
+    origen = " (lugar liberado, de la lista de espera)" if de_espera else ""
+    avisos.avisar(f"Nueva cita{origen}: {nombre}, {avisos.cuando(f'{fecha} {hora}')} ({motivo}). Tel {telefono}")
     return f"Cita agendada: {fecha} {hora} a nombre de {nombre}."
 
 
@@ -82,6 +86,9 @@ def cambiar_estado(telefono, cita_id, estado) -> str:
         c.execute("UPDATE citas SET estado=? WHERE id=?", (estado, cita_id))
     if estado == "cancelada":  # las confirmaciones no se avisan: se ven en #hoy y no gastan mensajes
         avisos.avisar(f"Cancelada: {cita['nombre']}, {avisos.cuando(cita['inicio'])}. El horario quedo libre.")
+        from . import espera
+
+        espera.hueco_liberado(cita["inicio"])
     return "Listo."
 
 
@@ -107,6 +114,10 @@ def reprogramar(telefono, cita_id, fecha, hora) -> str:
     avisos.avisar(
         f"Cita movida: {vieja['nombre']}, de {avisos.cuando(vieja['inicio'])} a {avisos.cuando(f'{fecha} {hora}')}."
     )
+    from . import espera
+
+    espera.al_agendar(telefono, f"{fecha} {hora}")
+    espera.hueco_liberado(vieja["inicio"])  # el horario viejo quedo libre
     return f"Cita reprogramada: {fecha} {hora} a nombre de {vieja['nombre']}."
 
 
