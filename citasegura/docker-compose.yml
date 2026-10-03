@@ -1,0 +1,38 @@
+# Produccion en un VPS: el bot + Caddy (pone HTTPS solo, con certificado gratis).
+# Uso: docker compose up -d --build     (ver DESPLIEGUE.md)
+# Con el bot de ventas tambien:  docker compose --profile ventas up -d --build
+services:
+  bot:
+    build:
+      context: .
+      args:
+        VOZ: ${VOZ:-0}            # VOZ=1 en .env instala lo necesario para notas de voz
+    env_file: .env
+    volumes:
+      - ./datos:/datos            # base de datos y respaldos; sobrevive a actualizaciones
+    restart: unless-stopped
+
+  ventas:                         # opcional: vende CitaSegura a dentistas desde otro numero
+    build: .
+    env_file: .env.ventas         # su propia app de Meta, numero y MODO=ventas
+    volumes:
+      - ./datos-ventas:/datos
+    restart: unless-stopped
+    profiles: ["ventas"]
+
+  caddy:
+    image: caddy:2
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - DOMINIO=${DOMINIO:?Pon DOMINIO=tu.dominio en .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_datos:/data         # certificados HTTPS
+    depends_on:
+      - bot
+    restart: unless-stopped
+
+volumes:
+  caddy_datos:
