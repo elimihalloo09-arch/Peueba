@@ -1,0 +1,2 @@
+# Opcional: entender notas de voz en el servidor (VOZ=1). Gratis; el modelo pesa ~250 MB.
+faster-whisper==1.2.*

@@ -58,6 +58,10 @@ y `DOMINIO=bot.tudominio.com`. El servidor revisa al arrancar que esten las llav
 (`WA_TOKEN`, `WA_PHONE_NUMBER_ID`, `WA_VERIFY_TOKEN`, `WA_APP_SECRET`, `ANTHROPIC_API_KEY`):
 si falta una, no arranca y te dice cual.
 
+Para entender notas de voz pon `VOZ=1` en `.env` (y `VOZ_MODELO=base` si tu servidor
+tiene 1 GB de RAM; con `small` usa uno de 2 GB). El modelo se descarga la primera vez a
+`datos/modelos`.
+
 ## Paso 4. Arrancar
 
 ```bash

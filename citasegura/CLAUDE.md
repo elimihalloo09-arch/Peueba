@@ -67,6 +67,7 @@ app/
   metricas.py      calculo de metricas y reporte semanal (lunes 9:00)
   avisos.py        avisos al consultorio: cita nueva, cancelada, movida, urgencia
   espera.py        lista de espera: ofrece horarios liberados (Lo quiero / No, gracias)
+  voz.py           notas de voz -> texto con faster-whisper en el servidor (opcional, VOZ=1)
   whatsapp.py      enviar_texto, enviar_plantilla
   db.py            SQLite: mensajes, citas, humano, procesados (+ migracion de columnas)
   clinica.py       datos de la clinica, SYSTEM_PROMPT y como_llegar() (lee llegada.txt)
@@ -141,7 +142,9 @@ Mejoras propuestas (ideas del usuario a partir del mensaje de un asistente human
 - ~~Lista de espera~~ (hecho: app/espera.py; estados esperando/ofrecida/tomada/resuelta/rechazada/
   vencida; `WA_TEMPLATE_LISTA_ESPERA`, `OFERTA_MINUTOS`; el reporte cuenta los lugares rellenados).
 - Recordatorio de regreso a los 6 meses (probablemente categoria marketing en Meta: plan mas caro).
-- Entender notas de voz (requiere servicio de voz a texto: preguntar antes de agregar).
+- ~~Entender notas de voz~~ (hecho: faster-whisper local, gratis, MIT; opcional con VOZ=1 y
+  requirements-voz.txt. NO probado con un modelo real: el entorno de desarrollo no podia
+  descargarlo. Probar con `python -m app.voz audio.ogg`).
 - Mandar archivos (QR de acceso, PDF de indicaciones previas), tono configurable con emojis.
 
 ## 10. Forma de trabajar

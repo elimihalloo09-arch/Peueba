@@ -2,7 +2,10 @@
 # Uso: docker compose up -d --build     (ver DESPLIEGUE.md)
 services:
   bot:
-    build: .
+    build:
+      context: .
+      args:
+        VOZ: ${VOZ:-0}            # VOZ=1 en .env instala lo necesario para notas de voz
     env_file: .env
     volumes:
       - ./datos:/datos            # base de datos y respaldos; sobrevive a actualizaciones

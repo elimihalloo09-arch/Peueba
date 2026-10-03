@@ -14,7 +14,7 @@ load_dotenv()
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request  # noqa: E402
 from fastapi.responses import PlainTextResponse  # noqa: E402
 
-from . import agenda, avisos, clinica, db, espera, ia, metricas, recordatorios, whatsapp  # noqa: E402
+from . import agenda, avisos, clinica, db, espera, ia, metricas, recordatorios, voz, whatsapp  # noqa: E402
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("citasegura")
@@ -161,11 +161,27 @@ def eco_de_recepcion(eco: dict):
         db.guardar_mensaje(paciente, "assistant", texto)
 
 
+def _escuchar(msg: dict) -> str | None:
+    """Nota de voz del paciente -> texto (en el servidor; el audio no se guarda)."""
+    try:
+        audio = whatsapp.descargar_media(msg["audio"]["id"])
+    except Exception as e:
+        log.error("No se pudo bajar la nota de voz: %s", e)
+        return None
+    texto = voz.transcribir(audio)
+    return f"🎤 {texto}" if texto else None  # la marca le dice a Claude que vino de un audio
+
+
 def procesar(msg: dict):
     if db.ya_procesado(msg["id"]):
         return
     telefono = msg["from"]
     texto = _extraer_texto(msg)
+    if not texto and msg.get("type") == "audio" and voz.activa():
+        texto = _escuchar(msg)
+        if not texto:
+            whatsapp.enviar_texto(telefono, "No alcance a escuchar bien tu audio 🙏 ¿Me lo escribes, por favor?")
+            return
     if not texto:
         whatsapp.enviar_texto(telefono, "Por ahora solo puedo leer mensajes de texto. ¿Me lo escribes?")
         return
@@ -177,7 +193,7 @@ def procesar(msg: dict):
     if db.en_modo_humano(telefono):
         return  # una persona de la clinica esta atendiendo esta conversacion
     respuestas = None
-    oferta = texto.strip().lower().rstrip(".!")
+    oferta = texto.replace("🎤", "").strip().lower().rstrip(".!")  # tambien si lo dijo en audio
     if oferta in ("lo quiero", "no, gracias", "no gracias"):  # respuesta a un lugar de la lista de espera
         respuestas = espera.responder(telefono, acepta=oferta == "lo quiero")
     if respuestas is None and msg.get("type") == "button":

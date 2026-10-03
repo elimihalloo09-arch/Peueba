@@ -7,11 +7,15 @@ ENV TZ=America/Mexico_City \
     DB_PATH=/datos/citasegura.db \
     RESPALDOS=/datos/respaldos \
     CLINICA_LLEGADA_ARCHIVO=/datos/llegada.txt \
+    VOZ_CARPETA=/datos/modelos \
     PRODUCCION=1
 
 WORKDIR /app
-COPY requirements.txt .
+COPY requirements.txt requirements-voz.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
+# Notas de voz (opcional): docker compose build --build-arg VOZ=1
+ARG VOZ=0
+RUN if [ "$VOZ" = "1" ]; then pip install --no-cache-dir -r requirements-voz.txt; fi
 COPY app ./app
 
 # Sin permisos de administrador dentro del contenedor

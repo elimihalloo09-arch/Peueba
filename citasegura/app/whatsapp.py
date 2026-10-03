@@ -42,3 +42,16 @@ def enviar_plantilla(telefono: str, plantilla: str, parametros: list[str], idiom
     }
     r = httpx.post(_url(), headers=_headers(), json=payload, timeout=20)
     r.raise_for_status()
+
+
+def descargar_media(media_id: str, max_bytes: int = 5_000_000) -> bytes:
+    """Baja un archivo que mando el paciente (ej. nota de voz). Meta da primero una URL temporal
+    y luego se descarga con el mismo token."""
+    info = httpx.get(f"https://graph.facebook.com/{GRAPH}/{media_id}", headers=_headers(), timeout=20)
+    info.raise_for_status()
+    datos = info.json()
+    if int(datos.get("file_size") or 0) > max_bytes:
+        raise ValueError("archivo demasiado grande")
+    r = httpx.get(datos["url"], headers=_headers(), timeout=60)
+    r.raise_for_status()
+    return r.content

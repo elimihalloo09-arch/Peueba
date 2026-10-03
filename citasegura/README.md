@@ -86,6 +86,23 @@ Cuando Meta la apruebe pon `WA_TEMPLATE_RECORDATORIO_2H=recordatorio_2h` en `.en
 Mientras tanto se usa la primera. Llena `CLINICA_DIRECCION` y `CLINICA_MAPS` (en Google
 Maps: busca el consultorio -> Compartir -> Copiar vinculo).
 
+## Notas de voz (opcional)
+Muchos pacientes mandan audios. Con `VOZ=1` el bot los convierte a texto **en tu propio
+servidor** con [faster-whisper](https://github.com/SYSTRAN/faster-whisper) (gratis, codigo
+abierto) y contesta como si lo hubieran escrito. El audio no se manda a ningun servicio externo
+ni se guarda.
+
+```
+pip install -r requirements-voz.txt
+python -m app.voz mi_audio.ogg     # prueba: guarda una nota de voz de WhatsApp y transcribela
+```
+
+- La primera vez descarga el modelo (~250 MB con `small`) y tarda; despues es mas rapido.
+- `VOZ_MODELO=small` entiende mejor; `base` usa menos memoria y es mas rapido (para un VPS de 1 GB).
+  Con `small` conviene un servidor de 2 GB.
+- Audios de mas de `VOZ_MAX_SEGUNDOS` (120) o que no se entienden: el bot pide que lo escriban.
+- Si el audio trae nombre, dia u hora poco claros, el bot los confirma antes de agendar.
+
 ## Lista de espera
 Si el dia que quiere el paciente esta lleno, el bot le ofrece otro dia y tambien anotarlo en
 la **lista de espera** de ese dia. Cuando alguien **cancela o mueve** su cita, ese horario se
