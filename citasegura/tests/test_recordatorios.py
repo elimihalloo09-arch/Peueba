@@ -65,3 +65,29 @@ def test_recordatorio_queda_en_historial(enviados):
     recordatorios.revisar()
     with db.conn() as c:
         assert c.execute("SELECT rol FROM mensajes WHERE telefono=?", (TEL,)).fetchone()["rol"] == "assistant"
+
+
+def test_2h_usa_plantilla_con_direccion(enviados, monkeypatch):
+    monkeypatch.setattr(recordatorios, "PLANTILLA_2H", "recordatorio_2h")
+    _cita(1.5, r48=1)
+    recordatorios.revisar()
+    [(tel, params)] = enviados
+    assert params[3] == recordatorios.DIRECCION and params[4] == recordatorios.MAPS
+    with db.conn() as c:
+        ultimo = c.execute("SELECT texto FROM mensajes ORDER BY id DESC").fetchone()["texto"]
+    assert "hoy a las" in ultimo
+
+
+def test_2h_sin_plantilla_aprobada_usa_la_de_48h(enviados, monkeypatch):
+    monkeypatch.setattr(recordatorios, "PLANTILLA_2H", "")
+    _cita(1.5, r48=1)
+    recordatorios.revisar()
+    [(tel, params)] = enviados
+    assert len(params) == 3
+
+
+def test_48h_no_usa_la_de_2h(enviados, monkeypatch):
+    monkeypatch.setattr(recordatorios, "PLANTILLA_2H", "recordatorio_2h")
+    _cita(30)
+    recordatorios.revisar()
+    assert len(enviados[0][1]) == 3

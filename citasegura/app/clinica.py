@@ -2,10 +2,12 @@
 import os
 
 NOMBRE = os.getenv("CLINICA_NOMBRE", "Clinica Dental Sonrisa")
+DIRECCION = os.getenv("CLINICA_DIRECCION", "Av. Ejemplo 123, Col. Benito Juarez, Nezahualcoyotl")
+MAPS = os.getenv("CLINICA_MAPS", "https://maps.google.com/?q=Nezahualcoyotl")
 
 INFO = f"""
 Clinica: {NOMBRE}, Nezahualcoyotl, Estado de Mexico.
-Direccion: Av. Ejemplo 123, Col. Benito Juarez (Google Maps: https://maps.google.com/?q=Nezahualcoyotl)
+Direccion: {DIRECCION} (Google Maps: {MAPS})
 Horario: lunes a viernes 10:00-19:00, sabado 10:00-14:00, domingo cerrado.
 Duracion de cita: 1 hora.
 Precios aproximados: consulta/valoracion $350, limpieza $600, resina desde $700,

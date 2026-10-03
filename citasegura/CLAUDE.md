@@ -62,7 +62,7 @@ app/
   ia.py            Claude + herramientas: ver_horarios, agendar_cita, mis_citas,
                    confirmar_cita, cancelar_cita, reprogramar_cita, pasar_a_humano
   agenda.py        logica de horarios y citas
-  recordatorios.py recordatorios 48 h y 2 h con plantilla
+  recordatorios.py recordatorios 48 h (con botones) y 2 h (direccion y Maps) con plantilla
   metricas.py      calculo de metricas y reporte semanal (lunes 9:00)
   whatsapp.py      enviar_texto, enviar_plantilla
   db.py            SQLite: mensajes, citas, humano, procesados (+ migracion de columnas)
@@ -108,7 +108,8 @@ Pendiente de probar con llaves reales: Claude + Meta.
 2. ~~Manejar respuestas a botones del recordatorio~~ (hecho: Confirmo/Cancelar directo en
    codigo, Reprogramar pasa a Claude).
 3. ~~Herramienta `reprogramar_cita`~~ (hecho).
-4. Recordatorio de 2 h con plantilla distinta (incluye direccion y Maps).
+4. ~~Recordatorio de 2 h con plantilla distinta~~ (hecho en codigo: `WA_TEMPLATE_RECORDATORIO_2H`,
+   `CLINICA_DIRECCION`, `CLINICA_MAPS`). Falta darla de alta y que Meta la apruebe (ver README).
 5. Notificar al consultorio (WhatsApp del doctor/recepcion) cada cita nueva y cada cancelacion.
 6. ~~Comando para salir de modo humano~~ (hecho: `TELEFONO_HUMANO` manda `#bot <telefono>`).
 7. ~~**Metricas para el doctor**~~ (hecho: `#reporte`, `#hoy`, `#falta` y envio los lunes).

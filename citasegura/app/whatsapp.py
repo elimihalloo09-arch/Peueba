@@ -20,6 +20,12 @@ def enviar_texto(telefono: str, texto: str):
     r.raise_for_status()
 
 
+def _limpiar(texto: str) -> str:
+    """Meta rechaza variables de plantilla con saltos de linea, tabuladores o muchos espacios
+    seguidos (ej. una direccion copiada en varias lineas)."""
+    return " ".join(str(texto).split())
+
+
 def enviar_plantilla(telefono: str, plantilla: str, parametros: list[str], idioma="es_MX"):
     """Las plantillas (ej. recordatorios) deben estar aprobadas por Meta antes de usarse."""
     payload = {
@@ -30,7 +36,7 @@ def enviar_plantilla(telefono: str, plantilla: str, parametros: list[str], idiom
             "name": plantilla,
             "language": {"code": idioma},
             "components": [
-                {"type": "body", "parameters": [{"type": "text", "text": p} for p in parametros]}
+                {"type": "body", "parameters": [{"type": "text", "text": _limpiar(p)} for p in parametros]}
             ],
         },
     }

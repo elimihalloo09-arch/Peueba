@@ -61,6 +61,22 @@ nombre `recordatorio_cita`, con 3 variables y botones de respuesta rapida:
 > Hola {{1}}, te recordamos tu cita en {{2}} el {{3}}. ¿Nos confirmas?
 > [Confirmo] [Reprogramar] [Cancelar]
 
+Y una segunda plantilla **Utilidad**, es_MX, nombre `recordatorio_2h`, con 5 variables
+(se manda 2 h antes):
+
+> Hola {{1}}, te recordamos que tu cita en {{2}} es hoy a las {{3}}.
+> Direccion: {{4}}
+> Como llegar: {{5}}
+> Si ya no puedes venir, respondenos este mensaje para darle tu lugar a otro paciente. ¡Te esperamos!
+
+Reglas de Meta que evitan el rechazo: ninguna variable al inicio ni al final del texto, y
+las variables van en orden ({{1}}, {{2}}…). Al mandar, el codigo quita saltos de linea de
+las variables porque Meta tampoco los acepta ahi.
+
+Cuando Meta la apruebe pon `WA_TEMPLATE_RECORDATORIO_2H=recordatorio_2h` en `.env`.
+Mientras tanto se usa la primera. Llena `CLINICA_DIRECCION` y `CLINICA_MAPS` (en Google
+Maps: busca el consultorio -> Compartir -> Copiar vinculo).
+
 ## Botones del recordatorio
 **Confirmo** / **Cancelar** se resuelven directo en el codigo (sin gastar Claude) sobre la
 proxima cita del paciente. **Reprogramar** lo atiende Claude con `reprogramar_cita`.
