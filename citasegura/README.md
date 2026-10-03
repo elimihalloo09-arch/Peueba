@@ -42,6 +42,14 @@ uvicorn app.main:app --reload --port 8000
 ```
 Prueba: abre http://localhost:8000/salud
 
+## Paso 3b. Probar sin WhatsApp (solo con la llave de Claude)
+```
+python probar_chat.py
+```
+Platicas con el bot en la terminal como si fueras el paciente. Tambien puedes simular botones
+(`/boton Confirmo`), escribir como el consultorio (`/staff #reporte`) y correr los
+recordatorios (`/recordatorios`). Usa su propia base `prueba_chat.db`.
+
 ## Paso 4. Exponerlo a internet (para que Meta te mande los mensajes)
 Instala Cloudflare Tunnel (gratis) y ejecuta:
 ```

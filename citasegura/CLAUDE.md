@@ -68,6 +68,7 @@ app/
   db.py            SQLite: mensajes, citas, humano, procesados (+ migracion de columnas)
   clinica.py       datos de la clinica y SYSTEM_PROMPT  (hoy hardcodeado, demo)
 tests/             pruebas con pytest (no usan Claude ni Meta)
+probar_chat.py     simulador en terminal: Claude real, WhatsApp falso
 ```
 
 Flujo: Meta -> POST /webhook -> responde 200 rapido -> tarea en segundo plano ->
