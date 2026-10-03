@@ -14,7 +14,7 @@ load_dotenv()
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request  # noqa: E402
 from fastapi.responses import PlainTextResponse  # noqa: E402
 
-from . import agenda, avisos, db, ia, metricas, recordatorios, whatsapp  # noqa: E402
+from . import agenda, avisos, clinica, db, ia, metricas, recordatorios, whatsapp  # noqa: E402
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("citasegura")
@@ -127,9 +127,9 @@ def _comando_staff(texto: str) -> str:
     return AYUDA_STAFF
 
 
-def _boton_recordatorio(telefono: str, texto: str) -> str | None:
+def _boton_recordatorio(telefono: str, texto: str) -> list[str] | None:
     """Confirmo/Cancelar de la plantilla se resuelven sin Claude (mas rapido y sin costo).
-    Devuelve la respuesta, o None si lo debe atender Claude (ej. Reprogramar)."""
+    Devuelve los mensajes a mandar, o None si lo debe atender Claude (ej. Reprogramar)."""
     accion = texto.strip().lower()
     if accion not in ("confirmo", "cancelar"):
         return None
@@ -139,9 +139,12 @@ def _boton_recordatorio(telefono: str, texto: str) -> str | None:
     cuando = datetime.strptime(cita["inicio"], "%Y-%m-%d %H:%M").strftime("%d/%m a las %H:%M")
     if accion == "confirmo":
         agenda.cambiar_estado(telefono, cita["id"], "confirmada")
-        return f"¡Gracias por confirmar! Te esperamos el {cuando}."
+        mensajes = [f"¡Gracias por confirmar! Te esperamos el {cuando}."]
+        if cita["estado"] == "agendada":  # la primera vez; si ya habia confirmado no se repite
+            mensajes.append(clinica.como_llegar())
+        return mensajes
     agenda.cambiar_estado(telefono, cita["id"], "cancelada")
-    return f"Listo, cancelamos tu cita del {cuando}. Si quieres agendar otra, aqui estoy."
+    return [f"Listo, cancelamos tu cita del {cuando}. Si quieres agendar otra, aqui estoy."]
 
 
 def eco_de_recepcion(eco: dict):
@@ -172,14 +175,19 @@ def procesar(msg: dict):
     db.guardar_mensaje(telefono, "user", texto)
     if db.en_modo_humano(telefono):
         return  # una persona de la clinica esta atendiendo esta conversacion
-    respuesta = _boton_recordatorio(telefono, texto) if msg.get("type") == "button" else None
-    if respuesta is None:
+    respuestas = _boton_recordatorio(telefono, texto) if msg.get("type") == "button" else None
+    if respuestas is None:
+        antes = {c["id"] for c in agenda.citas_del_paciente(telefono)}
         try:
-            respuesta = ia.responder(telefono)
+            respuestas = [ia.responder(telefono)]
         except Exception as e:
             log.exception("Error con Claude: %s", e)
-            respuesta = "Disculpa, tuve un problema. En un momento te atiende una persona de la clinica."
-    db.guardar_mensaje(telefono, "assistant", respuesta)
-    whatsapp.enviar_texto(telefono, respuesta)
+            respuestas = ["Disculpa, tuve un problema. En un momento te atiende una persona de la clinica."]
+        # cita nueva o movida en esta conversacion: mandar como llegar (gratis, el paciente acaba de escribir)
+        if {c["id"] for c in agenda.citas_del_paciente(telefono)} - antes:
+            respuestas.append(clinica.como_llegar())
+    for respuesta in respuestas:
+        db.guardar_mensaje(telefono, "assistant", respuesta)
+        whatsapp.enviar_texto(telefono, respuesta)
     if db.en_modo_humano(telefono):
         avisos.avisar(f"Atender a {telefono}: {texto} | Para regresarlo al asistente: #bot {telefono}")

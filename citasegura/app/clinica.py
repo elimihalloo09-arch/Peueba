@@ -4,6 +4,27 @@ import os
 NOMBRE = os.getenv("CLINICA_NOMBRE", "Clinica Dental Sonrisa")
 DIRECCION = os.getenv("CLINICA_DIRECCION", "Av. Ejemplo 123, Col. Benito Juarez, Nezahualcoyotl")
 MAPS = os.getenv("CLINICA_MAPS", "https://maps.google.com/?q=Nezahualcoyotl")
+WAZE = os.getenv("CLINICA_WAZE", "")
+# Indicaciones para llegar (estacionamiento, piso, consultorio...). Texto libre de varias lineas
+# en un archivo para que el consultorio lo escriba a su manera. Ver llegada.ejemplo.txt
+LLEGADA_ARCHIVO = os.getenv("CLINICA_LLEGADA_ARCHIVO", "llegada.txt")
+
+
+def como_llegar() -> str:
+    """Mensaje completo de como llegar. Se lee cada vez: editar el archivo no requiere reiniciar."""
+    try:
+        with open(LLEGADA_ARCHIVO, encoding="utf-8") as f:
+            indicaciones = f.read().strip()
+    except OSError:
+        indicaciones = ""
+    lineas = [f"📍 *Como llegar a {NOMBRE}*", DIRECCION]
+    if indicaciones:
+        lineas += ["", indicaciones]
+    lineas += ["", f"🗺️ Google Maps: {MAPS}"]
+    if WAZE:
+        lineas.append(f"🚗 Waze: {WAZE}")
+    return "\n".join(lineas)
+
 
 INFO = f"""
 Clinica: {NOMBRE}, Nezahualcoyotl, Estado de Mexico.

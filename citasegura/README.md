@@ -86,6 +86,17 @@ Cuando Meta la apruebe pon `WA_TEMPLATE_RECORDATORIO_2H=recordatorio_2h` en `.en
 Mientras tanto se usa la primera. Llena `CLINICA_DIRECCION` y `CLINICA_MAPS` (en Google
 Maps: busca el consultorio -> Compartir -> Copiar vinculo).
 
+## Indicaciones para llegar
+Copia `llegada.ejemplo.txt` a `llegada.txt` y escribe como llegar al consultorio con tus
+palabras (estacionamiento, entrada, piso, numero de consultorio). Con la direccion, Google Maps
+y Waze (`CLINICA_WAZE`) el bot arma un mensaje completo y lo manda solo:
+- cuando el paciente **agenda o mueve** su cita por chat, y
+- cuando toca **Confirmo** en el recordatorio (la primera vez).
+
+En los dos casos el paciente acaba de escribir, asi que va como mensaje normal: **gratis** y
+sin plantilla. Si preguntan "¿como llego?", el bot tambien lo sabe. El archivo se lee cada vez:
+se puede corregir sin reiniciar. En el servidor va en `datos/llegada.txt`.
+
 ## Botones del recordatorio
 **Confirmo** / **Cancelar** se resuelven directo en el codigo (sin gastar Claude) sobre la
 proxima cita del paciente. **Reprogramar** lo atiende Claude con `reprogramar_cita`.

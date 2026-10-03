@@ -6,6 +6,7 @@ ENV TZ=America/Mexico_City \
     PYTHONUNBUFFERED=1 \
     DB_PATH=/datos/citasegura.db \
     RESPALDOS=/datos/respaldos \
+    CLINICA_LLEGADA_ARCHIVO=/datos/llegada.txt \
     PRODUCCION=1
 
 WORKDIR /app

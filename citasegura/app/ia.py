@@ -6,7 +6,7 @@ from datetime import datetime
 from anthropic import Anthropic
 
 from . import agenda, db
-from .clinica import SYSTEM_PROMPT
+from .clinica import SYSTEM_PROMPT, como_llegar
 
 _client = None
 MODELO = os.getenv("CLAUDE_MODEL", "claude-haiku-4-5-20251001")
@@ -117,7 +117,7 @@ def _correr_herramienta(nombre_tool, args, telefono) -> str:
 
 def responder(telefono: str) -> str:
     ahora = datetime.now().strftime("%A %Y-%m-%d %H:%M")
-    system = SYSTEM_PROMPT + f"\nFecha y hora actual: {ahora}."
+    system = SYSTEM_PROMPT + f"\nComo llegar (usalo si preguntan):\n{como_llegar()}\n\nFecha y hora actual: {ahora}."
     mensajes = db.historial(telefono)
 
     for _ in range(5):  # maximo 5 vueltas de herramientas

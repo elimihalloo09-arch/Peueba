@@ -47,6 +47,12 @@ cp .env.example .env
 nano .env
 ```
 
+Escribe como llegar al consultorio (estacionamiento, piso, consultorio):
+
+```bash
+cp llegada.ejemplo.txt datos/llegada.txt && nano datos/llegada.txt
+```
+
 En `.env` llena **todo**: llaves de Claude y de Meta, datos de la clinica, `TELEFONO_HUMANO`
 y `DOMINIO=bot.tudominio.com`. El servidor revisa al arrancar que esten las llaves
 (`WA_TOKEN`, `WA_PHONE_NUMBER_ID`, `WA_VERIFY_TOKEN`, `WA_APP_SECRET`, `ANTHROPIC_API_KEY`):

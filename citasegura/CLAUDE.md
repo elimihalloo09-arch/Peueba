@@ -67,7 +67,7 @@ app/
   avisos.py        avisos al consultorio: cita nueva, cancelada, movida, urgencia
   whatsapp.py      enviar_texto, enviar_plantilla
   db.py            SQLite: mensajes, citas, humano, procesados (+ migracion de columnas)
-  clinica.py       datos de la clinica y SYSTEM_PROMPT  (hoy hardcodeado, demo)
+  clinica.py       datos de la clinica, SYSTEM_PROMPT y como_llegar() (lee llegada.txt)
 tests/             pruebas con pytest (no usan Claude ni Meta)
 probar_chat.py     simulador en terminal: Claude real, WhatsApp falso
 Dockerfile, docker-compose.yml, respaldar.sh, DESPLIEGUE.md   produccion en VPS
@@ -133,6 +133,13 @@ Pendiente de probar con llaves reales: Claude + Meta.
 10. ~~Dockerfile + guia de despliegue en VPS + respaldo diario de la BD~~ (hecho: `Dockerfile`,
     `docker-compose.yml` con Caddy, `DESPLIEGUE.md`, `respaldar.sh` cifrado con gpg, `app/respaldo.py`).
 11. Panel web basico del doctor (agenda y metricas).
+
+Mejoras propuestas (ideas del usuario a partir del mensaje de un asistente humano real):
+- ~~Indicaciones de llegada completas~~ (hecho: llegada.txt + Maps + Waze, al agendar/mover y al Confirmo).
+- Lista de espera: al cancelar, ofrecer el horario a quien lo queria (lo que mas vende).
+- Recordatorio de regreso a los 6 meses (probablemente categoria marketing en Meta: plan mas caro).
+- Entender notas de voz (requiere servicio de voz a texto: preguntar antes de agregar).
+- Mandar archivos (QR de acceso, PDF de indicaciones previas), tono configurable con emojis.
 
 ## 10. Forma de trabajar
 - Desarrollador unico, tiempo parcial (tardes y fines de semana): preferir soluciones
