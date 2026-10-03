@@ -98,3 +98,11 @@ def test_herramientas_confirmar_y_reprogramar(cita, lunes):
     assert ia._ejecutar("confirmar_cita", {"cita_id": cita["id"]}, TEL) == "Listo."
     r = ia._ejecutar("reprogramar_cita", {"cita_id": cita["id"], "fecha": lunes, "hora": "16:00"}, TEL)
     assert "reprogramada" in r
+
+
+def test_el_bot_solo_habla_de_la_clinica():
+    """Meta prohibe en WhatsApp los asistentes de IA de proposito general (2026);
+    los de citas y atencion a clientes si estan permitidos."""
+    from app.clinica import SYSTEM_PROMPT
+
+    assert "Solo hablas de temas de la clinica" in SYSTEM_PROMPT
