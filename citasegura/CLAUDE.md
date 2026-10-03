@@ -70,6 +70,7 @@ app/
   clinica.py       datos de la clinica y SYSTEM_PROMPT  (hoy hardcodeado, demo)
 tests/             pruebas con pytest (no usan Claude ni Meta)
 probar_chat.py     simulador en terminal: Claude real, WhatsApp falso
+Dockerfile, docker-compose.yml, respaldar.sh, DESPLIEGUE.md   produccion en VPS
 ```
 
 Flujo: Meta -> POST /webhook -> responde 200 rapido -> tarea en segundo plano ->
@@ -103,6 +104,8 @@ cancelar, reprogramar, botones del recordatorio, modo humano y comandos del cons
 recordatorios sin duplicados, idempotencia, metricas y reporte semanal.
 Estados de cita: agendada, confirmada, cancelada, reprogramada (la vieja; la nueva es otra fila).
 "Activa" = agendada o confirmada. Faltas: columna `falto`, la marca recepcion con `#falta`.
+Produccion: `PRODUCCION=1` (lo pone el Dockerfile) hace que el servidor no arranque si falta
+una llave. Un solo worker de uvicorn (con mas, los recordatorios saldrian repetidos).
 Pendiente de probar con llaves reales: Claude + Meta.
 
 ## 9. Backlog (en orden de prioridad)
@@ -121,7 +124,8 @@ Pendiente de probar con llaves reales: Claude + Meta.
 8. Mover `clinica.py` a configuracion en BD (multi-cliente: un registro por consultorio,
    enrutado por `phone_number_id` del webhook).
 9. Pruebas automaticas (pytest): ya hay base en `tests/`; ampliar con cada cambio.
-10. Dockerfile + guia de despliegue en VPS + respaldo diario de la BD.
+10. ~~Dockerfile + guia de despliegue en VPS + respaldo diario de la BD~~ (hecho: `Dockerfile`,
+    `docker-compose.yml` con Caddy, `DESPLIEGUE.md`, `respaldar.sh` cifrado con gpg, `app/respaldo.py`).
 11. Panel web basico del doctor (agenda y metricas).
 
 ## 10. Forma de trabajar

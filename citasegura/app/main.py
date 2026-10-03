@@ -3,6 +3,7 @@ import hashlib
 import hmac
 import logging
 import os
+from contextlib import asynccontextmanager
 from datetime import datetime
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -17,16 +18,32 @@ from . import agenda, avisos, db, ia, metricas, recordatorios, whatsapp  # noqa:
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("citasegura")
-app = FastAPI(title="CitaSegura")
 scheduler = BackgroundScheduler()
+OBLIGATORIAS = ("WA_TOKEN", "WA_PHONE_NUMBER_ID", "WA_VERIFY_TOKEN", "WA_APP_SECRET", "ANTHROPIC_API_KEY")
 
 
-@app.on_event("startup")
-def inicio():
+def revisar_configuracion():
+    """En produccion (PRODUCCION=1) no arranca si falta una llave: mejor un error claro al
+    iniciar que un bot que acepta mensajes falsos o que no puede contestar."""
+    if os.getenv("PRODUCCION") != "1":
+        return
+    faltan = [v for v in OBLIGATORIAS if not os.getenv(v) or os.getenv(v, "").startswith("pega_aqui")]
+    if faltan:
+        raise RuntimeError("Faltan en .env: " + ", ".join(faltan))
+
+
+@asynccontextmanager
+async def ciclo(app):
+    revisar_configuracion()
     db.init()
     scheduler.add_job(recordatorios.revisar, "interval", minutes=10)
     scheduler.add_job(metricas.enviar_reporte, "cron", day_of_week="mon", hour=9)  # lunes 9:00
     scheduler.start()
+    yield
+    scheduler.shutdown(wait=False)
+
+
+app = FastAPI(title="CitaSegura", lifespan=ciclo)
 
 
 @app.get("/salud")

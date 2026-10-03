@@ -1,7 +1,8 @@
 .env
 *.db
+datos/
+respaldos/
 .venv/
 __pycache__/
 .pytest_cache/
-datos/
-cifrados/
+tests/

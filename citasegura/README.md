@@ -127,8 +127,10 @@ pytest
 ```
 No usan Claude ni Meta: cada prueba crea su propia base de datos temporal.
 
-## Produccion (cuando tengas clientes que pagan)
-- No dejes el bot en tu compu de casa: si se va la luz o el internet, no salen los recordatorios.
-- Usa un VPS barato con Ubuntu, configura `TZ=America/Mexico_City` y corre con Docker o systemd.
-- Respalda `citasegura.db` diario. Con 5+ clientes, migra a PostgreSQL.
-- Configura `WA_APP_SECRET` para validar que los mensajes vienen de Meta.
+## Produccion
+Guia completa paso a paso en **[DESPLIEGUE.md](DESPLIEGUE.md)**: VPS con Ubuntu, Docker,
+HTTPS automatico con Caddy, token permanente de Meta y respaldo diario cifrado.
+```
+docker compose up -d --build
+```
+En el contenedor `PRODUCCION=1`: si falta una llave en `.env` no arranca y dice cual.

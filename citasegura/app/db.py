@@ -57,6 +57,7 @@ def init():
             c.execute("ALTER TABLE citas ADD COLUMN creado TEXT")
         if "falto" not in columnas:
             c.execute("ALTER TABLE citas ADD COLUMN falto INTEGER DEFAULT 0")
+    os.chmod(DB_PATH, 0o600)  # datos de pacientes: solo el usuario del bot puede leerlos
 
 
 def ya_procesado(wamid: str) -> bool:

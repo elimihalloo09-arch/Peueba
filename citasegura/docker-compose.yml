@@ -1,0 +1,26 @@
+# Produccion en un VPS: el bot + Caddy (pone HTTPS solo, con certificado gratis).
+# Uso: docker compose up -d --build     (ver DESPLIEGUE.md)
+services:
+  bot:
+    build: .
+    env_file: .env
+    volumes:
+      - ./datos:/datos            # base de datos y respaldos; sobrevive a actualizaciones
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - DOMINIO=${DOMINIO:?Pon DOMINIO=tu.dominio en .env}
+    command: caddy reverse-proxy --from ${DOMINIO} --to bot:8000
+    volumes:
+      - caddy_datos:/data         # certificados HTTPS
+    depends_on:
+      - bot
+    restart: unless-stopped
+
+volumes:
+  caddy_datos:
