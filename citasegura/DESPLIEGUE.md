@@ -85,6 +85,18 @@ En Meta -> WhatsApp -> Configuracion:
 
 Escribele al numero desde tu celular. Para ver lo que pasa: `docker compose logs -f bot`.
 
+## Paso 5b (opcional). Bot de ventas
+
+Corre en el mismo servidor, con su propio numero, base de datos y `.env`:
+
+1. Crea una **segunda app** en Meta for Developers con el numero de ventas (cada app tiene su
+   propio webhook, token y secreto).
+2. `cp .env .env.ventas`, y en `.env.ventas` cambia las llaves de Meta por las de la app de
+   ventas y agrega `MODO=ventas`, `VENDEDOR_NOMBRE=TuNombre` y `TELEFONO_HUMANO=` tu celular.
+3. `mkdir -p datos-ventas && chown 1000:1000 datos-ventas`
+4. `docker compose --profile ventas up -d --build`
+5. En la app de ventas de Meta, Callback URL: `https://bot.tudominio.com/ventas/webhook`.
+
 ## Paso 6. Respaldo diario cifrado
 
 Los datos de pacientes son sensibles: el respaldo se guarda cifrado.
@@ -121,7 +133,7 @@ docker compose start bot
 | Quiero… | Comando (dentro de `Peueba/citasegura`) |
 |---|---|
 | Ver que esta pasando | `docker compose logs -f bot` |
-| Actualizar a la ultima version | `git pull && docker compose up -d --build` |
+| Actualizar a la ultima version | `git pull && docker compose up -d --build` (con ventas: `--profile ventas`) |
 | Cambiar algo del `.env` | editar `.env` y `docker compose up -d` |
 | Reiniciar | `docker compose restart bot` |
 | Ver si esta sano | `docker compose ps` |

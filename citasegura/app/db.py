@@ -66,6 +66,19 @@ def init():
             telefono TEXT PRIMARY KEY,      -- pidio no recibir recordatorios de regreso
             desde TEXT DEFAULT (datetime('now','localtime'))
         );
+        CREATE TABLE IF NOT EXISTS interesados ( -- modo ventas: dentistas que quieren el piloto
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            telefono TEXT NOT NULL,
+            nombre TEXT,
+            consultorio TEXT,
+            zona TEXT,
+            faltas_semana REAL,
+            precio_consulta REAL,
+            whatsapp_business TEXT,
+            interes TEXT,
+            notas TEXT,
+            creado TEXT DEFAULT (datetime('now','localtime'))
+        );
         CREATE TABLE IF NOT EXISTS procesados (
             wamid TEXT PRIMARY KEY          -- evita contestar dos veces el mismo mensaje
         );

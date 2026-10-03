@@ -86,6 +86,26 @@ Cuando Meta la apruebe pon `WA_TEMPLATE_RECORDATORIO_2H=recordatorio_2h` en `.en
 Mientras tanto se usa la primera. Llena `CLINICA_DIRECCION` y `CLINICA_MAPS` (en Google
 Maps: busca el consultorio -> Compartir -> Copiar vinculo).
 
+## Vender en automatico (modo ventas)
+El mismo bot, en **otro numero**, vende CitaSegura a dentistas (`MODO=ventas`):
+1. El dentista **te escribe primero** (volante con QR, anuncio de Facebook/Instagram con boton de
+   WhatsApp, recomendacion). El bot nunca escribe en frio: WhatsApp lo prohibe y bloquea el numero.
+2. El bot le pregunta cuantas faltas tiene y cuanto cobra, le calcula lo que pierde
+   (`calcular_perdida`, las cuentas las hace el codigo), y le pide que **pruebe la demo ahi mismo**
+   escribiendo como paciente: agenda, recibe como llegar y un recordatorio con botones.
+3. Contesta dudas con lo del guion de venta y ofrece el piloto gratis de 30 dias.
+4. Si quiere el piloto, una llamada o hablar con alguien, lo registra y **te avisa a ti**
+   (`TELEFONO_HUMANO`): *"Interesado (piloto): Dr. Ramirez | Sonrisas Ramirez Neza | 5 faltas/semana
+   | consulta $600 | ..."*. Desde ahi el bot deja de contestarle y sigues tu.
+
+En modo ventas no hay recordatorios, reportes ni avisos de citas: las citas son de prueba.
+`#interesados` (desde tu celular) lista los ultimos.
+
+**Link para el QR o el anuncio** (cambia el numero por el de ventas):
+`https://wa.me/5215500000000?text=Hola%2C%20quiero%20ver%20c%C3%B3mo%20funciona%20CitaSegura`
+
+Como encenderlo en el servidor: ver "Bot de ventas" en DESPLIEGUE.md.
+
 ## Recordatorio de regreso (opcional)
 Trae de vuelta a pacientes que no iban a regresar: *"Hola Ana, ya es momento de tu proxima
 limpieza en Clinica Dental Sonrisa. ¿Te agendamos una cita?"*. Se activa con `REGRESO=1`.

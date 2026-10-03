@@ -69,12 +69,15 @@ app/
   espera.py        lista de espera: ofrece horarios liberados (Lo quiero / No, gracias)
   voz.py           notas de voz -> texto con faster-whisper en el servidor (opcional, VOZ=1)
   regreso.py       recordatorio de regreso ("ya toca tu limpieza"), diario 10:50 (opcional, REGRESO=1)
+  ventas.py        MODO=ventas: otro numero vende CitaSegura a dentistas que escribieron primero;
+                   demo en la platica, calcular_perdida, registrar_interesado -> avisa al vendedor
   whatsapp.py      enviar_texto, enviar_plantilla
   db.py            SQLite: mensajes, citas, humano, procesados (+ migracion de columnas)
   clinica.py       datos de la clinica, SYSTEM_PROMPT y como_llegar() (lee llegada.txt)
 tests/             pruebas con pytest (no usan Claude ni Meta)
 probar_chat.py     simulador en terminal: Claude real, WhatsApp falso
-Dockerfile, docker-compose.yml, respaldar.sh, DESPLIEGUE.md   produccion en VPS
+Dockerfile, docker-compose.yml, Caddyfile, respaldar.sh, DESPLIEGUE.md   produccion en VPS
+                   (/webhook -> bot de consultorios; /ventas/webhook -> bot de ventas, perfil "ventas")
 ```
 
 Flujo: Meta -> POST /webhook -> responde 200 rapido -> tarea en segundo plano ->
@@ -148,6 +151,7 @@ Mejoras propuestas (ideas del usuario a partir del mensaje de un asistente human
   requirements-voz.txt. NO probado con un modelo real: el entorno de desarrollo no podia
   descargarlo. Probar con `python -m app.voz audio.ogg`).
 - Mandar archivos (QR de acceso, PDF de indicaciones previas), tono configurable con emojis.
+- ~~Vender en automatico~~ (hecho: modo ventas, solo entrante; nunca prospeccion en frio).
 
 ## 10. Forma de trabajar
 - Desarrollador unico, tiempo parcial (tardes y fines de semana): preferir soluciones

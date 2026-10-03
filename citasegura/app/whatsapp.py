@@ -44,6 +44,25 @@ def enviar_plantilla(telefono: str, plantilla: str, parametros: list[str], idiom
     r.raise_for_status()
 
 
+def enviar_botones(telefono: str, texto: str, botones: list[str]):
+    """Mensaje con hasta 3 botones de respuesta rapida. Sin plantilla: solo dentro de las 24 h
+    despues de que la persona escribio (ej. la demo del modo ventas)."""
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": telefono,
+        "type": "interactive",
+        "interactive": {
+            "type": "button",
+            "body": {"text": texto},
+            "action": {
+                "buttons": [{"type": "reply", "reply": {"id": f"b{i}", "title": b[:20]}} for i, b in enumerate(botones[:3])]
+            },
+        },
+    }
+    r = httpx.post(_url(), headers=_headers(), json=payload, timeout=20)
+    r.raise_for_status()
+
+
 def descargar_media(media_id: str, max_bytes: int = 5_000_000) -> bytes:
     """Baja un archivo que mando el paciente (ej. nota de voz). Meta da primero una URL temporal
     y luego se descarga con el mismo token."""

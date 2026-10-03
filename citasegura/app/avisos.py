@@ -15,14 +15,17 @@ def cuando(inicio: str) -> str:
     return f"{DIAS[d.weekday()]} {d.strftime('%d/%m %H:%M')}"
 
 
-def avisar(texto: str):
+def avisar(texto: str, siempre: bool = False):
     """Manda el aviso sin detener al paciente si falla.
 
     Texto libre solo llega si el consultorio le escribio al bot en las ultimas 24 h.
     Con WA_TEMPLATE_AVISO (plantilla de Utilidad con una variable) llega siempre,
     pero cada aviso cuesta como mensaje de utilidad."""
     destino = os.getenv("TELEFONO_HUMANO")
-    if not destino or os.getenv("AVISAR_CONSULTORIO", "1") == "0":
+    if not destino:
+        return
+    # en modo ventas las citas son de prueba: solo llegan los avisos importantes (interesados)
+    if not siempre and (os.getenv("AVISAR_CONSULTORIO", "1") == "0" or os.getenv("MODO") == "ventas"):
         return
     try:
         plantilla = os.getenv("WA_TEMPLATE_AVISO")

@@ -6,3 +6,5 @@ __pycache__/
 datos/
 cifrados/
 llegada.txt
+datos-ventas/
+.env.ventas

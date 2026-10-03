@@ -68,7 +68,7 @@ def agendar(telefono, nombre, motivo, fecha, hora) -> str:
 def citas_del_paciente(telefono) -> list[dict]:
     with db.conn() as c:
         filas = c.execute(
-            "SELECT id, inicio, motivo, estado FROM citas WHERE telefono=? AND estado IN ('agendada','confirmada') "
+            "SELECT id, inicio, nombre, motivo, estado FROM citas WHERE telefono=? AND estado IN ('agendada','confirmada') "
             "AND inicio >= ? ORDER BY inicio",
             (telefono, datetime.now().strftime("%Y-%m-%d %H:%M")),
         ).fetchall()

@@ -5,7 +5,7 @@ from datetime import datetime
 
 from anthropic import Anthropic
 
-from . import agenda, db, espera
+from . import agenda, db, espera, ventas
 from .clinica import SYSTEM_PROMPT, como_llegar
 
 _client = None
@@ -110,6 +110,8 @@ def _ejecutar(nombre_tool, args, telefono) -> str:
 
 
 def _correr_herramienta(nombre_tool, args, telefono) -> str:
+    if nombre_tool in ventas.NOMBRES:
+        return ventas.ejecutar(nombre_tool, args, telefono)
     if nombre_tool == "ver_horarios":
         libres = agenda.horarios_libres(args["fecha"])
         return json.dumps(libres) if libres else "Sin horarios libres ese dia."
@@ -133,12 +135,17 @@ def _correr_herramienta(nombre_tool, args, telefono) -> str:
 
 def responder(telefono: str) -> str:
     ahora = datetime.now().strftime("%A %Y-%m-%d %H:%M")
-    system = SYSTEM_PROMPT + f"\nComo llegar (usalo si preguntan):\n{como_llegar()}\n\nFecha y hora actual: {ahora}."
+    if ventas.activo():  # otro numero: vende CitaSegura a dentistas, con la demo dentro de la platica
+        system = ventas.system_prompt() + f"\n\nFecha y hora actual: {ahora}."
+        tools = [t for t in TOOLS if t["name"] != "lista_de_espera"] + ventas.TOOLS
+    else:
+        system = SYSTEM_PROMPT + f"\nComo llegar (usalo si preguntan):\n{como_llegar()}\n\nFecha y hora actual: {ahora}."
+        tools = TOOLS
     mensajes = db.historial(telefono)
 
     for _ in range(5):  # maximo 5 vueltas de herramientas
         r = _cliente().messages.create(
-            model=MODELO, max_tokens=500, system=system, tools=TOOLS, messages=mensajes
+            model=MODELO, max_tokens=500, system=system, tools=tools, messages=mensajes
         )
         if r.stop_reason != "tool_use":
             texto = "".join(b.text for b in r.content if b.type == "text").strip()
