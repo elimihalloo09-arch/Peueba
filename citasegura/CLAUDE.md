@@ -64,6 +64,7 @@ app/
   agenda.py        logica de horarios y citas
   recordatorios.py recordatorios 48 h (con botones) y 2 h (direccion y Maps) con plantilla
   metricas.py      calculo de metricas y reporte semanal (lunes 9:00)
+  avisos.py        avisos al consultorio: cita nueva, cancelada, movida, urgencia
   whatsapp.py      enviar_texto, enviar_plantilla
   db.py            SQLite: mensajes, citas, humano, procesados (+ migracion de columnas)
   clinica.py       datos de la clinica y SYSTEM_PROMPT  (hoy hardcodeado, demo)
@@ -111,7 +112,8 @@ Pendiente de probar con llaves reales: Claude + Meta.
 3. ~~Herramienta `reprogramar_cita`~~ (hecho).
 4. ~~Recordatorio de 2 h con plantilla distinta~~ (hecho en codigo: `WA_TEMPLATE_RECORDATORIO_2H`,
    `CLINICA_DIRECCION`, `CLINICA_MAPS`). Falta darla de alta y que Meta la apruebe (ver README).
-5. Notificar al consultorio (WhatsApp del doctor/recepcion) cada cita nueva y cada cancelacion.
+5. ~~Notificar al consultorio cada cita nueva y cada cancelacion~~ (hecho: `app/avisos.py`; tambien
+   citas movidas y urgencias. Opcional `WA_TEMPLATE_AVISO` para que lleguen fuera de 24 h).
 6. ~~Comando para salir de modo humano~~ (hecho: `TELEFONO_HUMANO` manda `#bot <telefono>`).
 7. ~~**Metricas para el doctor**~~ (hecho: `#reporte`, `#hoy`, `#falta` y envio los lunes).
    Pendiente: plantilla de Utilidad para el reporte, para que llegue aunque el consultorio

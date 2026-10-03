@@ -7,8 +7,10 @@ from app import db, whatsapp
 
 @pytest.fixture(autouse=True)
 def bd_temporal(tmp_path, monkeypatch):
-    """Cada prueba usa su propia base de datos vacia."""
+    """Cada prueba usa su propia base de datos vacia y nunca le escribe a un telefono real."""
     monkeypatch.setattr(db, "DB_PATH", str(tmp_path / "prueba.db"))
+    for var in ("TELEFONO_HUMANO", "WA_TEMPLATE_AVISO", "AVISAR_CONSULTORIO"):
+        monkeypatch.delenv(var, raising=False)
     db.init()
 
 

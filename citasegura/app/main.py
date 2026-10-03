@@ -13,7 +13,7 @@ load_dotenv()
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request  # noqa: E402
 from fastapi.responses import PlainTextResponse  # noqa: E402
 
-from . import agenda, db, ia, metricas, recordatorios, whatsapp  # noqa: E402
+from . import agenda, avisos, db, ia, metricas, recordatorios, whatsapp  # noqa: E402
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("citasegura")
@@ -147,7 +147,5 @@ def procesar(msg: dict):
             respuesta = "Disculpa, tuve un problema. En un momento te atiende una persona de la clinica."
     db.guardar_mensaje(telefono, "assistant", respuesta)
     whatsapp.enviar_texto(telefono, respuesta)
-    if db.en_modo_humano(telefono) and staff:
-        whatsapp.enviar_texto(
-            staff, f"Atender a {telefono}: {texto}\nPara regresarlo al asistente: #bot {telefono}"
-        )
+    if db.en_modo_humano(telefono):
+        avisos.avisar(f"Atender a {telefono}: {texto} | Para regresarlo al asistente: #bot {telefono}")

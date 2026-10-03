@@ -99,6 +99,19 @@ Desde el telefono `TELEFONO_HUMANO`, escribiendole al numero del bot:
 | `#falta 12` | Marca que la cita 12 no llego (`#asistio 12` lo corrige) |
 | `#bot 5215512345678` | Regresa al asistente una conversacion que estaba con una persona |
 
+**Avisos automaticos:** al consultorio le llega un WhatsApp con cada cita nueva, cancelada o
+movida, y cuando una conversacion necesita a una persona (dolor, urgencia, queja). Las
+confirmaciones no se avisan para no llenar el chat; se ven con `#hoy`. Se apagan con
+`AVISAR_CONSULTORIO=0`.
+
+Para que los avisos lleguen siempre, crea una plantilla **Utilidad**, es_MX, nombre
+`aviso_consultorio`, y ponla en `WA_TEMPLATE_AVISO`:
+
+> Aviso de tu asistente de citas: {{1}}. Revisa tu agenda del dia con #hoy.
+
+Sin plantilla se mandan como texto libre: no cuestan, pero solo llegan si el consultorio le
+escribio al bot en las ultimas 24 h (por ejemplo, mandando `#hoy` cada manana).
+
 Cada **lunes a las 9:00** el bot manda el reporte solo. Ese mensaje (y el aviso de "Atender a…")
 es texto libre: WhatsApp solo lo entrega si `TELEFONO_HUMANO` le escribio al bot en las ultimas
 24 h. Si no llego, `#reporte` lo trae en cualquier momento.

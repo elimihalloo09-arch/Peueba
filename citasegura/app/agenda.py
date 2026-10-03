@@ -2,7 +2,7 @@
 import sqlite3
 from datetime import datetime, timedelta
 
-from . import db
+from . import avisos, db
 from .clinica import HORARIO
 
 
@@ -57,6 +57,7 @@ def agendar(telefono, nombre, motivo, fecha, hora) -> str:
             _insertar(c, telefono, nombre, motivo, fecha, hora)
     except sqlite3.IntegrityError:  # otro paciente la tomo en el mismo instante
         return "Ese horario ya no esta disponible."
+    avisos.avisar(f"Nueva cita: {nombre}, {avisos.cuando(f'{fecha} {hora}')} ({motivo}). Tel {telefono}")
     return f"Cita agendada: {fecha} {hora} a nombre de {nombre}."
 
 
@@ -72,11 +73,16 @@ def citas_del_paciente(telefono) -> list[dict]:
 
 def cambiar_estado(telefono, cita_id, estado) -> str:
     with db.conn() as c:
-        cur = c.execute(
-            "UPDATE citas SET estado=? WHERE id=? AND telefono=? AND estado IN ('agendada','confirmada')",
-            (estado, cita_id, telefono),
-        )
-    return "Listo." if cur.rowcount else "No encontre esa cita."
+        cita = c.execute(
+            "SELECT nombre, inicio FROM citas WHERE id=? AND telefono=? AND estado IN ('agendada','confirmada')",
+            (cita_id, telefono),
+        ).fetchone()
+        if not cita:
+            return "No encontre esa cita."
+        c.execute("UPDATE citas SET estado=? WHERE id=?", (estado, cita_id))
+    if estado == "cancelada":  # las confirmaciones no se avisan: se ven en #hoy y no gastan mensajes
+        avisos.avisar(f"Cancelada: {cita['nombre']}, {avisos.cuando(cita['inicio'])}. El horario quedo libre.")
+    return "Listo."
 
 
 def reprogramar(telefono, cita_id, fecha, hora) -> str:
@@ -87,7 +93,8 @@ def reprogramar(telefono, cita_id, fecha, hora) -> str:
     try:
         with db.conn() as c:
             vieja = c.execute(
-                "SELECT nombre, motivo, creado FROM citas WHERE id=? AND telefono=? AND estado IN ('agendada','confirmada')",
+                "SELECT nombre, motivo, creado, inicio FROM citas "
+                "WHERE id=? AND telefono=? AND estado IN ('agendada','confirmada')",
                 (cita_id, telefono),
             ).fetchone()
             if not vieja:
@@ -97,6 +104,9 @@ def reprogramar(telefono, cita_id, fecha, hora) -> str:
             _insertar(c, telefono, vieja["nombre"], vieja["motivo"], fecha, hora, vieja["creado"])
     except sqlite3.IntegrityError:
         return "Ese horario ya no esta disponible."
+    avisos.avisar(
+        f"Cita movida: {vieja['nombre']}, de {avisos.cuando(vieja['inicio'])} a {avisos.cuando(f'{fecha} {hora}')}."
+    )
     return f"Cita reprogramada: {fecha} {hora} a nombre de {vieja['nombre']}."
 
 
