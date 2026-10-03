@@ -1,8 +1,17 @@
-"""Logica de agenda: horarios libres, agendar, cancelar."""
+"""Logica de agenda: horarios libres, agendar, confirmar, cancelar, reprogramar."""
+import sqlite3
 from datetime import datetime, timedelta
 
 from . import db
 from .clinica import HORARIO
+
+
+def _normalizar_hora(hora: str) -> str:
+    """'9:00' o '9' -> '09:00'. Lanza ValueError si no es una hora valida."""
+    hora = hora.strip()
+    if ":" not in hora:
+        hora += ":00"
+    return datetime.strptime(hora, "%H:%M").strftime("%H:%M")
 
 
 def horarios_libres(fecha: str) -> list[str]:
@@ -27,14 +36,26 @@ def horarios_libres(fecha: str) -> list[str]:
     return libres
 
 
+def _insertar(c, telefono, nombre, motivo, fecha, hora):
+    """Inserta la cita; el indice unico de la BD impide dar la misma hora a dos pacientes."""
+    inicio = f"{fecha} {hora}"
+    # si faltan menos de 48 h el paciente acaba de agendar: el recordatorio de 48 h sobra
+    sin_48h = datetime.strptime(inicio, "%Y-%m-%d %H:%M") - datetime.now() <= timedelta(hours=48)
+    c.execute(
+        "INSERT INTO citas (telefono, nombre, motivo, inicio, recordatorio_48h) VALUES (?,?,?,?,?)",
+        (telefono, nombre, motivo, inicio, int(sin_48h)),
+    )
+
+
 def agendar(telefono, nombre, motivo, fecha, hora) -> str:
+    hora = _normalizar_hora(hora)
     if hora not in horarios_libres(fecha):
         return "Ese horario ya no esta disponible."
-    with db.conn() as c:
-        c.execute(
-            "INSERT INTO citas (telefono, nombre, motivo, inicio) VALUES (?,?,?,?)",
-            (telefono, nombre, motivo, f"{fecha} {hora}"),
-        )
+    try:
+        with db.conn() as c:
+            _insertar(c, telefono, nombre, motivo, fecha, hora)
+    except sqlite3.IntegrityError:  # otro paciente la tomo en el mismo instante
+        return "Ese horario ya no esta disponible."
     return f"Cita agendada: {fecha} {hora} a nombre de {nombre}."
 
 
@@ -50,5 +71,34 @@ def citas_del_paciente(telefono) -> list[dict]:
 
 def cambiar_estado(telefono, cita_id, estado) -> str:
     with db.conn() as c:
-        cur = c.execute("UPDATE citas SET estado=? WHERE id=? AND telefono=?", (estado, cita_id, telefono))
+        cur = c.execute(
+            "UPDATE citas SET estado=? WHERE id=? AND telefono=? AND estado != 'cancelada'",
+            (estado, cita_id, telefono),
+        )
     return "Listo." if cur.rowcount else "No encontre esa cita."
+
+
+def reprogramar(telefono, cita_id, fecha, hora) -> str:
+    """Cancela la cita y crea la nueva en un solo paso: o pasan las dos cosas o ninguna."""
+    hora = _normalizar_hora(hora)
+    if hora not in horarios_libres(fecha):
+        return "Ese horario ya no esta disponible."
+    try:
+        with db.conn() as c:
+            vieja = c.execute(
+                "SELECT nombre, motivo FROM citas WHERE id=? AND telefono=? AND estado != 'cancelada'",
+                (cita_id, telefono),
+            ).fetchone()
+            if not vieja:
+                return "No encontre esa cita."
+            c.execute("UPDATE citas SET estado='cancelada' WHERE id=?", (cita_id,))
+            _insertar(c, telefono, vieja["nombre"], vieja["motivo"], fecha, hora)
+    except sqlite3.IntegrityError:
+        return "Ese horario ya no esta disponible."
+    return f"Cita reprogramada: {fecha} {hora} a nombre de {vieja['nombre']}."
+
+
+def proxima_cita(telefono) -> dict | None:
+    """La siguiente cita activa del paciente (la que se le recordo)."""
+    citas = citas_del_paciente(telefono)
+    return citas[0] if citas else None

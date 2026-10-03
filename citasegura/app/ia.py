@@ -8,7 +8,7 @@ from anthropic import Anthropic
 from . import agenda, db
 from .clinica import SYSTEM_PROMPT
 
-client = Anthropic()  # lee ANTHROPIC_API_KEY del entorno
+_client = None
 MODELO = os.getenv("CLAUDE_MODEL", "claude-haiku-4-5-20251001")
 
 TOOLS = [
@@ -41,6 +41,29 @@ TOOLS = [
         "input_schema": {"type": "object", "properties": {}},
     },
     {
+        "name": "confirmar_cita",
+        "description": "Marca como confirmada una cita del paciente por id (cuando dice que si asistira).",
+        "input_schema": {
+            "type": "object",
+            "properties": {"cita_id": {"type": "integer"}},
+            "required": ["cita_id"],
+        },
+    },
+    {
+        "name": "reprogramar_cita",
+        "description": "Cambia una cita del paciente a otra fecha y hora libre. Libera el horario anterior. "
+        "Usala solo cuando el paciente ya eligio el nuevo horario de ver_horarios.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "cita_id": {"type": "integer"},
+                "fecha": {"type": "string", "description": "YYYY-MM-DD"},
+                "hora": {"type": "string", "description": "HH:MM"},
+            },
+            "required": ["cita_id", "fecha", "hora"],
+        },
+    },
+    {
         "name": "cancelar_cita",
         "description": "Cancela una cita del paciente por id.",
         "input_schema": {
@@ -57,7 +80,22 @@ TOOLS = [
 ]
 
 
+def _cliente():
+    global _client
+    if _client is None:
+        _client = Anthropic()  # lee ANTHROPIC_API_KEY del entorno
+    return _client
+
+
 def _ejecutar(nombre_tool, args, telefono) -> str:
+    """Corre la herramienta; si Claude manda datos mal formados se lo decimos para que corrija."""
+    try:
+        return _correr_herramienta(nombre_tool, args, telefono)
+    except (KeyError, ValueError, TypeError) as e:
+        return f"Datos invalidos ({e}). Revisa el formato: fecha YYYY-MM-DD, hora HH:MM."
+
+
+def _correr_herramienta(nombre_tool, args, telefono) -> str:
     if nombre_tool == "ver_horarios":
         libres = agenda.horarios_libres(args["fecha"])
         return json.dumps(libres) if libres else "Sin horarios libres ese dia."
@@ -65,6 +103,10 @@ def _ejecutar(nombre_tool, args, telefono) -> str:
         return agenda.agendar(telefono, args["nombre"], args["motivo"], args["fecha"], args["hora"])
     if nombre_tool == "mis_citas":
         return json.dumps(agenda.citas_del_paciente(telefono), ensure_ascii=False)
+    if nombre_tool == "confirmar_cita":
+        return agenda.cambiar_estado(telefono, args["cita_id"], "confirmada")
+    if nombre_tool == "reprogramar_cita":
+        return agenda.reprogramar(telefono, args["cita_id"], args["fecha"], args["hora"])
     if nombre_tool == "cancelar_cita":
         return agenda.cambiar_estado(telefono, args["cita_id"], "cancelada")
     if nombre_tool == "pasar_a_humano":
@@ -79,11 +121,13 @@ def responder(telefono: str) -> str:
     mensajes = db.historial(telefono)
 
     for _ in range(5):  # maximo 5 vueltas de herramientas
-        r = client.messages.create(
+        r = _cliente().messages.create(
             model=MODELO, max_tokens=500, system=system, tools=TOOLS, messages=mensajes
         )
         if r.stop_reason != "tool_use":
-            return "".join(b.text for b in r.content if b.type == "text").strip()
+            texto = "".join(b.text for b in r.content if b.type == "text").strip()
+            # WhatsApp rechaza mensajes vacios (pasa a veces despues de una herramienta)
+            return texto or "Listo. Si necesitas algo mas, aqui estoy."
 
         mensajes.append({"role": "assistant", "content": r.content})
         resultados = []

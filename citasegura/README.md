@@ -61,6 +61,21 @@ nombre `recordatorio_cita`, con 3 variables y botones de respuesta rapida:
 > Hola {{1}}, te recordamos tu cita en {{2}} el {{3}}. ¿Nos confirmas?
 > [Confirmo] [Reprogramar] [Cancelar]
 
+## Botones del recordatorio y modo humano
+- **Confirmo** / **Cancelar** se resuelven directo en el codigo (sin gastar Claude) sobre la
+  proxima cita del paciente. **Reprogramar** lo atiende Claude con `reprogramar_cita`.
+- Cuando el bot pasa una conversacion a humano, avisa a `TELEFONO_HUMANO`. Para regresarla
+  al asistente, desde ese telefono escribele al numero del bot: `#bot 5215512345678`.
+  (Ojo: ese aviso es texto libre; solo llega si `TELEFONO_HUMANO` le escribio al bot en las
+  ultimas 24 h.)
+
+## Pruebas
+```
+pip install -r requirements-dev.txt
+pytest
+```
+No usan Claude ni Meta: cada prueba crea su propia base de datos temporal.
+
 ## Produccion (cuando tengas clientes que pagan)
 - No dejes el bot en tu compu de casa: si se va la luz o el internet, no salen los recordatorios.
 - Usa un VPS barato con Ubuntu, configura `TZ=America/Mexico_City` y corre con Docker o systemd.

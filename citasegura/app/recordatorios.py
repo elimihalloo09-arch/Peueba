@@ -23,17 +23,26 @@ def revisar():
         faltan = inicio - ahora
         fecha_txt = inicio.strftime("%d/%m a las %H:%M")
         try:
-            if faltan <= timedelta(hours=48) and not cita["recordatorio_48h"]:
+            if faltan <= timedelta(hours=2) and not cita["recordatorio_2h"]:
+                _enviar(cita, fecha_txt)
+                # si nunca salio el de 48 h (cita agendada de ultimo momento) ya no se manda:
+                # un solo mensaje basta y cada plantilla cuesta
+                _marcar(cita["id"], "recordatorio_2h", "recordatorio_48h")
+            elif timedelta(hours=2) < faltan <= timedelta(hours=48) and not cita["recordatorio_48h"]:
                 # Plantilla con botones Confirmo / Reprogramar / Cancelar (se configuran en Meta)
-                whatsapp.enviar_plantilla(cita["telefono"], PLANTILLA, [cita["nombre"], NOMBRE, fecha_txt])
+                _enviar(cita, fecha_txt)
                 _marcar(cita["id"], "recordatorio_48h")
-            elif faltan <= timedelta(hours=2) and not cita["recordatorio_2h"]:
-                whatsapp.enviar_plantilla(cita["telefono"], PLANTILLA, [cita["nombre"], NOMBRE, fecha_txt])
-                _marcar(cita["id"], "recordatorio_2h")
         except Exception as e:  # un error con un paciente no debe detener a los demas
             log.error("Fallo recordatorio cita %s: %s", cita["id"], e)
 
 
-def _marcar(cita_id, campo):
+def _enviar(cita, fecha_txt):
+    whatsapp.enviar_plantilla(cita["telefono"], PLANTILLA, [cita["nombre"], NOMBRE, fecha_txt])
+    # queda en el historial para que Claude entienda si el paciente contesta "Reprogramar"
+    db.guardar_mensaje(cita["telefono"], "assistant", f"Recordatorio enviado: tu cita es el {fecha_txt}.")
+
+
+def _marcar(cita_id, *campos):
     with db.conn() as c:
-        c.execute(f"UPDATE citas SET {campo}=1 WHERE id=?", (cita_id,))
+        for campo in campos:  # nombres fijos del codigo, nunca vienen del usuario
+            c.execute(f"UPDATE citas SET {campo}=1 WHERE id=?", (cita_id,))

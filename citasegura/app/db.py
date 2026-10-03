@@ -44,6 +44,8 @@ def init():
         CREATE TABLE IF NOT EXISTS procesados (
             wamid TEXT PRIMARY KEY          -- evita contestar dos veces el mismo mensaje
         );
+        -- una hora solo puede tener una cita activa (evita empalmes si dos agendan a la vez)
+        CREATE UNIQUE INDEX IF NOT EXISTS una_cita_por_hora ON citas(inicio) WHERE estado != 'cancelada';
         """)
 
 
@@ -80,3 +82,9 @@ def en_modo_humano(telefono) -> bool:
 def activar_humano(telefono):
     with conn() as c:
         c.execute("INSERT OR IGNORE INTO humano (telefono) VALUES (?)", (telefono,))
+
+
+def desactivar_humano(telefono) -> bool:
+    """Regresa la conversacion al bot. True si estaba en modo humano."""
+    with conn() as c:
+        return c.execute("DELETE FROM humano WHERE telefono=?", (telefono,)).rowcount > 0
