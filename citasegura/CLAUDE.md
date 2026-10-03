@@ -104,12 +104,18 @@ cancelar, reprogramar, botones del recordatorio, modo humano y comandos del cons
 recordatorios sin duplicados, idempotencia, metricas y reporte semanal.
 Estados de cita: agendada, confirmada, cancelada, reprogramada (la vieja; la nueva es otra fila).
 "Activa" = agendada o confirmada. Faltas: columna `falto`, la marca recepcion con `#falta`.
+Coexistencia: si la recepcion contesta desde la app WhatsApp Business, llega un eco
+(`message_echoes`, campo `smb_message_echoes`) y el bot se pausa en esa conversacion
+(`eco_de_recepcion` en main.py). La pausa vence tras `PAUSA_HUMANO_HORAS` sin actividad o con `#bot`.
+Formato del eco tomado de documentacion publica: falta confirmarlo con un mensaje real.
 Produccion: `PRODUCCION=1` (lo pone el Dockerfile) hace que el servidor no arranque si falta
 una llave. Un solo worker de uvicorn (con mas, los recordatorios saldrian repetidos).
 Pendiente de probar con llaves reales: Claude + Meta.
 
 ## 9. Backlog (en orden de prioridad)
 1. Conectar llaves reales y probar conversacion completa con el numero de prueba de Meta.
+   Despues, probar coexistencia con un numero en WhatsApp Business (eco de la recepcion) y revisar
+   si hace falta registrarse como Tech Provider de Meta para dar de alta numeros de clientes.
 2. ~~Manejar respuestas a botones del recordatorio~~ (hecho: Confirmo/Cancelar directo en
    codigo, Reprogramar pasa a Claude).
 3. ~~Herramienta `reprogramar_cita`~~ (hecho).

@@ -70,6 +70,8 @@ En Meta -> WhatsApp -> Configuracion:
 - Callback URL: `https://bot.tudominio.com/webhook`
 - Verify token: el mismo de `WA_VERIFY_TOKEN`
 - Suscribete al campo **messages**
+- Si el numero es el del consultorio en coexistencia (sigue en su app WhatsApp Business),
+  suscribete tambien a **smb_message_echoes**: asi el bot se pausa cuando la recepcion contesta
 
 Escribele al numero desde tu celular. Para ver lo que pasa: `docker compose logs -f bot`.
 

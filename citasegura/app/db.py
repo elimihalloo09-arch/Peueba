@@ -2,6 +2,7 @@
 import os
 import sqlite3
 from contextlib import contextmanager
+from datetime import datetime, timedelta
 
 DB_PATH = os.getenv("DB_PATH", "citasegura.db")
 
@@ -85,14 +86,33 @@ def historial(telefono, limite=20):
     return msgs
 
 
+def _horas_pausa() -> float:
+    """Horas sin actividad de la recepcion tras las que el bot vuelve solo (0 = nunca)."""
+    try:
+        return float(os.getenv("PAUSA_HUMANO_HORAS", "12"))
+    except ValueError:
+        return 12.0
+
+
 def en_modo_humano(telefono) -> bool:
     with conn() as c:
-        return c.execute("SELECT 1 FROM humano WHERE telefono=?", (telefono,)).fetchone() is not None
+        fila = c.execute("SELECT desde FROM humano WHERE telefono=?", (telefono,)).fetchone()
+        if fila is None:
+            return False
+        horas = _horas_pausa()
+        if horas and fila["desde"] < (datetime.now() - timedelta(hours=horas)).strftime("%Y-%m-%d %H:%M:%S"):
+            c.execute("DELETE FROM humano WHERE telefono=?", (telefono,))  # nadie la atendio: vuelve el bot
+            return False
+        return True
 
 
 def activar_humano(telefono):
+    """Pausa al bot en esta conversacion. Si ya estaba pausada, reinicia el conteo de horas."""
     with conn() as c:
-        c.execute("INSERT OR IGNORE INTO humano (telefono) VALUES (?)", (telefono,))
+        c.execute(
+            "INSERT OR REPLACE INTO humano (telefono, desde) VALUES (?, ?)",
+            (telefono, datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+        )
 
 
 def desactivar_humano(telefono) -> bool:

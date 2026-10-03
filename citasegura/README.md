@@ -58,7 +58,8 @@ cloudflared tunnel --url http://localhost:8000
 Copia la URL https que te da y en Meta -> WhatsApp -> Configuracion:
 - Callback URL: `https://TU-URL/webhook`
 - Verify token: el mismo de `WA_VERIFY_TOKEN`
-- Suscribete al campo `messages`.
+- Suscribete al campo `messages` (y a `smb_message_echoes` si usas el numero del consultorio
+  en coexistencia).
 
 Escribele al numero de prueba desde tu celular. Debe contestar Claude.
 
@@ -88,6 +89,21 @@ Maps: busca el consultorio -> Compartir -> Copiar vinculo).
 ## Botones del recordatorio
 **Confirmo** / **Cancelar** se resuelven directo en el codigo (sin gastar Claude) sobre la
 proxima cita del paciente. **Reprogramar** lo atiende Claude con `reprogramar_cita`.
+
+## Mismo numero del consultorio (coexistencia)
+Meta permite que el numero siga en la app **WhatsApp Business** del consultorio y al mismo
+tiempo este conectado al bot. Se conecta con el registro de Meta (*Embedded Signup*,
+opcion "Connect a WhatsApp Business App"); revisa los requisitos actuales en la
+documentacion de Meta antes del primer cliente.
+
+Cuando la recepcion le contesta a un paciente desde su celular, **el bot se pausa solo en
+esa conversacion** para no contestarle encima. Vuelve cuando el consultorio manda
+`#bot <telefono>` o solo, tras `PAUSA_HUMANO_HORAS` (12 por omision) sin que la recepcion
+escriba. Lo que escribio la recepcion queda en el historial para que el bot tenga contexto.
+
+Para que funcione, en Meta -> WhatsApp -> Configuracion suscribete tambien al campo
+**smb_message_echoes**. El formato se tomo de la documentacion publica: confirmalo con un
+mensaje real de la recepcion y revisa en `docker compose logs bot` que el bot se pause.
 
 ## Comandos del consultorio
 Desde el telefono `TELEFONO_HUMANO`, escribiendole al numero del bot:

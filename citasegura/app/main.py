@@ -76,8 +76,12 @@ async def recibir(request: Request, tareas: BackgroundTasks):
     data = await request.json()
     for entry in data.get("entry", []):
         for change in entry.get("changes", []):
-            for msg in change.get("value", {}).get("messages", []):
+            valor = change.get("value", {})
+            for msg in valor.get("messages", []):
                 tareas.add_task(procesar, msg)
+            # Coexistencia: la recepcion contesto desde la app WhatsApp Business (campo smb_message_echoes)
+            for eco in valor.get("message_echoes", []):
+                tareas.add_task(eco_de_recepcion, eco)
     return {"ok": True}  # contestar rapido a Meta; el trabajo se hace en segundo plano
 
 
@@ -138,6 +142,19 @@ def _boton_recordatorio(telefono: str, texto: str) -> str | None:
         return f"¡Gracias por confirmar! Te esperamos el {cuando}."
     agenda.cambiar_estado(telefono, cita["id"], "cancelada")
     return f"Listo, cancelamos tu cita del {cuando}. Si quieres agendar otra, aqui estoy."
+
+
+def eco_de_recepcion(eco: dict):
+    """Una persona del consultorio le escribio al paciente desde su celular: el bot se hace a un
+    lado en esa conversacion para no contestarle encima. Vuelve con #bot o solo tras
+    PAUSA_HUMANO_HORAS sin que la recepcion escriba."""
+    paciente = eco.get("to")
+    if not paciente or not eco.get("id") or db.ya_procesado(eco["id"]):
+        return
+    db.activar_humano(paciente)
+    texto = _extraer_texto(eco)
+    if texto:  # queda en el historial para que el bot sepa que se dijo cuando regrese
+        db.guardar_mensaje(paciente, "assistant", texto)
 
 
 def procesar(msg: dict):
