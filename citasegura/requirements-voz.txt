@@ -1,2 +1,4 @@
 # Opcional: entender notas de voz en el servidor (VOZ=1). Gratis; el modelo pesa ~250 MB.
 faster-whisper==1.2.*
+# av 19 quito un parametro que usa faster-whisper 1.2 para leer el audio: fijar la 18
+av==18.*
