@@ -3,7 +3,7 @@ import logging
 import os
 from datetime import datetime, timedelta
 
-from . import db, whatsapp
+from . import db, regreso, whatsapp
 from .clinica import NOMBRE
 
 log = logging.getLogger("metricas")
@@ -30,6 +30,7 @@ def calcular(desde: datetime, hasta: datetime) -> dict:
         ).fetchone()[0]
     m = dict(f)
     m["nuevas"] = nuevas
+    m["regresaron"] = regreso.regresaron(desde, hasta)
     with db.conn() as c:  # lugares cancelados que la lista de espera volvio a llenar
         m["rellenados"] = c.execute(
             "SELECT COUNT(*) FROM espera WHERE estado='tomada' AND tomada_en >= ? AND tomada_en <= ?", rango
@@ -65,6 +66,7 @@ def reporte(ahora: datetime | None = None) -> str:
         f"Citas de la semana: {semana['total']}",
         f"• Canceladas con aviso (horario liberado): {semana['canceladas']}",
         f"• Lugares liberados que se volvieron a llenar con la lista de espera: {semana['rellenados']}",
+        f"• Pacientes que regresaron gracias al recordatorio de regreso: {semana['regresaron']}",
         f"• Confirmadas por WhatsApp: {semana['confirmadas']} ({_pct(semana['tasa_confirmacion'])})",
         f"• Asistieron: {semana['asistencias']}",
         f"• Faltaron: {semana['faltas']}",

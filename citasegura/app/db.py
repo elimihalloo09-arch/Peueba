@@ -56,6 +56,16 @@ def init():
             tomada_en TEXT,
             creado TEXT DEFAULT (datetime('now','localtime'))
         );
+        CREATE TABLE IF NOT EXISTS regreso_envios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            telefono TEXT NOT NULL,
+            cita_id INTEGER,
+            enviado_en TEXT NOT NULL        -- 'YYYY-MM-DD HH:MM'
+        );
+        CREATE TABLE IF NOT EXISTS no_regreso (
+            telefono TEXT PRIMARY KEY,      -- pidio no recibir recordatorios de regreso
+            desde TEXT DEFAULT (datetime('now','localtime'))
+        );
         CREATE TABLE IF NOT EXISTS procesados (
             wamid TEXT PRIMARY KEY          -- evita contestar dos veces el mismo mensaje
         );
@@ -70,6 +80,8 @@ def init():
             c.execute("ALTER TABLE citas ADD COLUMN creado TEXT")
         if "falto" not in columnas:
             c.execute("ALTER TABLE citas ADD COLUMN falto INTEGER DEFAULT 0")
+        if "regreso" not in columnas:  # 1 = ya se mando (o ya no toca) el recordatorio de regreso
+            c.execute("ALTER TABLE citas ADD COLUMN regreso INTEGER DEFAULT 0")
     os.chmod(DB_PATH, 0o600)  # datos de pacientes: solo el usuario del bot puede leerlos
 
 

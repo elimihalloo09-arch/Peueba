@@ -14,7 +14,7 @@ load_dotenv()
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request  # noqa: E402
 from fastapi.responses import PlainTextResponse  # noqa: E402
 
-from . import agenda, avisos, clinica, db, espera, ia, metricas, recordatorios, voz, whatsapp  # noqa: E402
+from . import agenda, avisos, clinica, db, espera, ia, metricas, recordatorios, regreso, voz, whatsapp  # noqa: E402
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("citasegura")
@@ -39,6 +39,7 @@ async def ciclo(app):
     scheduler.add_job(recordatorios.revisar, "interval", minutes=10)
     scheduler.add_job(espera.revisar, "interval", minutes=10)
     scheduler.add_job(metricas.enviar_reporte, "cron", day_of_week="mon", hour=9)  # lunes 9:00
+    scheduler.add_job(regreso.revisar, "cron", hour=10, minute=50)  # diario, en horario de consultorio
     scheduler.start()
     yield
     scheduler.shutdown(wait=False)
@@ -196,6 +197,8 @@ def procesar(msg: dict):
     oferta = texto.replace("🎤", "").strip().lower().rstrip(".!")  # tambien si lo dijo en audio
     if oferta in ("lo quiero", "no, gracias", "no gracias"):  # respuesta a un lugar de la lista de espera
         respuestas = espera.responder(telefono, acepta=oferta == "lo quiero")
+    if respuestas is None and oferta == "no por ahora":  # boton del recordatorio de regreso
+        respuestas = regreso.no_por_ahora(telefono)
     if respuestas is None and msg.get("type") == "button":
         respuestas = _boton_recordatorio(telefono, texto)
     if respuestas is None:

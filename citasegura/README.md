@@ -86,6 +86,28 @@ Cuando Meta la apruebe pon `WA_TEMPLATE_RECORDATORIO_2H=recordatorio_2h` en `.en
 Mientras tanto se usa la primera. Llena `CLINICA_DIRECCION` y `CLINICA_MAPS` (en Google
 Maps: busca el consultorio -> Compartir -> Copiar vinculo).
 
+## Recordatorio de regreso (opcional)
+Trae de vuelta a pacientes que no iban a regresar: *"Hola Ana, ya es momento de tu proxima
+limpieza en Clinica Dental Sonrisa. ¿Te agendamos una cita?"*. Se activa con `REGRESO=1`.
+
+- `REGRESO_REGLAS=limpieza:6,revision:12`: si el motivo de la cita trae esa palabra, se
+  recuerda despues de esos meses (sin importar acentos ni mayusculas).
+- Un solo mensaje por paciente y solo por su cita mas reciente. Nunca si ya tiene otra cita,
+  si falto o si cancelo. Al activarlo no se le escribe a todo el historial viejo (solo a lo que
+  vencio en los ultimos 30 dias).
+- El boton **No por ahora** lo da de baja de estos recordatorios.
+- El reporte del lunes cuenta los pacientes que regresaron gracias al recordatorio.
+
+Necesita una plantilla aprobada en `WA_TEMPLATE_REGRESO` (es_MX, nombre `regreso_cita`).
+Meta probablemente la clasifique como **marketing** (~USD 0.04 por mensaje); conviene
+ofrecerlo en un plan mas alto:
+
+> Hola {{1}}, ya es momento de tu proxima {{2}} en {{3}}. ¿Te agendamos una cita?
+> [Agendar] [No por ahora]
+
+"Agendar" lo atiende Claude como cualquier mensaje. Los pacientes deben saber que el
+consultorio les puede escribir por WhatsApp (por ejemplo, avisarles al agendar).
+
 ## Notas de voz (opcional)
 Muchos pacientes mandan audios. Con `VOZ=1` el bot los convierte a texto **en tu propio
 servidor** con [faster-whisper](https://github.com/SYSTRAN/faster-whisper) (gratis, codigo
