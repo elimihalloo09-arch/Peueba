@@ -13,7 +13,7 @@ load_dotenv()
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request  # noqa: E402
 from fastapi.responses import PlainTextResponse  # noqa: E402
 
-from . import agenda, db, ia, recordatorios, whatsapp  # noqa: E402
+from . import agenda, db, ia, metricas, recordatorios, whatsapp  # noqa: E402
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("citasegura")
@@ -25,6 +25,7 @@ scheduler = BackgroundScheduler()
 def inicio():
     db.init()
     scheduler.add_job(recordatorios.revisar, "interval", minutes=10)
+    scheduler.add_job(metricas.enviar_reporte, "cron", day_of_week="mon", hour=9)  # lunes 9:00
     scheduler.start()
 
 
@@ -75,14 +76,34 @@ def _extraer_texto(msg: dict) -> str | None:
     return None
 
 
+AYUDA_STAFF = (
+    "Comandos:\n"
+    "#reporte – resumen de la semana\n"
+    "#hoy – citas de hoy con su numero\n"
+    "#falta 12 – la cita 12 no llego (#asistio 12 lo corrige)\n"
+    "#bot 5215512345678 – regresar una conversacion al asistente"
+)
+
+
 def _comando_staff(texto: str) -> str:
-    """El consultorio regresa una conversacion al bot con '#bot 5215512345678'."""
+    """Comandos que solo acepta el telefono del consultorio (TELEFONO_HUMANO)."""
     partes = texto.split()
-    if len(partes) != 2 or not partes[1].isdigit():
-        return "Para regresar una conversacion al asistente escribe: #bot 5215512345678"
-    if db.desactivar_humano(partes[1]):
-        return f"Listo, el asistente vuelve a atender a {partes[1]}."
-    return f"{partes[1]} no estaba en atencion humana."
+    cmd = partes[0].lower()
+    arg = partes[1] if len(partes) == 2 and partes[1].lstrip("#").isdigit() else None
+    if cmd == "#reporte":
+        return metricas.reporte()
+    if cmd == "#hoy":
+        return metricas.citas_de_hoy()
+    if cmd in ("#falta", "#asistio") and arg:
+        cita_id = int(arg.lstrip("#"))
+        if metricas.marcar_falta(cita_id, falto=cmd == "#falta"):
+            return f"Anotado: cita {cita_id} {'no llego' if cmd == '#falta' else 'si llego'}."
+        return f"No encontre la cita {cita_id} (o todavia no es su hora)."
+    if cmd == "#bot" and arg:
+        if db.desactivar_humano(arg):
+            return f"Listo, el asistente vuelve a atender a {arg}."
+        return f"{arg} no estaba en atencion humana."
+    return AYUDA_STAFF
 
 
 def _boton_recordatorio(telefono: str, texto: str) -> str | None:
@@ -111,7 +132,7 @@ def procesar(msg: dict):
         whatsapp.enviar_texto(telefono, "Por ahora solo puedo leer mensajes de texto. ¿Me lo escribes?")
         return
     staff = os.getenv("TELEFONO_HUMANO")
-    if staff and telefono == staff and texto.strip().lower().startswith("#bot"):
+    if staff and telefono == staff and texto.strip().startswith("#"):
         whatsapp.enviar_texto(telefono, _comando_staff(texto))
         return
     db.guardar_mensaje(telefono, "user", texto)

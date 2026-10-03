@@ -57,13 +57,15 @@ multi-sucursal, panel web (llega despues), campanas de marketing masivas.
 ```
 app/
   main.py          webhook de WhatsApp (GET verificacion, POST mensajes), arranque,
-                   botones del recordatorio y comando #bot
+                   botones del recordatorio y comandos del consultorio (#reporte, #hoy,
+                   #falta, #asistio, #bot)
   ia.py            Claude + herramientas: ver_horarios, agendar_cita, mis_citas,
                    confirmar_cita, cancelar_cita, reprogramar_cita, pasar_a_humano
   agenda.py        logica de horarios y citas
   recordatorios.py recordatorios 48 h y 2 h con plantilla
+  metricas.py      calculo de metricas y reporte semanal (lunes 9:00)
   whatsapp.py      enviar_texto, enviar_plantilla
-  db.py            SQLite: mensajes, citas, humano, procesados
+  db.py            SQLite: mensajes, citas, humano, procesados (+ migracion de columnas)
   clinica.py       datos de la clinica y SYSTEM_PROMPT  (hoy hardcodeado, demo)
 tests/             pruebas con pytest (no usan Claude ni Meta)
 ```
@@ -95,8 +97,10 @@ calida, clara, sin tecnicismos. Nunca inventar horarios ni precios: usar herrami
 
 ## 8. Estado actual del codigo
 Funciona (probado con pytest): horarios libres, agendar (sin empalmes), listar, confirmar,
-cancelar, reprogramar, botones del recordatorio, modo humano y comando `#bot`,
-recordatorios sin duplicados, idempotencia.
+cancelar, reprogramar, botones del recordatorio, modo humano y comandos del consultorio,
+recordatorios sin duplicados, idempotencia, metricas y reporte semanal.
+Estados de cita: agendada, confirmada, cancelada, reprogramada (la vieja; la nueva es otra fila).
+"Activa" = agendada o confirmada. Faltas: columna `falto`, la marca recepcion con `#falta`.
 Pendiente de probar con llaves reales: Claude + Meta.
 
 ## 9. Backlog (en orden de prioridad)
@@ -107,8 +111,9 @@ Pendiente de probar con llaves reales: Claude + Meta.
 4. Recordatorio de 2 h con plantilla distinta (incluye direccion y Maps).
 5. Notificar al consultorio (WhatsApp del doctor/recepcion) cada cita nueva y cada cancelacion.
 6. ~~Comando para salir de modo humano~~ (hecho: `TELEFONO_HUMANO` manda `#bot <telefono>`).
-7. **Metricas para el doctor:** citas agendadas, confirmadas, canceladas, faltas.
-   Reporte semanal por WhatsApp. (Esto es lo que justifica la mensualidad.)
+7. ~~**Metricas para el doctor**~~ (hecho: `#reporte`, `#hoy`, `#falta` y envio los lunes).
+   Pendiente: plantilla de Utilidad para el reporte, para que llegue aunque el consultorio
+   no haya escrito en 24 h.
 8. Mover `clinica.py` a configuracion en BD (multi-cliente: un registro por consultorio,
    enrutado por `phone_number_id` del webhook).
 9. Pruebas automaticas (pytest): ya hay base en `tests/`; ampliar con cada cambio.

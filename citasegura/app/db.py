@@ -33,9 +33,11 @@ def init():
             nombre TEXT NOT NULL,
             motivo TEXT,
             inicio TEXT NOT NULL,           -- 'YYYY-MM-DD HH:MM'
-            estado TEXT DEFAULT 'agendada', -- agendada, confirmada, cancelada
+            estado TEXT DEFAULT 'agendada', -- agendada, confirmada, cancelada, reprogramada
             recordatorio_48h INTEGER DEFAULT 0,
-            recordatorio_2h INTEGER DEFAULT 0
+            recordatorio_2h INTEGER DEFAULT 0,
+            creado TEXT,                    -- 'YYYY-MM-DD HH:MM' en que el bot la agendo
+            falto INTEGER DEFAULT 0         -- 1 si recepcion marco que el paciente no llego
         );
         CREATE TABLE IF NOT EXISTS humano (
             telefono TEXT PRIMARY KEY,      -- conversaciones que atiende una persona
@@ -45,8 +47,16 @@ def init():
             wamid TEXT PRIMARY KEY          -- evita contestar dos veces el mismo mensaje
         );
         -- una hora solo puede tener una cita activa (evita empalmes si dos agendan a la vez)
-        CREATE UNIQUE INDEX IF NOT EXISTS una_cita_por_hora ON citas(inicio) WHERE estado != 'cancelada';
+        DROP INDEX IF EXISTS una_cita_por_hora;
+        CREATE UNIQUE INDEX IF NOT EXISTS una_cita_activa_por_hora ON citas(inicio)
+            WHERE estado IN ('agendada','confirmada');
         """)
+        # bases creadas antes de las metricas no tienen estas columnas
+        columnas = {f["name"] for f in c.execute("PRAGMA table_info(citas)")}
+        if "creado" not in columnas:
+            c.execute("ALTER TABLE citas ADD COLUMN creado TEXT")
+        if "falto" not in columnas:
+            c.execute("ALTER TABLE citas ADD COLUMN falto INTEGER DEFAULT 0")
 
 
 def ya_procesado(wamid: str) -> bool:

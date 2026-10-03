@@ -61,13 +61,27 @@ nombre `recordatorio_cita`, con 3 variables y botones de respuesta rapida:
 > Hola {{1}}, te recordamos tu cita en {{2}} el {{3}}. ¿Nos confirmas?
 > [Confirmo] [Reprogramar] [Cancelar]
 
-## Botones del recordatorio y modo humano
-- **Confirmo** / **Cancelar** se resuelven directo en el codigo (sin gastar Claude) sobre la
-  proxima cita del paciente. **Reprogramar** lo atiende Claude con `reprogramar_cita`.
-- Cuando el bot pasa una conversacion a humano, avisa a `TELEFONO_HUMANO`. Para regresarla
-  al asistente, desde ese telefono escribele al numero del bot: `#bot 5215512345678`.
-  (Ojo: ese aviso es texto libre; solo llega si `TELEFONO_HUMANO` le escribio al bot en las
-  ultimas 24 h.)
+## Botones del recordatorio
+**Confirmo** / **Cancelar** se resuelven directo en el codigo (sin gastar Claude) sobre la
+proxima cita del paciente. **Reprogramar** lo atiende Claude con `reprogramar_cita`.
+
+## Comandos del consultorio
+Desde el telefono `TELEFONO_HUMANO`, escribiendole al numero del bot:
+
+| Comando | Que hace |
+|---|---|
+| `#reporte` | Resumen de la semana: citas, confirmadas, canceladas, faltas, % de inasistencia |
+| `#hoy` | Citas de hoy con su numero |
+| `#falta 12` | Marca que la cita 12 no llego (`#asistio 12` lo corrige) |
+| `#bot 5215512345678` | Regresa al asistente una conversacion que estaba con una persona |
+
+Cada **lunes a las 9:00** el bot manda el reporte solo. Ese mensaje (y el aviso de "Atender a…")
+es texto libre: WhatsApp solo lo entrega si `TELEFONO_HUMANO` le escribio al bot en las ultimas
+24 h. Si no llego, `#reporte` lo trae en cualquier momento.
+
+**Las faltas las marca recepcion** con `#falta`: el bot no puede saber si alguien llego. Sin
+eso, el reporte cuenta a todos como asistencias. Lo practico: al cerrar el dia, `#hoy` y
+marcar quien no vino.
 
 ## Pruebas
 ```
