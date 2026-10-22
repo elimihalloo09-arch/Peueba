@@ -19,7 +19,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
     <main class="marco"><router-outlet /></main>
   `,
   styles: [`
-    .banda{ background:#611232; color:#fff; border-bottom:4px solid #A57F2C; }
+    .banda{ background:#691B32; color:#fff; border-bottom:4px solid #AE8320; }
     .banda .marco{ padding-top:22px; padding-bottom:0; }
     .banda .kicker{ color:#E8D9DF; }
     .marco{ max-width:960px; margin:0 auto; padding:24px 16px 64px; }
@@ -28,7 +28,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
     nav a{ font-size:13.5px; font-weight:600; text-decoration:none; color:#E8D9DF;
            padding:9px 14px 11px; border-radius:8px 8px 0 0; }
     nav a:hover{ color:#fff; background:rgba(255,255,255,.08); }
-    nav a.activo{ background:var(--ground); color:#611232; }
+    nav a.activo{ background:var(--ground); color:#A02142; }
     @media (prefers-color-scheme: dark){ nav a.activo{ color:var(--guinda); } }
   `],
 })

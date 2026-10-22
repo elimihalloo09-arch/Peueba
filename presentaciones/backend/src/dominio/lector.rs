@@ -295,13 +295,15 @@ fn encabezado_proyecto(cuerpo: &str, conocidos: &[String], siguiente_es_contenid
         }
     }
 
+    if cuerpo.ends_with('.') {
+        return None;
+    }
+    // Corto, o largo pero con viñetas abajo: un nombre de proyecto puede ser largo.
     let palabras = cuerpo.split_whitespace().count();
-    let corto = largo <= 60 && palabras <= 8 && !cuerpo.ends_with('.');
-    if corto {
-        let (nombre, equipo) = dividir_equipo(cuerpo);
-        if coincidir(&nombre, conocidos).is_some() || siguiente_es_contenido {
-            return Some((nombre, equipo, String::new()));
-        }
+    let corto = largo <= 60 && palabras <= 8;
+    let (nombre, equipo) = dividir_equipo(cuerpo);
+    if (corto && coincidir(&nombre, conocidos).is_some()) || (siguiente_es_contenido && largo <= 140) {
+        return Some((nombre, equipo, String::new()));
     }
     None
 }
@@ -575,15 +577,15 @@ mod pruebas {
     #[test]
     fn lee_el_formato_del_deck() {
         let t = "PROYECTO: PORTAL DE TRÁMITES\nEquipo jurídico\n\
-                 • Continúan las pruebas del checklist. Estado: En proceso.\n\
-                 • Estamos en espera de la retroalimentación de jurídica. Estado: Pendiente.\n";
+                 • Continúan las pruebas de usabilidad. Estado: En proceso.\n\
+                 • Estamos en espera de la validación normativa. Estado: Pendiente.\n";
         let l = leer(t, &[], None);
         assert_eq!(l.bloques.len(), 1);
         let b = &l.bloques[0];
         assert_eq!(b.proyecto, "Portal de Trámites");
         assert_eq!(b.equipo, "Equipo jurídico");
         assert!(b.nuevo);
-        assert_eq!(b.puntos[0], PuntoLeido { texto: "Continúan las pruebas del checklist.".into(), estado: Some(EnProceso), inferido: false });
+        assert_eq!(b.puntos[0], PuntoLeido { texto: "Continúan las pruebas de usabilidad.".into(), estado: Some(EnProceso), inferido: false });
         assert_eq!(b.puntos[1].estado, Some(Pendiente));
         assert!(!b.puntos[1].texto.contains("Estado"));
     }
@@ -612,12 +614,12 @@ mod pruebas {
 
     #[test]
     fn reconoce_proyectos_del_catalogo_aunque_vengan_distinto() {
-        let cat = nombres(&["Asistente virtual (AOS)", "Tablero de indicadores"]);
-        let t = "ASISTENTE VIRTUAL\n1. Se corrigió la conexión VPN - concluido\n\
+        let cat = nombres(&["Asistente virtual (Fase 2)", "Tablero de indicadores"]);
+        let t = "ASISTENTE VIRTUAL\n1. Se corrigió el flujo de citas - concluido\n\
                  Tablero de indicadores: se están cargando los datos de agosto\n";
         let l = leer(t, &cat, None);
         assert_eq!(l.bloques.len(), 2);
-        assert_eq!(l.bloques[0].proyecto, "Asistente virtual (AOS)");
+        assert_eq!(l.bloques[0].proyecto, "Asistente virtual (Fase 2)");
         assert!(!l.bloques[0].nuevo);
         assert_eq!(l.bloques[0].puntos[0].estado, Some(Concluido));
         assert_eq!(l.bloques[1].proyecto, "Tablero de indicadores");
@@ -647,12 +649,21 @@ mod pruebas {
 
     #[test]
     fn ignora_saludos_y_entiende_el_preterito() {
-        let t = "Hola, les paso el avance de esta semana:\nPortal\n- QA liberó el módulo de citas\n- Se cargó la base\nSaludos";
+        let t = "Hola, les paso el avance de esta semana:\nPortal\n- Calidad liberó el módulo de citas\n- Se cargó la base\nSaludos";
         let l = leer(t, &[], None);
         assert_eq!(l.bloques.len(), 1);
         assert_eq!(l.bloques[0].proyecto, "Portal");
         assert_eq!(l.bloques[0].puntos.len(), 2);
         assert!(l.bloques[0].puntos.iter().all(|p| p.estado == Some(Concluido) && p.inferido));
+    }
+
+    #[test]
+    fn un_nombre_largo_con_vinetas_abajo_es_proyecto() {
+        let t = "Sistema de seguimiento de requerimientos de las administraciones desconcentradas - Equipo de análisis\n- Se revisaron los criterios (en proceso)";
+        let l = leer(t, &[], None);
+        assert_eq!(l.bloques[0].proyecto, "Sistema de seguimiento de requerimientos de las administraciones desconcentradas");
+        assert_eq!(l.bloques[0].equipo, "Equipo de análisis");
+        assert_eq!(l.bloques[0].puntos.len(), 1);
     }
 
     #[test]

@@ -22,3 +22,10 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 printpdf = { version = "0.7", features = ["font_subsetting"] }
 ttf-parser = "0.21"
 zip = { version = "2", default-features = false, features = ["deflate"] }
+# Para juntar el fondo de cada diseño de la plantilla con sus logos.
+image = { version = "0.25", default-features = false, features = ["jpeg", "png"] }
+
+# Las dependencias optimizadas también en desarrollo: leer la plantilla y
+# armar el PDF tarda segundos sin optimizar y milisegundos optimizado.
+[profile.dev.package."*"]
+opt-level = 2

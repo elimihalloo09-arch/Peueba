@@ -11,15 +11,17 @@ use axum::{
     Router,
 };
 use sqlx::postgres::PgPoolOptions;
-use std::net::SocketAddr;
+use std::{net::SocketAddr, path::PathBuf, sync::Arc};
 use tower_http::cors::{Any, CorsLayer};
 
+use avances_api::dominio::plantilla::Plantilla;
 use rutas::{avances, cortes, documentos, proyectos};
 
 #[derive(Clone)]
 pub struct Estado {
     pub bd: sqlx::PgPool,
     pub llave: Option<String>,
+    pub plantilla: Option<Arc<Plantilla>>,
 }
 
 #[tokio::main]
@@ -43,7 +45,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         tracing::warn!("APP_API_KEY vacía: la API queda abierta. Ponle una antes de exponerla fuera de tu red.");
     }
 
-    let estado = Estado { bd, llave };
+    let plantilla = cargar_plantilla().map(Arc::new);
+    let estado = Estado { bd, llave, plantilla };
 
     let origen = std::env::var("ORIGEN_PERMITIDO").unwrap_or_else(|_| "http://localhost:4200".into());
     let cors = match origen.parse::<HeaderValue>() {
@@ -64,6 +67,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/cortes/:id/pdf", get(documentos::pdf))
         .route("/cortes/:id/pptx", get(documentos::pptx))
         .route("/leer", post(avances::leer))
+        .route("/plantilla", get(documentos::plantilla))
         .route("/avances/:id", put(avances::actualizar).delete(avances::borrar))
         .route("/pasos/:id", put(avances::actualizar_paso).delete(avances::borrar_paso))
         .route_layer(middleware::from_fn_with_state(estado.clone(), guardia))
@@ -80,6 +84,33 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let escucha = tokio::net::TcpListener::bind(dir).await?;
     axum::serve(escucha, app).await?;
     Ok(())
+}
+
+/// La plantilla institucional: la de PLANTILLA o la primera .pptx/.potx de
+/// ../plantilla/. Sin ella, las presentaciones salen con el diseño propio, sin
+/// fondos ni logos.
+fn cargar_plantilla() -> Option<Plantilla> {
+    let ruta = match std::env::var("PLANTILLA").ok().filter(|r| !r.trim().is_empty()) {
+        Some(r) => PathBuf::from(r),
+        None => std::fs::read_dir("../plantilla")
+            .ok()?
+            .filter_map(Result::ok)
+            .map(|e| e.path())
+            .filter(|p| p.extension().is_some_and(|x| x == "pptx" || x == "potx"))
+            .min()?,
+    };
+    let nombre = ruta.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default();
+    let resultado = std::fs::read(&ruta).map_err(|e| e.to_string()).and_then(|d| Plantilla::cargar(&nombre, &d));
+    match resultado {
+        Ok(p) => {
+            tracing::info!("plantilla {nombre}: {}", p.disenos().join(", "));
+            Some(p)
+        }
+        Err(e) => {
+            tracing::warn!("no se pudo usar la plantilla {}: {e}", ruta.display());
+            None
+        }
+    }
 }
 
 /// Deja pasar solo si el header X-API-Key coincide. Si no hay llave configurada,

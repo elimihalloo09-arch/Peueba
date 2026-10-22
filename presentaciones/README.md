@@ -27,7 +27,7 @@ No hace falta un formato fijo. Todo esto funciona, mezclado:
 ```
 PROYECTO: PORTAL DE TRÁMITES
 Equipo jurídico
-• Continúan las pruebas del checklist. Estado: En proceso.
+• Continúan las pruebas de usabilidad. Estado: En proceso.
 
 Mesa de ayuda - Equipo de soporte
 - Se liberó la base de conocimiento (concluido)
@@ -57,23 +57,42 @@ Próximos pasos:
 
 ## La presentación
 
-Sale con el formato del deck *Avance de proyectos* que ya se presenta
-(Google Slides, corte del 24/09/2026), que es la plantilla institucional:
+Sale sobre la **plantilla institucional 2026** (`Plantilla_Presentacion2026.pptx`):
+fondos con grecas, logos de Hacienda | SAT, logo de *2026, año de Margarita
+Maza*, Noto Sans, títulos guinda `#A02142` y subtítulos `#691B32`. Usa sus
+cuatro diseños:
 
-- 16:9, **Montserrat**, paleta del Gobierno de México: guinda `#611232`,
-  dorado `#A57F2C`, verde `#1E5B4F`.
-- **Portada** guinda: título, *Corte al …*, proyectos y quién presenta.
-- **Resumen del corte** (con dos o más proyectos): cuántos puntos hay
-  concluidos, en proceso y pendientes por proyecto.
-- **Una diapositiva por proyecto**: `PROYECTO: NOMBRE`, el equipo y las
-  viñetas con *Estado:* en color. Si no cabe, baja la letra un poco y, si
-  aun así no cabe, la parte en (1/2), (2/2).
-- **Próximos pasos** con la fecha del siguiente corte.
+| Diapositiva | Diseño | Qué lleva |
+|---|---|---|
+| Portada | Portada | Título centrado, *Corte al …*, quién presenta y los proyectos |
+| Resumen del corte | Interior 2 | Por proyecto: cuántos puntos concluidos, en proceso y pendientes (con dos o más proyectos) |
+| Un proyecto | Interior 2 | Nombre del proyecto, equipo y las viñetas con *Estado:* en color |
+| Próximos pasos | Interior 1 | Lo que sigue por proyecto y la fecha del siguiente corte |
+| Cierre | Cierre | *Gracias* en la franja de la ilustración |
 
-El PDF lleva la fuente incrustada: se ve igual en cualquier computadora. El
-PowerPoint se abre en PowerPoint, Keynote y Google Slides, y cada viñeta va
-en su propia caja de texto, como en el deck original. Si la computadora no
-tiene Montserrat, PowerPoint la sustituye; Google Slides sí la tiene.
+Si un proyecto no cabe, primero baja la letra (20 → 16 pt) y, si aun así no
+cabe, lo parte en (1/2), (2/2). Los títulos largos se acomodan en varios
+renglones sin meterse debajo de los logos.
+
+- **PowerPoint**: se arma *dentro* de la plantilla, con su maestro, diseños,
+  tema y fondos: lo que agregues a mano también sale institucional. Cada
+  viñeta va en su propia caja de texto.
+- **PDF**: lleva Noto Sans incrustada y el fondo de cada diseño con sus
+  logos, así que se ve igual en cualquier computadora.
+
+### Dónde va la plantilla
+
+La plantilla trae los logos oficiales, así que **no viaja en el repositorio**
+(que es público). Ponla en `presentaciones/plantilla/` —el backend toma la
+primera `.pptx` o `.potx` que encuentre ahí— o indica la ruta en `PLANTILLA`
+dentro de `backend/.env`. Al arrancar, el log dice cuál cargó, y la pantalla
+de cortes también lo muestra. Sin plantilla, todo funciona igual pero las
+presentaciones salen con fondo blanco, sin fondos ni logos.
+
+Si la plantilla cambia, solo reemplaza el archivo y reinicia el backend.
+Debe ser panorámica de 13.33 × 7.5 pulgadas y tener diseños llamados
+*Portada*, *Interior 1*, *Interior 2* y *Cierre*; si falta alguno, usa el más
+parecido.
 
 Para ver un ejemplo sin base de datos:
 
@@ -106,15 +125,17 @@ el 4200: corre uno a la vez o usa `npm start -- --port 4201` y ajusta
 
 ```
 backend/
-  fuentes/              Montserrat (licencia OFL), incrustada en el PDF.
+  fuentes/              Noto Sans (licencia OFL), incrustada en el PDF.
   migrations/           Esquema. Se aplica solo al arrancar.
   src/dominio/
     lector.rs           Entiende el texto de los equipos.
     maqueta.rs          Qué va en cada diapositiva y dónde: lo comparten PDF y PowerPoint.
     pdf.rs, pptx.rs     Dibujan la maqueta.
+    plantilla.rs        Lee la plantilla: diseños, fondos y logos.
     estilo.rs           Colores, medidas y métricas de la fuente.
   src/rutas/            Un archivo por recurso de la API.
   examples/muestra.rs   Presentación de ejemplo sin base.
+plantilla/              Aquí va la plantilla institucional (no se sube al repo).
 frontend/
   src/app/paginas/      Cortes, el corte (donde se pega el texto) y proyectos.
 ```
@@ -134,6 +155,7 @@ frontend/
 | `PUT DELETE` | `/api/proyectos/:id` | Nombre, equipo, orden, activo |
 | `GET` | `/api/cortes/:id/pdf` | La presentación en PDF |
 | `GET` | `/api/cortes/:id/pptx` | La presentación en PowerPoint |
+| `GET` | `/api/plantilla` | Qué plantilla está usando y con qué diseños |
 
 ## Pruebas
 
@@ -142,9 +164,10 @@ cd backend && cargo test
 ```
 
 Cubren el lector (formato del deck, correo informal, catálogo, saludos,
-renglones cortados, estados en renglón aparte), la maqueta (orden de las
-diapositivas, reparto cuando no cabe, renglones dentro del ancho) y las
-fechas en español.
+nombres largos, renglones cortados, estados en renglón aparte), la maqueta
+(diseño de cada diapositiva, reparto cuando no cabe, títulos que no pisan
+los logos, renglones dentro del ancho), la lectura de la plantilla —con la
+real, si está en `plantilla/`— y las fechas en español.
 
 ## Seguridad
 

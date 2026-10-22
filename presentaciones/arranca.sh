@@ -25,6 +25,10 @@ fi
 
 [ -f backend/.env ] || { cp .env.example backend/.env; echo "==> Creé backend/.env"; }
 
+if ! ls plantilla/*.pptx plantilla/*.potx >/dev/null 2>&1 && ! grep -qE '^PLANTILLA=.+' backend/.env; then
+  echo "  Ojo: no hay plantilla institucional en plantilla/. Las presentaciones saldrán sin fondos ni logos."
+fi
+
 echo "==> Dependencias del frontend"
 [ -d frontend/node_modules ] || (cd frontend && npm install --no-audit --no-fund)
 

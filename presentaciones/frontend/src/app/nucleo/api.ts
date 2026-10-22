@@ -82,6 +82,10 @@ export class Api {
     return this.http.delete(`${BASE}/proyectos/${id}`, this.opciones);
   }
 
+  plantilla(): Observable<{ archivo: string | null; disenos: string[] }> {
+    return this.http.get<{ archivo: string | null; disenos: string[] }>(`${BASE}/plantilla`, this.opciones);
+  }
+
   documento(id: string, tipo: 'pdf' | 'pptx'): Observable<HttpResponse<Blob>> {
     return this.http.get(`${BASE}/cortes/${id}/${tipo}`, { ...this.opciones, responseType: 'blob', observe: 'response' });
   }

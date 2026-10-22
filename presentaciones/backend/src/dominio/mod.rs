@@ -3,6 +3,7 @@ pub mod fechas;
 pub mod lector;
 pub mod maqueta;
 pub mod pdf;
+pub mod plantilla;
 pub mod pptx;
 
 use serde::{Deserialize, Serialize};
@@ -42,7 +43,7 @@ impl EstadoAvance {
         match self {
             Self::Concluido => estilo::VERDE,
             Self::EnProceso => estilo::DORADO_TEXTO,
-            Self::Pendiente => estilo::GUINDA_CLARO,
+            Self::Pendiente => estilo::GUINDA,
         }
     }
 }

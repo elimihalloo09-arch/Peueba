@@ -1,10 +1,10 @@
-/* La misma identidad de las presentaciones: Montserrat, guinda y dorado. */
+/* La identidad de la plantilla institucional 2026: Noto Sans, guinda y dorado. */
 :root{
-  --ground:#F4F1EC; --surface:#FFFFFF; --sunken:#F3EEE7;
+  --ground:#F3F2F0; --surface:#FFFFFF; --sunken:#F3EEE7;
   --hair:#DDD5CA; --hair-soft:#EAE4DB;
   --ink:#1F1F1F; --ink-2:#4F4A47; --ink-3:#7D7570;
-  --guinda:#611232; --guinda-2:#9B2247; --dorado:#A57F2C; --verde:#1E5B4F;
-  --concluido:#1E5B4F; --proceso:#86661F; --pendiente:#9B2247;
+  --guinda:#A02142; --guinda-2:#691B32; --dorado:#AE8320; --verde:#235C4E;
+  --concluido:#235C4E; --proceso:#856314; --pendiente:#A02142;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark){
@@ -21,7 +21,7 @@
 html,body{ margin:0; }
 body{
   background:var(--ground); color:var(--ink);
-  font-family:"Montserrat",ui-sans-serif,system-ui,sans-serif; font-size:14.5px; line-height:1.5;
+  font-family:"Noto Sans",ui-sans-serif,system-ui,sans-serif; font-size:14.5px; line-height:1.5;
   -webkit-font-smoothing:antialiased;
 }
 h1,h2,h3{ margin:0; font-weight:700; letter-spacing:-.01em; }

@@ -2,6 +2,7 @@ use axum::{
     extract::{Path, State},
     http::header,
     response::{IntoResponse, Response},
+    Json,
 };
 use uuid::Uuid;
 
@@ -15,16 +16,24 @@ use crate::{error::{Error, Resultado}, modelos::DetalleCorte, rutas::cortes::det
 pub async fn pdf(State(e): State<Estado>, Path(id): Path<Uuid>) -> Resultado<Response> {
     let d = detalle(&e.bd, id).await?;
     let p = presentacion(&d);
-    let bytes = pdf::generar(&maqueta::armar(&p), &p.titulo).map_err(Error::Documento)?;
+    let bytes = pdf::generar(&maqueta::armar(&p), &p.titulo, e.plantilla.as_deref()).map_err(Error::Documento)?;
     Ok(archivo(bytes, "application/pdf", &nombre(&d, "pdf")))
 }
 
 pub async fn pptx(State(e): State<Estado>, Path(id): Path<Uuid>) -> Resultado<Response> {
     let d = detalle(&e.bd, id).await?;
     let p = presentacion(&d);
-    let bytes = pptx::generar(&maqueta::armar(&p), &p.titulo, &p.presenta).map_err(Error::Documento)?;
+    let bytes = pptx::generar(&maqueta::armar(&p), &p.titulo, &p.presenta, e.plantilla.as_deref()).map_err(Error::Documento)?;
     let tipo = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
     Ok(archivo(bytes, tipo, &nombre(&d, "pptx")))
+}
+
+/// Qué plantilla se está usando, para avisarlo en pantalla.
+pub async fn plantilla(State(e): State<Estado>) -> Json<serde_json::Value> {
+    Json(match e.plantilla.as_deref() {
+        Some(p) => serde_json::json!({ "archivo": p.nombre, "disenos": p.disenos() }),
+        None => serde_json::json!({ "archivo": null, "disenos": [] }),
+    })
 }
 
 fn presentacion(d: &DetalleCorte) -> Presentacion {

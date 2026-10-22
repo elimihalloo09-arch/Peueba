@@ -3,3 +3,7 @@ backend/.env
 frontend/node_modules/
 frontend/dist/
 frontend/.angular/
+
+# La plantilla institucional trae logos oficiales: se queda en tu máquina.
+plantilla/*.pptx
+plantilla/*.potx

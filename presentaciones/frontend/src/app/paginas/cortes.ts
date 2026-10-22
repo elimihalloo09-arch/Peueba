@@ -53,6 +53,14 @@ import { CorteEnLista } from '../nucleo/modelos';
         @if (!error()) { <p class="cargando vacio">Todavía no hay cortes. Crea el primero arriba.</p> }
       }
     </div>
+    @if (plantilla(); as p) {
+      @if (p.archivo) {
+        <p class="plantilla">Las presentaciones salen sobre <b>{{ p.archivo }}</b> ({{ p.disenos.join(', ') }}).</p>
+      } @else {
+        <p class="plantilla falta">No encontré la plantilla institucional: las presentaciones salen sin fondos ni logos.
+          Pon el .pptx en <code>presentaciones/plantilla/</code> y reinicia el backend.</p>
+      }
+    }
     @if (error()) { <p class="error">{{ error() }}</p> }
   `,
   styles: [`
@@ -71,6 +79,8 @@ import { CorteEnLista } from '../nucleo/modelos';
     .txt small{ color:var(--ink-3); font-size:12.5px; }
     .ir{ color:var(--ink-3); font-size:20px; }
     .vacio{ padding:18px; }
+    .plantilla{ font-size:12.5px; color:var(--ink-3); margin:16px 0 0; }
+    .plantilla.falta{ color:var(--pendiente); }
   `],
 })
 export class CortesComponent implements OnInit {
@@ -79,6 +89,7 @@ export class CortesComponent implements OnInit {
   lista = signal<CorteEnLista[]>([]);
   error = signal('');
   creando = signal(false);
+  plantilla = signal<{ archivo: string | null; disenos: string[] } | null>(null);
   fecha = hoyIso();
   siguiente = sumarDias(hoyIso(), 7);
   arrastrar = true;
@@ -90,6 +101,7 @@ export class CortesComponent implements OnInit {
       next: (l) => this.lista.set(l),
       error: () => this.error.set('No se pudo conectar con el backend. ¿Está corriendo en el puerto 3001?'),
     });
+    this.api.plantilla().subscribe({ next: (p) => this.plantilla.set(p) });
   }
 
   crear(): void {
