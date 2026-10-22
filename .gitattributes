@@ -1,0 +1,6 @@
+# Los scripts de bash se rompen con saltos de línea de Windows (CRLF).
+*.sh   text eol=lf
+*.ps1  text eol=crlf
+*.ttf  binary
+*.png  binary
+*.jpg  binary

@@ -7,3 +7,7 @@ frontend/.angular/
 # La plantilla institucional trae logos oficiales: se queda en tu máquina.
 plantilla/*.pptx
 plantilla/*.potx
+
+# Lo que deja el ejemplo: cargo run --example muestra -- .
+backend/muestra.pdf
+backend/muestra.pptx

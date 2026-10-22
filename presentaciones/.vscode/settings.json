@@ -1,0 +1,15 @@
+{
+  "rust-analyzer.linkedProjects": ["backend/Cargo.toml"],
+  "rust-analyzer.check.command": "clippy",
+  "files.eol": "\n",
+  "files.exclude": {
+    "**/target": true,
+    "**/node_modules": true,
+    "**/.angular": true
+  },
+  "search.exclude": {
+    "**/target": true,
+    "**/node_modules": true,
+    "**/package-lock.json": true
+  }
+}

@@ -1,0 +1,47 @@
+---
+description: Cómo está hecho el generador de presentaciones de avance y qué cuidar al cambiarlo
+alwaysApply: true
+---
+
+# Avance de proyectos
+
+Junta el texto que mandan los equipos y genera la presentación institucional
+del corte en PDF y PowerPoint. Rust (Axum + SQLx) en `backend/`, Angular 18
+standalone en `frontend/`, PostgreSQL. Lee `README.md` antes de cambios grandes.
+
+## Convenciones
+
+- Todo en español: nombres de funciones, variables, tipos, rutas de la API,
+  mensajes de error y commits. Comentarios cortos que dicen el porqué.
+- El backend no usa `unwrap` fuera de pruebas; los errores van por
+  `error::Error` y salen como `{ "error": "…" }`.
+- Frontend: componentes standalone con `signal`, control flow `@if/@for`,
+  estilos dentro del componente y variables de `src/styles.css`.
+
+## Dónde vive cada cosa
+
+- `backend/src/dominio/lector.rs`: entiende el texto de los equipos. Todo
+  cambio aquí lleva su prueba en el mismo archivo.
+- `backend/src/dominio/maqueta.rs`: decide qué va en cada diapositiva y dónde.
+  **El PDF (`pdf.rs`) y el PowerPoint (`pptx.rs`) dibujan esta misma maqueta**:
+  si cambias una posición o un tamaño, cámbialo aquí, no en uno solo de los dos.
+- `backend/src/dominio/estilo.rs`: colores, fuentes y medidas de la plantilla
+  2026 (Noto Sans, guinda #A02142, 960 × 540 pt).
+- `backend/src/dominio/plantilla.rs`: lee la plantilla .pptx (diseños Portada,
+  Interior 1, Interior 2, Cierre).
+
+## Lo que no se hace
+
+- No subir la plantilla institucional (`plantilla/*.pptx`): trae logos
+  oficiales y el repositorio es público.
+- No poner avances, nombres de proyectos ni personas reales en código,
+  pruebas, ejemplos ni README. Usar ejemplos inventados.
+- Los títulos interiores no pueden pasar de x = 603 pt (ahí empiezan los logos).
+
+## Antes de dar algo por terminado
+
+```bash
+cd backend && cargo test           # lector, maqueta, plantilla y fechas
+cargo run --example muestra -- .     # genera muestra.pdf y muestra.pptx para revisarlos
+cd ../frontend && npx ng build
+```

@@ -97,14 +97,102 @@ parecido.
 Para ver un ejemplo sin base de datos:
 
 ```bash
-cd backend && cargo run --example muestra -- /tmp
+cd backend && cargo run --example muestra -- .
+```
+
+## En tu computadora (y en Cursor)
+
+### 1. Instala las herramientas (una sola vez)
+
+| Qué | Windows | Ubuntu / Mac |
+|---|---|---|
+| Git | <https://git-scm.com/download/win> | `sudo apt install git` / ya viene |
+| Rust | <https://rustup.rs> (`rustup-init.exe`; si pide *Visual Studio C++ Build Tools*, acepta) | `curl https://sh.rustup.rs -sSf \| sh` |
+| Node 20 o 22 | <https://nodejs.org> (LTS) | `nvm install 22` |
+| PostgreSQL 16 | Docker Desktop **o** el instalador de <https://www.postgresql.org/download/windows/> | `docker` o `sudo apt install postgresql` |
+| Cursor | <https://cursor.com> | igual |
+
+Si en tu equipo del trabajo no puedes instalar Docker, usa PostgreSQL
+instalado: no hace falta nada más.
+
+### 2. Baja el proyecto
+
+```bash
+git clone -b claude/transport-savings-expense-projector-nyy8rn https://github.com/elimihalloo09-arch/Peueba.git
+cd peueba/presentaciones
+```
+
+Pide usuario y contraseña de GitHub la primera vez: como contraseña va un
+*token* (GitHub → Settings → Developer settings → Personal access tokens), o
+inicia sesión desde Cursor, que lo hace por ti.
+
+### 3. Copia la plantilla
+
+Copia `Plantilla_Presentacion2026.pptx` a `presentaciones/plantilla/`. No viene
+en el repositorio (trae logos oficiales); sin ella todo funciona, pero las
+presentaciones salen en blanco.
+
+### 4. La base de datos
+
+- **Con Docker**: nada, el script de arranque la levanta.
+- **Con PostgreSQL instalado**: una vez, crea el usuario y la base, y en
+  `backend/.env` usa el puerto 5432:
+
+  ```bash
+  psql -U postgres -f preparar-bd.sql
+  ```
+
+  ```
+  DATABASE_URL=postgres://avances:avances@localhost:5432/avances
+  ```
+
+  (En Windows, `psql` está en `C:\Program Files\PostgreSQL\16\bin`.)
+
+La base empieza vacía: las tablas se crean solas al arrancar el backend.
+
+### 5. Arranca
+
+```powershell
+# Windows
+powershell -ExecutionPolicy Bypass -File .\arranca.ps1
+```
+
+```bash
+# Ubuntu / Mac
+./arranca.sh
+```
+
+La primera vez el backend tarda unos minutos en compilar. Luego abre
+<http://localhost:4200>.
+
+### 6. Ábrelo en Cursor
+
+*File → Open Folder* y elige la carpeta **`presentaciones`** (no la raíz del
+repositorio): así encuentra solo el backend y el frontend. Acepta instalar las
+extensiones recomendadas (rust-analyzer, Angular). La IA de Cursor lee
+`.cursor/rules/proyecto.mdc`, donde están las convenciones del proyecto y lo
+que no se debe subir.
+
+Para trabajar, en la terminal de Cursor:
+
+```bash
+cd backend && cargo test                      # las pruebas
+cargo run --example muestra -- .             # deja muestra.pdf y muestra.pptx en backend/
+```
+
+Para guardar tus cambios en GitHub:
+
+```bash
+git add -A
+git commit -m "Lo que cambié"
+git push
 ```
 
 ## Correr
 
 ```bash
-./arranca.sh     # levanta base, backend y frontend
-./prueba.sh      # crea un corte de prueba, genera PDF y PowerPoint, y lo borra
+./arranca.sh     # levanta base, backend y frontend (en Windows: arranca.ps1)
+./prueba.sh      # crea un corte de prueba, genera PDF y PowerPoint, y lo borra (bash)
 ```
 
 O a mano:
