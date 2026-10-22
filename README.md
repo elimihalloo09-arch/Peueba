@@ -55,3 +55,10 @@ Fórmula base:
 gasto del mes = (días laborales − días desde casa) × costo del día presencial
               + días desde casa × gasto extra en casa
 ```
+
+## Otros proyectos en este repositorio
+
+- [`app/`](app/README.md): finanzas personales, Rust + Angular + PostgreSQL.
+- [`presentaciones/`](presentaciones/README.md): junta los avances que mandan
+  los equipos en texto y genera la presentación institucional del corte en PDF
+  y PowerPoint. Mismo stack.

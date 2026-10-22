@@ -1,0 +1,21 @@
+# Puerto 5433 para convivir con la base de finanzas (5432).
+services:
+  bd:
+    image: postgres:16-alpine
+    container_name: avances-bd
+    environment:
+      POSTGRES_USER: avances
+      POSTGRES_PASSWORD: avances
+      POSTGRES_DB: avances
+    ports:
+      - "5433:5432"
+    volumes:
+      - datos:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U avances -d avances"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  datos:
