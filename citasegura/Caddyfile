@@ -1,0 +1,9 @@
+# HTTPS automatico. /ventas/... va al bot de ventas (si esta encendido); todo lo demas al de consultorios.
+{$DOMINIO} {
+	handle_path /ventas/* {
+		reverse_proxy ventas:8000
+	}
+	handle {
+		reverse_proxy bot:8000
+	}
+}
